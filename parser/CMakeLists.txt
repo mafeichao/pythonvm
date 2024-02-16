@@ -4,4 +4,5 @@ project(galang_parser)
 set(CMAKE_C_COMPILER g++)
 set(CMAKE_CXX_COMPILER g++)
 
-add_executable(parser parser.cpp)
+add_executable(parser main.cpp
+    lexer.cpp)

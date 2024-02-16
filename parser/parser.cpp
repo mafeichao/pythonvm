@@ -1,40 +1,49 @@
-#include <stdio.h>
+a#include "parser.hpp"
+#include "ast.hpp"
+#include "visitor.hpp"
 
-#define INIT 0
-#define NUM 1
+#include <stdlib.h>
+#include <cassert>
 
-int main() {
-    FILE * fp = fopen("test_token.txt", "r");
-    char ch; 
-    int state, num = 0;
+Parser::Parser(Lexer* lex) {
+    _lex = lex;
+    _cur_token = NULL;
+}
 
-    while ((ch = getc(fp)) != EOF) {
-        if (ch == ' ' || ch == '\n') {
-            if (state == NUM) {
-                printf("token NUM : %d\n", num);
-                state = INIT;
-                num = 0;
-            }   
-        }   
-
-        else if (ch >= '0' && ch <= '9') {
-            state = NUM;
-            num = num * 10 + ch - '0';
-        }   
-
-        else if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
-		    if (state == NUM) {
-                printf("token NUM : %d\n", num);
-                state = INIT;
-                num = 0;
-            }
-
-            printf("token operator : %c\n", ch);
-            state = INIT;
-        }
-
+Parser::~Parser() {
+    if (_lex) {
+        delete _lex;
+        _lex = NULL;
     }
 
-    fclose(fp);
-    return 0;
+    if (_cur_token) {
+        delete _cur_token;
+        _cur_token = NULL;
+    }
 }
+
+Token* Parser::get_token() {
+    if (_cur_token == NULL) {
+        _cur_token = _lex->next();
+        if (_cur_token)
+            _cur_token->print();
+    }
+    
+    return _cur_token;
+}
+
+void Parser::consume() {
+    _cur_token = NULL;
+}
+
+void Parser::match(TokenType tt) {
+    get_token();
+    if (_cur_token->_tt != tt) {
+        printf("Parser Error: expected %d, but got %d\n", tt, _cur_token->_tt);
+        assert(_cur_token->_tt == tt); // to crash.
+    }
+    else {
+        consume();
+    }
+}
+
