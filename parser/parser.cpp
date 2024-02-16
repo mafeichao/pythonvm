@@ -110,7 +110,7 @@ int Parser::stoi(Token* data) {
 }
 
 void Parser::eval() {
-    Dumper dumper;
-    dumper.visit(expression());
+    PrintVisitor printer;
+    printer.visit(expression());
     printf("\n");
 }

@@ -26,4 +26,14 @@ public:
     virtual void visit(ConstInt* n);
 };
 
+class PrintVisitor : public Visitor {
+public:
+    PrintVisitor() {}
+
+    void visit(Node* n);
+
+    virtual void visit(BinaryOp* n);
+    virtual void visit(ConstInt* n);
+};
+
 #endif
