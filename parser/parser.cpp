@@ -1,6 +1,4 @@
-a#include "parser.hpp"
-#include "ast.hpp"
-#include "visitor.hpp"
+#include "parser.hpp"
 
 #include <stdlib.h>
 #include <cassert>
@@ -12,7 +10,6 @@ Parser::Parser(Lexer* lex) {
 
 Parser::~Parser() {
     if (_lex) {
-        delete _lex;
         _lex = NULL;
     }
 
@@ -47,3 +44,71 @@ void Parser::match(TokenType tt) {
     }
 }
 
+int Parser::expression() {
+    int a = term();
+    Token* op = get_token();
+    while (op != NULL &&
+        (op->_tt == T_PLUS || op->_tt == T_MINUS)) {
+        consume();
+        int b = term();
+        if (op->_tt == T_PLUS) {
+            a = a + b;
+        } else {
+            a = a - b;
+        }
+
+        op = get_token();
+    }
+
+    return a;
+}
+
+int Parser::term() {
+    int a = factor();
+    Token* op = get_token();
+    while (op != NULL &&
+        (op->_tt == T_MULT || op->_tt == T_DIV)) {
+        consume();
+        int b = factor();
+        if (op->_tt == T_MULT) {
+            a = a * b;
+        } else {
+            a = a / b;
+        }
+
+        op = get_token();
+    }
+
+    return a;
+}
+
+int Parser::factor() {
+    Token* data = get_token();
+    if (data->_tt == T_INT) {
+        consume();
+        return stoi(data);
+    }
+    else if (data->_tt == T_LEFT_PAR) {
+        match(T_LEFT_PAR);
+        int a = expression();
+        match(T_RIGHT_PAR);
+
+        return a;
+    }
+    return -1;
+}
+
+int Parser::stoi(Token* data) {
+    int value = 0;
+    for (int i = 0; i < data->_length; i++) {
+        value = value * 10 + data->_value[i] - '0';
+    }
+
+    return value;
+}
+
+int Parser::eval() {
+    printf("%d\n", expression());
+
+    return 0;
+}

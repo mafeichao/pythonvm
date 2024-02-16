@@ -1,5 +1,5 @@
 #include "lexer.hpp"
-
+#include "parser.hpp"
 
 void test_lexer(const char* filename) {
     Lexer lexer(filename);
@@ -9,6 +9,12 @@ void test_lexer(const char* filename) {
     }
 }
 
+void test_parser(const char* filename) {
+    Lexer lexer(filename);
+    Parser parser(&lexer);
+    parser.eval();
+}
+
 int main(int argc, char** argv) {
     if (argc != 2) {
         printf("Usage: galang filename\n");
@@ -16,6 +22,7 @@ int main(int argc, char** argv) {
     }
 
     test_lexer(argv[1]);
+    test_parser(argv[1]);
 
     return 0;
 }
