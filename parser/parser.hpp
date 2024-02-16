@@ -3,6 +3,8 @@
 
 #include "lexer.hpp"
 
+class Node;
+
 class Parser {
 private:
     Lexer* _lex;
@@ -12,15 +14,15 @@ public:
     Parser(Lexer* lex);
     ~Parser();
 
-    int eval();
+    void eval();
     
     void consume();
     Token* get_token();
     void match(TokenType tt);
     
-    int expression();
-    int term();
-    int factor();
+    Node* expression();
+    Node* term();
+    Node* factor();
     int stoi(Token* data);
 };
 

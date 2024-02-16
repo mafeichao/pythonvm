@@ -1,4 +1,6 @@
 #include "parser.hpp"
+#include "ast.hpp"
+#include "visitor.hpp"
 
 #include <stdlib.h>
 #include <cassert>
@@ -44,17 +46,17 @@ void Parser::match(TokenType tt) {
     }
 }
 
-int Parser::expression() {
-    int a = term();
+Node* Parser::expression() {
+    Node* a = term();
     Token* op = get_token();
     while (op != NULL &&
         (op->_tt == T_PLUS || op->_tt == T_MINUS)) {
         consume();
-        int b = term();
+        Node* b = term();
         if (op->_tt == T_PLUS) {
-            a = a + b;
+            a = new BinaryOp(AST_OP_ADD, a, b);
         } else {
-            a = a - b;
+            a = new BinaryOp(AST_OP_SUB, a, b);
         }
 
         op = get_token();
@@ -63,17 +65,17 @@ int Parser::expression() {
     return a;
 }
 
-int Parser::term() {
-    int a = factor();
+Node* Parser::term() {
+    Node* a = factor();
     Token* op = get_token();
     while (op != NULL &&
         (op->_tt == T_MULT || op->_tt == T_DIV)) {
         consume();
-        int b = factor();
+        Node* b = factor();
         if (op->_tt == T_MULT) {
-            a = a * b;
+            a = new BinaryOp(AST_OP_MUL, a, b);
         } else {
-            a = a / b;
+            a = new BinaryOp(AST_OP_DIV, a, b);
         }
 
         op = get_token();
@@ -82,20 +84,20 @@ int Parser::term() {
     return a;
 }
 
-int Parser::factor() {
+Node* Parser::factor() {
     Token* data = get_token();
     if (data->_tt == T_INT) {
         consume();
-        return stoi(data);
+        return new ConstInt(stoi(data));
     }
     else if (data->_tt == T_LEFT_PAR) {
         match(T_LEFT_PAR);
-        int a = expression();
+        Node* a = expression();
         match(T_RIGHT_PAR);
 
         return a;
     }
-    return -1;
+    return NULL;
 }
 
 int Parser::stoi(Token* data) {
@@ -107,8 +109,8 @@ int Parser::stoi(Token* data) {
     return value;
 }
 
-int Parser::eval() {
-    printf("%d\n", expression());
-
-    return 0;
+void Parser::eval() {
+    Dumper dumper;
+    dumper.visit(expression());
+    printf("\n");
 }

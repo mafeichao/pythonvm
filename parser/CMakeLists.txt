@@ -6,4 +6,6 @@ set(CMAKE_CXX_COMPILER g++)
 
 add_executable(parser main.cpp
     lexer.cpp
-    parser.cpp)
+    parser.cpp
+    ast.cpp
+    visitor.cpp)
