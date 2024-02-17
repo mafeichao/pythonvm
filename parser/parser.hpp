@@ -14,7 +14,7 @@ public:
     Parser(Lexer* lex);
     ~Parser();
 
-    void eval();
+    Node* parse();
     
     void consume();
     Token* get_token();
@@ -25,7 +25,5 @@ public:
     Node* factor();
     int stoi(Token* data);
 };
-
-void eval(const char* s);
 
 #endif

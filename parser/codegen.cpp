@@ -1,6 +1,7 @@
 #include "codegen.hpp"
 #include "ast.hpp"
 #include "opcode.hpp"
+#include "codeobj.hpp"
 
 void CodeGen::visit(Node* n) {
     n->accept(this);
@@ -39,6 +40,11 @@ void CodeGen::visit(BinaryOp* op) {
 void CodeGen::visit(ConstInt* n) {
     add_op(LOAD_CONST, n->_value);
 }
+
+CodeObject* CodeGen::make_code_object() {
+    return new CodeObject(_insts);
+}
+
 
 void CodeGen::dump() {
     for (int i = 0; i < _insts.size(); i++)

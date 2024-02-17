@@ -9,4 +9,5 @@ add_executable(parser main.cpp
     parser.cpp
     ast.cpp
     visitor.cpp
-    codegen.cpp)
+    codegen.cpp
+    codeobj.cpp)

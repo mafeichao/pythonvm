@@ -1,5 +1,7 @@
 #include "lexer.hpp"
 #include "parser.hpp"
+#include "codegen.hpp"
+#include "codeobj.hpp"
 
 void test_lexer(const char* filename) {
     Lexer lexer(filename);
@@ -12,7 +14,12 @@ void test_lexer(const char* filename) {
 void test_parser(const char* filename) {
     Lexer lexer(filename);
     Parser parser(&lexer);
-    parser.eval();
+
+    CodeGen gen;
+    gen.visit(parser.parse());
+    CodeObject* co = gen.make_code_object();
+
+    CodeObject::write_to_file(string(filename).append("c"), *co);
 }
 
 int main(int argc, char** argv) {

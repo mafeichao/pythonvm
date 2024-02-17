@@ -110,9 +110,6 @@ int Parser::stoi(Token* data) {
     return value;
 }
 
-void Parser::eval() {
-    CodeGen gen;
-    gen.visit(expression());
-    gen.dump();
-    printf("\n");
+Node* Parser::parse() {
+    return expression();
 }

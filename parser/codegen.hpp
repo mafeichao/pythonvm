@@ -9,6 +9,8 @@ using namespace std;
 #include "visitor.hpp"
 #include "opcode.hpp"
 
+class CodeObject;
+
 class CodeGen : public Visitor {
 private:
     vector<unsigned char>   _insts;
@@ -24,6 +26,8 @@ public:
 
     virtual void visit(BinaryOp* n);
     virtual void visit(ConstInt* n);
+
+    CodeObject* make_code_object();
 
     void dump();
 };
