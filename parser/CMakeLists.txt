@@ -8,4 +8,5 @@ add_executable(parser main.cpp
     lexer.cpp
     parser.cpp
     ast.cpp
-    visitor.cpp)
+    visitor.cpp
+    codegen.cpp)

@@ -1,6 +1,7 @@
 #include "parser.hpp"
 #include "ast.hpp"
 #include "visitor.hpp"
+#include "codegen.hpp"
 
 #include <stdlib.h>
 #include <cassert>
@@ -110,7 +111,8 @@ int Parser::stoi(Token* data) {
 }
 
 void Parser::eval() {
-    PrintVisitor printer;
-    printer.visit(expression());
+    CodeGen gen;
+    gen.visit(expression());
+    gen.dump();
     printf("\n");
 }
