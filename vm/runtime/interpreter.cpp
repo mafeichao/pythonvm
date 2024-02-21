@@ -1,5 +1,5 @@
 #include "runtime/interpreter.hpp"
-#include "hiString.hpp"
+#include "object/hiString.hpp"
 
 #include "code/bytecode.hpp"
 

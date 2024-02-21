@@ -3,7 +3,7 @@
 
 #include "binaryFileParser.hpp"
 
-#include "hiString.hpp"
+#include "object/hiString.hpp"
 
 BinaryFileParser::BinaryFileParser(BufferedInputStream* buf_file_stream) {
     file_stream = buf_file_stream;

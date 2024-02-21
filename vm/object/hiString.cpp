@@ -1,5 +1,6 @@
-#include "hiString.hpp"
 #include <string.h>
+
+#include "object/hiString.hpp"
 
 HiString::HiString(const char* x) {
     _length = strlen(x);
