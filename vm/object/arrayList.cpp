@@ -70,3 +70,7 @@ template <typename T>
 T ArrayList<T>::pop() {
     return _array[--_size];
 }
+
+class HiObject;
+template class ArrayList<HiObject*>;
+

@@ -1,7 +1,8 @@
 #ifndef BINARY_FILE_PARSER_HPP
 #define BINARY_FILE_PARSER_HPP
 
-#include "bufferedInputStream.hpp"
+#include "util/bufferedInputStream.hpp"
+#include "code/codeObject.hpp"
 
 class HiString;
 
@@ -13,6 +14,8 @@ public:
     BinaryFileParser(BufferedInputStream* stream);
 
 public:
+    CodeObject* parse();
+
     HiString*   get_string();
 
     HiString* get_byte_codes();

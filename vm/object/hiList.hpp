@@ -1,0 +1,18 @@
+#ifndef _HI_LIST_HPP
+#define _HI_LIST_HPP
+
+#include "hiObject.hpp"
+#include "arrayList.hpp"
+
+class HiList : public HiObject {
+private:
+    ArrayList<HiObject*>* _values;
+
+public:
+    HiList();
+
+    HiObject* get(int index);
+    void add(HiObject* o);
+};
+
+#endif
