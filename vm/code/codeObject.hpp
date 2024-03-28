@@ -4,6 +4,7 @@
 #include "object/hiObject.hpp"
 
 class HiString;
+class HiList;
 
 template <typename T>
 class ArrayList;
@@ -18,22 +19,22 @@ public:
     int _flag;
 
     HiString* _bytecodes;
-    ArrayList<HiObject*>*  _names;
-    ArrayList<HiObject*>*  _consts;
-    ArrayList<HiObject*>*  _var_names;
+    HiList*  _names;
+    HiList*  _consts;
+    HiList*  _var_names;
 
-    ArrayList<HiObject*>*  _free_vars;
-    ArrayList<HiObject*>*  _cell_vars;
+    HiList*  _free_vars;
+    HiList*  _cell_vars;
 
     HiString* _co_name;
     HiString* _file_name;
 
     int _lineno;
     HiString* _notable;
+
     CodeObject(int argcount, int posonlyargcount, int kwonlyargcount, int nlocals, int stacksize, 
-        int flag, HiString* bytecodes, ArrayList<HiObject*>* consts, 
-        ArrayList<HiObject*>* names, ArrayList<HiObject*>* varnames, 
-        ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
+        int flag, HiString* bytecodes, HiList* consts, 
+        HiList* names, HiList* varnames, HiList* freevars, HiList* cellvars,
         HiString* file_name, HiString* co_name, int lineno, HiString* notable);
 };
 

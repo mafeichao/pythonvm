@@ -1,9 +1,10 @@
 #include "code/codeObject.hpp"
+#include "object/hiString.hpp"
+#include "object/hiList.hpp"
 
 CodeObject::CodeObject(int argcount, int nlocals, int posonlyargcount, int kwonlyargcount, int stacksize, 
-    int flag, HiString* bytecodes, ArrayList<HiObject*>* consts, 
-    ArrayList<HiObject*>* names, ArrayList<HiObject*>* varnames, 
-    ArrayList<HiObject*>* freevars, ArrayList<HiObject*>* cellvars,
+    int flag, HiString* bytecodes, HiList* consts, 
+    HiList* names, HiList* varnames, HiList* freevars, HiList* cellvars,
     HiString* file_name, HiString* co_name, int lineno, HiString* notable):
         _argcount(argcount),
         _posonlyargcount(posonlyargcount),
@@ -21,6 +22,5 @@ CodeObject::CodeObject(int argcount, int nlocals, int posonlyargcount, int kwonl
         _file_name(file_name),
         _lineno(lineno),
         _notable(notable) {
-
 }
 

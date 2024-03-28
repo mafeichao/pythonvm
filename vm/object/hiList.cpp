@@ -8,6 +8,9 @@ HiObject* HiList::get(int index) {
     return _values->get(index);
 }
 
+void HiList::set(int index, HiObject* o) {
+    return _values->set(index, o);
+}
 void HiList::add(HiObject* o) {
     return _values->add(o);
 }

@@ -13,6 +13,7 @@ public:
 
     HiObject* get(int index);
     void add(HiObject* o);
+    void set(int index, HiObject* o);
 };
 
 #endif

@@ -74,3 +74,6 @@ T ArrayList<T>::pop() {
 class HiObject;
 template class ArrayList<HiObject*>;
 
+class HiString;
+template class ArrayList<HiString*>;
+
