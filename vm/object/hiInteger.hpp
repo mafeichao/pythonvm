@@ -10,6 +10,10 @@ private:
 public:
     HiInteger(int x) : _value(x) {}
     int value() { return _value; }
+
+    virtual void print() {
+        printf("%d", _value);
+    }
 };
 
 #endif

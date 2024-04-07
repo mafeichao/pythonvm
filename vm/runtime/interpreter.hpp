@@ -1,16 +1,17 @@
 #ifndef INTERPRETER_HPP
 #define INTERPRETER_HPP
 
-class HiString;
+#include "code/bytecode.hpp"
+#include "code/codeObject.hpp"
 
 class Interpreter {
 private:
-    int *_stack;
-
+    ArrayList<HiObject*>* _stack;
+    HiList* _consts;
 public:
     Interpreter();
 
-    void run(HiString* codes);
+    void run(CodeObject* codes);
 };
 
 #endif

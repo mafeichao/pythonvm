@@ -14,6 +14,12 @@ public:
 
     const char* value()     { return _value; }
     int length()            { return _length; }
+
+    virtual void print() {
+        for (int i = 0; i < _length; i++) {
+            putchar(_value[i]);
+        }
+    }
 };
 
 #endif

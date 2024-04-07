@@ -147,7 +147,9 @@ HiString* BinaryFileParser::get_byte_codes() {
 }
 
 HiString* BinaryFileParser::get_no_table() {
-    char ch = file_stream->read();
+    char object_type = file_stream->read();
+    bool ref_flag = (object_type & 0x80) != 0;
+    char ch = object_type & 0x7f;
     
     if (ch != 's' && ch != 't') {
         printf("expect a string for no table, but got %c\n", ch);
