@@ -7,6 +7,7 @@ set(CMAKE_CXX_COMPILER g++)
 add_executable(pvm main.cpp
     code/binaryFileParser.cpp
     code/codeObject.cpp
+    object/hiInteger.cpp
     object/hiString.cpp
     object/hiList.cpp
     object/arrayList.cpp

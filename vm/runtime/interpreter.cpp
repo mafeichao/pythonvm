@@ -6,6 +6,9 @@
 
 #include <string.h>
 
+#define PUSH(x)  _stack->add((x))
+#define POP()    _stack->pop()
+
 Interpreter::Interpreter() {
 }
 
@@ -25,27 +28,73 @@ void Interpreter::run(CodeObject* codes) {
 
         switch (op_code) {
             case ByteCode::LOAD_CONST:
-                _stack->add(_consts->get(op_arg));
+                PUSH(_consts->get(op_arg));
                 break;
 
             case ByteCode::LOAD_NAME:
                 // "print", do nothig.
-                _stack->add(nullptr);
+                PUSH(nullptr);
                 break;
 
             case ByteCode::CALL_FUNCTION:
-                v = _stack->pop();
+                v = POP();
                 v->print();
                 printf("\n");
                 break;
 
             case ByteCode::POP_TOP:
-                _stack->pop();
+                POP();
                 break;
 
             case ByteCode::RETURN_VALUE:
-                _stack->pop(); 
+                POP();
                 break;
+
+            case ByteCode::COMPARE_OP:
+                w = POP();
+                v = POP();
+
+                switch(op_arg) {
+                case ByteCode::GREATER:
+                    PUSH(v->greater(w));
+                    break;
+
+                case ByteCode::LESS:
+                    PUSH(v->less(w));
+                    break;
+
+                case ByteCode::EQUAL:
+                    PUSH(v->equal(w));
+                    break;
+
+                case ByteCode::NOT_EQUAL:
+                    PUSH(v->not_equal(w));
+                    break;
+
+                case ByteCode::GREATER_EQUAL:
+                    PUSH(v->ge(w));
+                    break;
+
+                case ByteCode::LESS_EQUAL:
+                    PUSH(v->le(w));
+                    break;
+
+                default:
+                    printf("Error: Unrecognized compare op %d\n", op_arg);
+
+                }
+                break;
+
+            case ByteCode::POP_JUMP_IF_FALSE:
+                v = POP();
+                if (((HiInteger*)v)->value() == 0)
+                    pc = op_arg;
+                break;
+
+            case ByteCode::JUMP_FORWARD:
+                pc += op_arg;
+                break;
+
 
             default:
                 printf("Error: Unrecognized byte code %d\n", op_code);

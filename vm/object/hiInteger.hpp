@@ -8,12 +8,17 @@ private:
     int _value;
 
 public:
-    HiInteger(int x) : _value(x) {}
+    HiInteger(int x);
     int value() { return _value; }
 
-    virtual void print() {
-        printf("%d", _value);
-    }
+    virtual void print();
+
+    virtual HiObject* greater  (HiObject* x);
+    virtual HiObject* less     (HiObject* x);
+    virtual HiObject* equal    (HiObject* x);
+    virtual HiObject* not_equal(HiObject* x);
+    virtual HiObject* ge       (HiObject* x);
+    virtual HiObject* le       (HiObject* x);
 };
 
 #endif
