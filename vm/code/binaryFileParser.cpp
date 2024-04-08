@@ -3,6 +3,7 @@
 #include <time.h>
 
 #include "code/binaryFileParser.hpp"
+#include "runtime/universe.hpp"
 #include "object/hiString.hpp"
 #include "object/hiList.hpp"
 #include "object/hiInteger.hpp"
@@ -231,6 +232,7 @@ HiList* BinaryFileParser::get_tuple() {
             obj = new HiInteger(file_stream->read_int());
             break;
         case 'N':
+            list->add(Universe::HiNone);
             break;
         case 't':
             obj = get_string(true);

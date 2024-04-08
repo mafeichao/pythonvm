@@ -1,3 +1,4 @@
+#include "runtime/universe.hpp"
 #include "runtime/interpreter.hpp"
 #include "object/arrayList.hpp"
 #include "object/hiString.hpp"
@@ -87,7 +88,7 @@ void Interpreter::run(CodeObject* codes) {
 
             case ByteCode::POP_JUMP_IF_FALSE:
                 v = POP();
-                if (((HiInteger*)v)->value() == 0)
+                if (v == Universe::HiFalse || v == Universe::HiNone)
                     pc = op_arg;
                 break;
 

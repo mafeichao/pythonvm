@@ -1,5 +1,6 @@
 #include "util/bufferedInputStream.hpp"
 #include "code/binaryFileParser.hpp"
+#include "runtime/universe.hpp"
 #include "runtime/interpreter.hpp"
 
 int main(int argc, char** argv) {
@@ -11,6 +12,8 @@ int main(int argc, char** argv) {
     BufferedInputStream stream(argv[1]);
     BinaryFileParser parser(&stream);
     CodeObject* main_code = parser.parse();
+
+    Universe::genesis();
 
     Interpreter interpreter;
     interpreter.run(main_code);
