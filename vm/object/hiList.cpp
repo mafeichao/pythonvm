@@ -11,6 +11,7 @@ HiObject* HiList::get(int index) {
 void HiList::set(int index, HiObject* o) {
     return _values->set(index, o);
 }
-void HiList::add(HiObject* o) {
+
+void HiList::append(HiObject* o) {
     return _values->add(o);
 }

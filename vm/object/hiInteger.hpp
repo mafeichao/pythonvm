@@ -13,6 +13,8 @@ public:
 
     virtual void print();
 
+    virtual HiObject* add      (HiObject* x);
+
     virtual HiObject* greater  (HiObject* x);
     virtual HiObject* less     (HiObject* x);
     virtual HiObject* equal    (HiObject* x);

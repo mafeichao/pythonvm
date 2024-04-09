@@ -232,7 +232,7 @@ HiList* BinaryFileParser::get_tuple() {
             obj = new HiInteger(file_stream->read_int());
             break;
         case 'N':
-            list->add(Universe::HiNone);
+            obj = Universe::HiNone;
             break;
         case 't':
             obj = get_string(true);
@@ -250,7 +250,7 @@ HiList* BinaryFileParser::get_tuple() {
             printf("parser, unrecognized type : %c\n", obj_type);
         }
 
-        list->add(obj);
+        list->append(obj);
         if (ref_flag && obj_type != 'c') {
             _cache.add(obj);
         }

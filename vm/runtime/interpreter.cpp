@@ -4,6 +4,7 @@
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiList.hpp"
+#include "util/map.hpp"
 
 #include <string.h>
 
@@ -19,6 +20,8 @@ void Interpreter::run(CodeObject* codes) {
 
     _stack  = new ArrayList<HiObject*>(codes->_stack_size);
     _consts = codes->_consts;
+    HiList* names  = codes->_names;
+    Map<HiObject*, HiObject*>* locals  = new Map<HiObject*, HiObject*>();
 
     while (pc < code_length) {
         unsigned char op_code = codes->_bytecodes->value()[pc++];
@@ -33,9 +36,16 @@ void Interpreter::run(CodeObject* codes) {
                 break;
 
             case ByteCode::LOAD_NAME:
-                // "print", do nothig.
-                PUSH(nullptr);
+                v = names->get(op_arg);
+                w = locals->get(v);
+                PUSH(w);
                 break;
+
+            case ByteCode::STORE_NAME:
+                v = names->get(op_arg);
+                locals->put(v, POP());
+                break;
+
 
             case ByteCode::CALL_FUNCTION:
                 v = POP();
@@ -45,6 +55,12 @@ void Interpreter::run(CodeObject* codes) {
 
             case ByteCode::POP_TOP:
                 POP();
+                break;
+
+            case ByteCode::BINARY_ADD:
+                v = POP();
+                w = POP();
+                PUSH(w->add(v));
                 break;
 
             case ByteCode::RETURN_VALUE:

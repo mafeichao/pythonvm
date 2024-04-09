@@ -13,6 +13,7 @@ add_executable(pvm main.cpp
     object/arrayList.cpp
     runtime/universe.cpp
     runtime/interpreter.cpp
+    util/map.cpp
     )
 
 include_directories(./)

@@ -12,7 +12,7 @@ public:
     HiList();
 
     HiObject* get(int index);
-    void add(HiObject* o);
+    void append(HiObject* o);
     void set(int index, HiObject* o);
 };
 

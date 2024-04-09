@@ -11,6 +11,10 @@ void HiInteger::print() {
     printf("%d", _value);
 }
 
+HiObject* HiInteger::add(HiObject* x) {
+    return new HiInteger(_value + ((HiInteger*)x)->value());
+}
+
 HiObject* HiInteger::greater(HiObject* x) {
     if (_value > ((HiInteger*)x)->_value)
         return Universe::HiTrue;
