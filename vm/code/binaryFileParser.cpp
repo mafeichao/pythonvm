@@ -176,7 +176,7 @@ HiList* BinaryFileParser::try_to_get_tuple() {
     }
     else if (obj_type == 'r') {
         int index = file_stream->read_int();
-        result = dynamic_cast<HiList*>(_cache.get(index));
+        result = static_cast<HiList*>(_cache.get(index));
     }
     else {
         file_stream->unread();
