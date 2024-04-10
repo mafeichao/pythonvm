@@ -22,6 +22,20 @@ void Interpreter::build_frame(HiObject* callable) {
     _frame = frame;
 }
 
+void Interpreter::leave_frame(HiObject* return_value) {
+    if (!_frame->sender()) {
+        delete _frame;
+        _frame = NULL;
+        return;
+    }
+
+    FrameObject* temp = _frame;
+    _frame         = _frame->sender();
+    PUSH(return_value);
+
+    delete temp;
+}
+
 void Interpreter::run(CodeObject* codes) {
     _frame = new FrameObject(codes);
 
@@ -86,7 +100,9 @@ void Interpreter::run(CodeObject* codes) {
                 break;
 
             case ByteCode::RETURN_VALUE:
-                POP();
+                leave_frame(POP());
+                if (!_frame)
+                    return;
                 break;
 
             case ByteCode::COMPARE_OP:

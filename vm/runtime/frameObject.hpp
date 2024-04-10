@@ -11,7 +11,7 @@ class FrameObject {
 public:
     FrameObject(CodeObject* codes);
     FrameObject(FunctionObject* func);
-    ~FrameObject();
+    ~FrameObject() {};
 
     ArrayList<HiObject*>* _stack;
 
