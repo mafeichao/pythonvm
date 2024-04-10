@@ -14,6 +14,7 @@ add_executable(pvm main.cpp
     object/arrayList.cpp
     runtime/universe.cpp
     runtime/interpreter.cpp
+    runtime/frameObject.cpp
     util/map.cpp
     )
 

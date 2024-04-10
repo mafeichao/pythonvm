@@ -4,10 +4,12 @@
 #include "code/bytecode.hpp"
 #include "code/codeObject.hpp"
 
+class FrameObject;
+
 class Interpreter {
 private:
-    ArrayList<HiObject*>* _stack;
-    HiList* _consts;
+     FrameObject* _frame;
+
 public:
     Interpreter();
 

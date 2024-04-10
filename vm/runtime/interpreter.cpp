@@ -1,5 +1,6 @@
 #include "runtime/universe.hpp"
 #include "runtime/interpreter.hpp"
+#include "runtime/frameObject.hpp"
 #include "object/arrayList.hpp"
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
@@ -8,42 +9,36 @@
 
 #include <string.h>
 
-#define PUSH(x)  _stack->add((x))
-#define POP()    _stack->pop()
+#define PUSH(x)       _frame->stack()->add((x))
+#define POP()         _frame->stack()->pop()
 
 Interpreter::Interpreter() {
 }
 
 void Interpreter::run(CodeObject* codes) {
-    int pc = 0;
-    int code_length = codes->_bytecodes->length();
+    _frame = new FrameObject(codes);
 
-    _stack  = new ArrayList<HiObject*>(codes->_stack_size);
-    _consts = codes->_consts;
-    HiList* names  = codes->_names;
-    Map<HiObject*, HiObject*>* locals  = new Map<HiObject*, HiObject*>();
-
-    while (pc < code_length) {
-        unsigned char op_code = codes->_bytecodes->value()[pc++];
-        short op_arg = (codes->_bytecodes->value()[pc++] & 0xFF);
+    while (_frame->has_more_codes()) {
+        unsigned char op_code = _frame->get_op_code();
+        int op_arg = _frame->get_op_arg();
 
         HiInteger* lhs, * rhs;
         HiObject* v, * w, * u, * attr;
 
         switch (op_code) {
             case ByteCode::LOAD_CONST:
-                PUSH(_consts->get(op_arg));
+                PUSH(_frame->consts()->get(op_arg));
                 break;
 
             case ByteCode::LOAD_NAME:
-                v = names->get(op_arg);
-                w = locals->get(v);
+                v = _frame->names()->get(op_arg);
+                w = _frame->locals()->get(v);
                 PUSH(w);
                 break;
 
             case ByteCode::STORE_NAME:
-                v = names->get(op_arg);
-                locals->put(v, POP());
+                v = _frame->names()->get(op_arg);
+                _frame->locals()->put(v, POP());
                 break;
 
 
@@ -105,15 +100,15 @@ void Interpreter::run(CodeObject* codes) {
             case ByteCode::POP_JUMP_IF_FALSE:
                 v = POP();
                 if (v == Universe::HiFalse || v == Universe::HiNone)
-                    pc = op_arg;
+                    _frame->set_pc(op_arg);
                 break;
 
             case ByteCode::JUMP_FORWARD:
-                pc += op_arg;
+                _frame->set_pc(op_arg + _frame->get_pc());
                 break;
 
             case ByteCode::JUMP_ABSOLUTE:
-                pc = op_arg;
+                _frame->set_pc(op_arg);
                 break;
 
             default:
