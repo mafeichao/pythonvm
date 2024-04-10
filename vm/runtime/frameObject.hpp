@@ -19,6 +19,7 @@ public:
     HiList* _names;
 
     Map<HiObject*, HiObject*>* _locals;
+    Map<HiObject*, HiObject*>* _globals;
 
     CodeObject*           _codes;
     FrameObject*          _sender;
@@ -34,6 +35,7 @@ public:
     HiList* consts()                { return _consts; }
     HiList* names()                 { return _names; }
     Map<HiObject*, HiObject*>* locals()           { return _locals; }
+    Map<HiObject*, HiObject*>* globals()          { return _globals; }
 
     bool has_more_codes();
     unsigned char get_op_code();

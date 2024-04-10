@@ -9,11 +9,11 @@ int main(int argc, char** argv) {
         return 0;
     }
 
+    Universe::genesis();
+
     BufferedInputStream stream(argv[1]);
     BinaryFileParser parser(&stream);
     CodeObject* main_code = parser.parse();
-
-    Universe::genesis();
 
     Interpreter interpreter;
     interpreter.run(main_code);

@@ -13,7 +13,17 @@
 #define PUSH(x)       _frame->stack()->add((x))
 #define POP()         _frame->stack()->pop()
 
+#define HI_TRUE       Universe::HiTrue
+#define HI_FALSE      Universe::HiFalse
+
 Interpreter::Interpreter() {
+    _builtins = new Map<HiObject*, HiObject*>();
+
+    _builtins->put(new HiString("True"),     Universe::HiTrue);
+    _builtins->put(new HiString("False"),    Universe::HiFalse);
+    _builtins->put(new HiString("None"),     Universe::HiNone);
+
+    _builtins->put(new HiString("print"),    Universe::HiNone);
 }
 
 void Interpreter::build_frame(HiObject* callable) {
@@ -55,18 +65,40 @@ void Interpreter::run(CodeObject* codes) {
             case ByteCode::LOAD_NAME:
                 v = _frame->names()->get(op_arg);
                 w = _frame->locals()->get(v);
-                PUSH(w);
+                if (w != Universe::HiNone) {
+                    PUSH(w);
+                    break;
+                }
+
+                w = _frame->globals()->get(v);
+                if (w != Universe::HiNone) {
+                    PUSH(w);
+                    break;
+                }
+
+                w = _builtins->get(v);
+                if (w != Universe::HiNone) {
+                    PUSH(w);
+                    break;
+                }
+
+                PUSH(Universe::HiNone);
                 break;
 
             case ByteCode::LOAD_GLOBAL:
                 v = _frame->names()->get(op_arg);
-                w = _frame->locals()->get(v);
+                w = _frame->globals()->get(v);
                 PUSH(w);
                 break;
 
             case ByteCode::STORE_NAME:
                 v = _frame->names()->get(op_arg);
                 _frame->locals()->put(v, POP());
+                break;
+
+            case ByteCode::STORE_GLOBAL:
+                v = _frame->names()->get(op_arg);
+                _frame->globals()->put(v, POP());
                 break;
 
             case ByteCode::POP_TOP:
@@ -132,6 +164,20 @@ void Interpreter::run(CodeObject* codes) {
 
                 case ByteCode::LESS_EQUAL:
                     PUSH(v->le(w));
+                    break;
+
+                case ByteCode::IS:
+                    if (v == w)
+                        PUSH(HI_TRUE);
+                    else
+                        PUSH(HI_FALSE);
+                    break;
+
+                case ByteCode::IS_NOT:
+                    if (v == w)
+                        PUSH(HI_TRUE);
+                    else
+                        PUSH(HI_FALSE);
                     break;
 
                 default:

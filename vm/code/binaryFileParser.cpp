@@ -243,6 +243,12 @@ HiList* BinaryFileParser::get_tuple() {
         case 'N':
             obj = Universe::HiNone;
             break;
+        case 'T':
+            obj = Universe::HiTrue;
+            break;
+        case 'F':
+            obj = Universe::HiFalse;
+            break;
         case 't':
             obj = get_string(true);
             break;
