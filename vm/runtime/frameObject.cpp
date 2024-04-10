@@ -1,17 +1,32 @@
 #include "runtime/frameObject.hpp"
+#include "runtime/functionObject.hpp"
 #include "object/hiString.hpp"
 
 // this constructor is used for module only.
 FrameObject::FrameObject(CodeObject* codes) {
+    _codes   = codes;
     _consts  = codes->_consts;
     _names   = codes->_names;
     
     _locals  = new Map<HiObject*, HiObject*>();
 
-    _stack  = new ArrayList<HiObject*>();
+    _stack   = new ArrayList<HiObject*>();
 
-    _codes = codes;
-    _pc    = 0;
+    _pc      = 0;
+    _sender  = NULL;
+}
+
+FrameObject::FrameObject (FunctionObject* func) {
+    _codes   = func->_func_code;
+    _consts  = _codes->_consts;
+    _names   = _codes->_names;
+
+    _locals  = new Map<HiObject*, HiObject*>();
+
+    _stack   = new ArrayList<HiObject*>();
+
+    _pc      = 0;
+    _sender  = NULL;
 }
 
 int FrameObject::get_op_arg() {

@@ -1,6 +1,7 @@
 #include "runtime/universe.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/frameObject.hpp"
+#include "runtime/functionObject.hpp"
 #include "object/arrayList.hpp"
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
@@ -15,6 +16,12 @@
 Interpreter::Interpreter() {
 }
 
+void Interpreter::build_frame(HiObject* callable) {
+    FrameObject* frame = new FrameObject((FunctionObject*) callable);
+    frame->set_sender(_frame);
+    _frame = frame;
+}
+
 void Interpreter::run(CodeObject* codes) {
     _frame = new FrameObject(codes);
 
@@ -22,6 +29,7 @@ void Interpreter::run(CodeObject* codes) {
         unsigned char op_code = _frame->get_op_code();
         int op_arg = _frame->get_op_arg();
 
+        FunctionObject* fo;
         HiInteger* lhs, * rhs;
         HiObject* v, * w, * u, * attr;
 
@@ -36,16 +44,15 @@ void Interpreter::run(CodeObject* codes) {
                 PUSH(w);
                 break;
 
+            case ByteCode::LOAD_GLOBAL:
+                v = _frame->names()->get(op_arg);
+                w = _frame->locals()->get(v);
+                PUSH(w);
+                break;
+
             case ByteCode::STORE_NAME:
                 v = _frame->names()->get(op_arg);
                 _frame->locals()->put(v, POP());
-                break;
-
-
-            case ByteCode::CALL_FUNCTION:
-                v = POP();
-                v->print();
-                printf("\n");
                 break;
 
             case ByteCode::POP_TOP:
@@ -56,6 +63,26 @@ void Interpreter::run(CodeObject* codes) {
                 v = POP();
                 w = POP();
                 PUSH(w->add(v));
+                break;
+
+            case ByteCode::MAKE_FUNCTION:
+                w = POP(); // function name
+                v = POP();
+                fo = new FunctionObject(v);
+                PUSH(fo);
+                break;
+
+            case ByteCode::CALL_FUNCTION:
+                if (op_arg == 1) { // print
+                    v = POP();
+                    v->print();
+                    printf("\n");
+                    POP(); // pop "nullptr"
+                    PUSH(Universe::HiNone); // return value of print
+                    break;
+                }
+                    
+                build_frame(POP());
                 break;
 
             case ByteCode::RETURN_VALUE:

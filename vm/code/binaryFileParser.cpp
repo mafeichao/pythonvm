@@ -122,6 +122,9 @@ HiString* BinaryFileParser::get_name() {
     else if (ch == 'R') {
         s = _string_table.get(file_stream->read_int());
     }
+    else if (ch == 'r') {
+        s = static_cast<HiString*>(_cache.get(file_stream->read_int()));
+    }
      
     if (ref_flag) {
         _cache.add(s);
@@ -209,6 +212,7 @@ HiList* BinaryFileParser::get_cell_vars() {
 HiList* BinaryFileParser::get_tuple() {
     unsigned char length = (unsigned char)file_stream->read();
     HiList* list = new HiList();
+    int index = 0;
 
     for (int i = 0; i < length; i++) {
         char obj_type = file_stream->read();
@@ -223,10 +227,15 @@ HiList* BinaryFileParser::get_tuple() {
 
             // 代码对象，需要先占位，最后再设置
             if (ref_flag) {
+                index = _cache.size();
                 _cache.add(NULL);
             }
 
             obj = get_code_object();
+
+            if (ref_flag) {
+                _cache.set(index, obj);
+            }
             break;
         case 'i':
             obj = new HiInteger(file_stream->read_int());
@@ -245,6 +254,9 @@ HiList* BinaryFileParser::get_tuple() {
             break;
         case 'R':
             obj = _string_table.get(file_stream->read_int());
+            break;
+        case 'r':
+            obj = _cache.get(file_stream->read_int());
             break;
         default:
             printf("parser, unrecognized type : %c\n", obj_type);
