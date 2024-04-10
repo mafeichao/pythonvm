@@ -23,11 +23,11 @@ Interpreter::Interpreter() {
     _builtins->put(new HiString("False"),    Universe::HiFalse);
     _builtins->put(new HiString("None"),     Universe::HiNone);
 
-    _builtins->put(new HiString("print"),    Universe::HiNone);
+    _builtins->put(new HiString("print"),    Universe::PrintFunc);
 }
 
-void Interpreter::build_frame(HiObject* callable) {
-    FrameObject* frame = new FrameObject((FunctionObject*) callable);
+void Interpreter::build_frame(HiObject* callable, ObjList args) {
+    FrameObject* frame = new FrameObject((FunctionObject*) callable, args);
     frame->set_sender(_frame);
     _frame = frame;
 }
@@ -54,6 +54,7 @@ void Interpreter::run(CodeObject* codes) {
         int op_arg = _frame->get_op_arg();
 
         FunctionObject* fo;
+        ArrayList<HiObject*>* args = nullptr;
         HiInteger* lhs, * rhs;
         HiObject* v, * w, * u, * attr;
 
@@ -83,6 +84,10 @@ void Interpreter::run(CodeObject* codes) {
                 }
 
                 PUSH(Universe::HiNone);
+                break;
+
+            case ByteCode::LOAD_FAST:
+                PUSH(_frame->fast_locals()->get(op_arg));
                 break;
 
             case ByteCode::LOAD_GLOBAL:
@@ -119,16 +124,31 @@ void Interpreter::run(CodeObject* codes) {
                 break;
 
             case ByteCode::CALL_FUNCTION:
-                if (op_arg == 1) { // print
-                    v = POP();
-                    v->print();
+                if (op_arg > 0) {
+                    args = new ArrayList<HiObject*>(op_arg);
+                    while (op_arg--) {
+                        args->set(op_arg, POP());
+                    }
+                }
+
+                fo = static_cast<FunctionObject*>(POP());
+                // workaround for 'print'
+                if (fo == Universe::PrintFunc) {
+                    for (int i = 0; i < args->length(); i++) {
+                        args->get(i)->print();
+                    }
                     printf("\n");
-                    POP(); // pop "nullptr"
-                    PUSH(Universe::HiNone); // return value of print
-                    break;
+                    PUSH(Universe::HiNone);
+                }
+                else {
+                    build_frame(fo, args);
+                }
+
+                if (args != NULL) {
+                    delete args;
+                    args = NULL;
                 }
                     
-                build_frame(POP());
                 break;
 
             case ByteCode::RETURN_VALUE:

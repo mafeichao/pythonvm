@@ -10,7 +10,7 @@ class FunctionObject;
 class FrameObject {
 public:
     FrameObject(CodeObject* codes);
-    FrameObject(FunctionObject* func);
+    FrameObject(FunctionObject* func, ObjList args);
     ~FrameObject() {};
 
     ArrayList<HiObject*>* _stack;
@@ -20,6 +20,7 @@ public:
 
     Map<HiObject*, HiObject*>* _locals;
     Map<HiObject*, HiObject*>* _globals;
+    ObjList                    _fast_locals;
 
     CodeObject*           _codes;
     FrameObject*          _sender;
@@ -34,8 +35,10 @@ public:
     ArrayList<HiObject*>* stack()   { return _stack; }
     HiList* consts()                { return _consts; }
     HiList* names()                 { return _names; }
+
     Map<HiObject*, HiObject*>* locals()           { return _locals; }
     Map<HiObject*, HiObject*>* globals()          { return _globals; }
+    ObjList                    fast_locals()      { return _fast_locals; }
 
     bool has_more_codes();
     unsigned char get_op_code();

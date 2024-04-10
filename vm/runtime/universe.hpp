@@ -12,6 +12,7 @@ public:
     static HiInteger* HiFalse;
 
     static HiObject* HiNone;
+    static HiObject* PrintFunc;
 
 public:
     static void genesis();

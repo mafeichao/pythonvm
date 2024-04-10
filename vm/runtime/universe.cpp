@@ -4,14 +4,16 @@
 
 HiInteger* Universe::HiTrue   = NULL;
 HiInteger* Universe::HiFalse  = NULL;
-
 HiObject*  Universe::HiNone   = NULL;
+
+HiObject*  Universe::PrintFunc   = NULL;
 
 void Universe::genesis() {
     HiTrue       = new HiInteger(1);
     HiFalse      = new HiInteger(0);
 
     HiNone       = new HiObject();
+    PrintFunc    = new HiObject();
 }
 
 void Universe::destroy() {
