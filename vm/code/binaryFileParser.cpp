@@ -252,6 +252,7 @@ HiList* BinaryFileParser::get_tuple() {
         case 't':
             obj = get_string(true);
             break;
+        case 'z':
         case 'Z':
             obj = get_string(false);
             break;

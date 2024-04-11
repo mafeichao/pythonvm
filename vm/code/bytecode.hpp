@@ -45,6 +45,7 @@ public:
     static const unsigned char DUP_TOPX = 99;   /* number of items to duplicate */
     static const unsigned char LOAD_CONST = 100; /* Index in const list */
     static const unsigned char LOAD_NAME = 101; /* Index in name list */
+    static const unsigned char BUILD_TUPLE = 102;
     static const unsigned char BUILD_LIST = 103;
     static const unsigned char BUILD_MAP = 105;
     static const unsigned char LOAD_ATTR = 106; /* Index in name list */

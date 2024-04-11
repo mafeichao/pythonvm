@@ -55,6 +55,7 @@ void Interpreter::run(CodeObject* codes) {
 
         FunctionObject* fo;
         ArrayList<HiObject*>* args = nullptr;
+        HiList * lst;
         HiInteger* lhs, * rhs;
         HiObject* v, * w, * u, * attr;
 
@@ -236,6 +237,14 @@ void Interpreter::run(CodeObject* codes) {
 
             case ByteCode::JUMP_ABSOLUTE:
                 _frame->set_pc(op_arg);
+                break;
+
+            case ByteCode::BUILD_TUPLE:
+                lst = new HiList();
+                while (op_arg--) {
+                    lst->append(POP());
+                }
+                PUSH(lst);
                 break;
 
             default:
