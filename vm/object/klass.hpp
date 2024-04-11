@@ -36,6 +36,8 @@ public:
     virtual HiObject* mul(HiObject* x, HiObject* y) { return nullptr; }
     virtual HiObject* div(HiObject* x, HiObject* y) { return nullptr; }
     virtual HiObject* mod(HiObject* x, HiObject* y) { return nullptr; }
+
+    virtual HiObject* call(ArrayList<HiObject*>* args) { return nullptr; }
 };
 
 #endif
