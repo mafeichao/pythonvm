@@ -1,12 +1,16 @@
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
 #include "runtime/universe.hpp"
+#include "runtime/functionObject.hpp"
 #include <string.h>
 
-StringKlass* StringKlass::instance = NULL;
+StringKlass* StringKlass::instance = nullptr;
+
+StringKlass::StringKlass() {
+}
 
 StringKlass* StringKlass::get_instance() {
-    if (instance == NULL)
+    if (instance == nullptr)
         instance = new StringKlass();
 
     return instance;
@@ -61,5 +65,30 @@ HiString::HiString(const char * x, const int length) {
     }
 
     set_klass(StringKlass::get_instance());
+}
+
+HiObject* string_upper(ObjList args) {
+    HiObject* arg0 = args->get(0);
+    assert(arg0->klass() == StringKlass::get_instance());
+
+    HiString* str_obj = (HiString*)arg0;
+
+    int length = str_obj->length();
+    if (length <= 0)
+        return Universe::HiNone;
+
+    char* v = new char[length];
+    char c;
+    for (int i = 0; i < length; i++) {
+        c = str_obj->value()[i];
+        if (c >= 'a' && c <= 'z')
+            v[i] = c - 0x20;
+        else
+            v[i] = c;
+    }
+
+    str_obj = new HiString(v, length);
+    delete[] v;
+    return str_obj;
 }
 

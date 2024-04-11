@@ -65,6 +65,9 @@ public:
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;
 
+    static const unsigned char LOAD_METHOD = 160;
+    static const unsigned char CALL_METHOD = 161;
+
     enum COMPARE {
         LESS = 0,
         LESS_EQUAL,

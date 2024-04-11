@@ -2,10 +2,13 @@
 #define _HI_STRING_HPP
 
 #include "object/hiObject.hpp"
+#include "object/arrayList.hpp"
+
+HiObject* string_upper(ObjList args);
 
 class StringKlass : public Klass {
 private:
-    StringKlass() {}
+    StringKlass();
     static StringKlass* instance;
 
 public:
