@@ -140,3 +140,11 @@ HiObject* len(ObjList args) {
     return new HiInteger(((HiString*)arg0)->length());
 }
 
+HiObject* object_print(ObjList args) {
+    HiObject* arg0 = args->get(0);
+    arg0->print();
+    printf("\n");
+
+    return Universe::HiNone;
+}
+

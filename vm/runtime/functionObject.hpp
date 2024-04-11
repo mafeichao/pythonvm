@@ -16,6 +16,7 @@ public:
 };
 
 HiObject* len(ObjList args);
+HiObject* object_print(ObjList args);
 
 typedef HiObject* (*NativeFuncPointer)(ObjList args);
 

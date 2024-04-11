@@ -23,7 +23,7 @@ Interpreter::Interpreter() {
     _builtins->put(new HiString("False"),    Universe::HiFalse);
     _builtins->put(new HiString("None"),     Universe::HiNone);
 
-    _builtins->put(new HiString("print"),    Universe::PrintFunc);
+    _builtins->put(new HiString("print"),    new FunctionObject(object_print));
     _builtins->put(new HiString("len"),      new FunctionObject(len));
 }
 
@@ -186,17 +186,7 @@ void Interpreter::run(CodeObject* codes) {
                 }
 
                 fo = static_cast<FunctionObject*>(POP());
-                // workaround for 'print'
-                if (fo == Universe::PrintFunc) {
-                    for (int i = 0; i < args->length(); i++) {
-                        args->get(i)->print();
-                    }
-                    printf("\n");
-                    PUSH(Universe::HiNone);
-                }
-                else {
-                    build_frame(fo, args);
-                }
+                build_frame(fo, args);
 
                 if (args != NULL) {
                     delete args;
