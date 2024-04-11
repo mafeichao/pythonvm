@@ -14,6 +14,7 @@ public:
     HiObject* get(int index);
     void append(HiObject* o);
     void set(int index, HiObject* o);
+    int length();
 };
 
 #endif

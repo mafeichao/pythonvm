@@ -35,7 +35,7 @@ CodeObject* BinaryFileParser::parse() {
         // 这里需要先占位
         int index = 0;
         if (ref_flag) {
-            index = _cache.size();
+            index = _cache.length();
             _cache.add(NULL);
         }
 
@@ -227,7 +227,7 @@ HiList* BinaryFileParser::get_tuple() {
 
             // 代码对象，需要先占位，最后再设置
             if (ref_flag) {
-                index = _cache.size();
+                index = _cache.length();
                 _cache.add(NULL);
             }
 
@@ -263,6 +263,9 @@ HiList* BinaryFileParser::get_tuple() {
             break;
         case 'r':
             obj = _cache.get(file_stream->read_int());
+            break;
+        case ')':
+            obj = get_tuple();
             break;
         default:
             printf("parser, unrecognized type : %c\n", obj_type);

@@ -6,9 +6,9 @@
 template <typename T>
 class ArrayList {
 private:
-    int _length;
+    int _capacity;
     T*  _array;
-    int _size;
+    int _length;
 
     void expand();
 
@@ -19,8 +19,8 @@ public:
     void insert(int index, T t);
     T    get(int index);
     void set(int index, T t);
-    int  size();
     int  length();
+    int  capacity();
     T    pop();
 };
 
