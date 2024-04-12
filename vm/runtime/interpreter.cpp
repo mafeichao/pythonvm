@@ -163,7 +163,7 @@ void Interpreter::run(CodeObject* codes) {
                 if (op_arg == 1) {
                     HiList* t = (HiList*)POP();
                     args = new ArrayList<HiObject*>();
-                    for (int i = 0; i < t->length(); i++) {
+                    for (int i = 0; i < t->size(); i++) {
                         args->add(t->get(i));
                     }
                 }
@@ -264,10 +264,11 @@ void Interpreter::run(CodeObject* codes) {
                 _frame->set_pc(op_arg);
                 break;
 
+            case ByteCode::BUILD_LIST:
             case ByteCode::BUILD_TUPLE:
                 lst = new HiList();
                 while (op_arg--) {
-                    lst->append(POP());
+                    lst->set(op_arg, POP());
                 }
                 PUSH(lst);
                 break;
