@@ -15,6 +15,7 @@ public:
     static StringKlass* get_instance();
 
     virtual HiObject* equal    (HiObject* x, HiObject* y);
+    virtual HiObject* subscr (HiObject* x, HiObject* y);
 
     virtual void print(HiObject* obj);
 };

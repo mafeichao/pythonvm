@@ -155,6 +155,12 @@ void Interpreter::run(CodeObject* codes) {
                 PUSH(w->add(v));
                 break;
 
+            case ByteCode::BINARY_SUBSCR:
+                v = POP();
+                w = POP();
+                PUSH(w->subscr(v));
+                break;
+
             case ByteCode::MAKE_FUNCTION:
                 w = POP(); // function name
                 v = POP();

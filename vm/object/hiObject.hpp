@@ -28,6 +28,7 @@ public:
     HiObject* le       (HiObject* x);
 
     HiObject* getattr(HiObject* x);
+    HiObject* subscr(HiObject* x);
 };
 
 #endif

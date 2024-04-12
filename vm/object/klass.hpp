@@ -42,6 +42,8 @@ public:
     virtual HiObject* mod(HiObject* x, HiObject* y) { return nullptr; }
 
     virtual HiObject* call(ArrayList<HiObject*>* args) { return nullptr; }
+
+    virtual HiObject* subscr (HiObject* x, HiObject* y) { return 0; }
 };
 
 #endif

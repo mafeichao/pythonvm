@@ -67,6 +67,16 @@ HiString::HiString(const char * x, const int length) {
     set_klass(StringKlass::get_instance());
 }
 
+HiObject* StringKlass::subscr(HiObject* x, HiObject* y) {
+    assert(x && x->klass() == (Klass*) this);
+    assert(y && y->klass() == (Klass*) IntegerKlass::get_instance());
+
+    HiString * sx = (HiString*)x;
+    HiInteger* iy = (HiInteger*)y;
+
+    return new HiString(&(sx->value()[iy->value()]), 1);
+}
+
 HiObject* string_upper(ObjList args) {
     HiObject* arg0 = args->get(0);
     assert(arg0->klass() == StringKlass::get_instance());
