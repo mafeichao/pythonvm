@@ -1,5 +1,6 @@
 #include "object/klass.hpp"
 #include "object/hiInteger.hpp"
+#include "object/hiString.hpp"
 #include "runtime/universe.hpp"
 
 #include <stdio.h>

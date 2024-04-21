@@ -5,14 +5,13 @@
 
 class HiInteger;
 class HiObject;
+class HiString;
 
 class Universe {
 public:
-    static HiInteger* HiTrue;
-    static HiInteger* HiFalse;
-
-    static HiObject* HiNone;
-    static HiObject* PrintFunc;
+    static HiString* HiTrue;
+    static HiString* HiFalse;
+    static HiString* HiNone;
 
 public:
     static void genesis();

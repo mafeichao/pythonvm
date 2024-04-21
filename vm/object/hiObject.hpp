@@ -29,8 +29,10 @@ public:
 
     HiObject* getattr(HiObject* x);
     HiObject* subscr(HiObject* x);
+
     void      store_subscr(HiObject* x, HiObject* y);
     HiObject* contains(HiObject* x);
+    void      del_subscr(HiObject* x);
 };
 
 #endif

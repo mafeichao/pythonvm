@@ -1,6 +1,7 @@
 #include "util/map.hpp"
 #include "runtime/universe.hpp"
 #include "object/hiObject.hpp"
+#include "object/hiString.hpp"
 
 template <typename K, typename V>
 Map<K, V>::Map() {

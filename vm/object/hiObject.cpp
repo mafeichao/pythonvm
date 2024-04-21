@@ -1,4 +1,5 @@
 #include "object/hiObject.hpp"
+#include "object/hiString.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 
@@ -71,6 +72,10 @@ HiObject* HiObject::subscr(HiObject* x) {
 
 void HiObject::store_subscr(HiObject* x, HiObject* y) {
     klass()->store_subscr(this, x, y);
+}
+
+void HiObject::del_subscr(HiObject* x) {
+    klass()->del_subscr(this, x);
 }
 
 HiObject* HiObject::contains(HiObject* x) {

@@ -258,12 +258,11 @@ void Interpreter::run(CodeObject* codes) {
                     break;
 
                 case ByteCode::IN:
-                    PUSH(v->contains(w));
+                    PUSH(w->contains(v));
                     break;
 
                 default:
                     printf("Error: Unrecognized compare op %d\n", op_arg);
-
                 }
                 break;
 
@@ -288,6 +287,12 @@ void Interpreter::run(CodeObject* codes) {
                     lst->set(op_arg, POP());
                 }
                 PUSH(lst);
+                break;
+
+            case ByteCode::DELETE_SUBSCR:
+                w = POP();
+                v = POP();
+                v->del_subscr(w);
                 break;
 
             default:

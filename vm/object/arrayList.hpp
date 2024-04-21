@@ -22,6 +22,7 @@ public:
     int  length();
     int  capacity();
     T    pop();
+    void delete_index(int index);
 };
 
 class HiObject;

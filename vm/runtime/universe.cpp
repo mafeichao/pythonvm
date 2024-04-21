@@ -5,14 +5,14 @@
 #include "object/hiObject.hpp"
 #include "util/map.hpp"
 
-HiInteger* Universe::HiTrue   = NULL;
-HiInteger* Universe::HiFalse  = NULL;
-HiObject*  Universe::HiNone   = NULL;
+HiString* Universe::HiTrue   = NULL;
+HiString* Universe::HiFalse  = NULL;
+HiString* Universe::HiNone   = NULL;
 
 void Universe::genesis() {
-    HiTrue       = new HiInteger(1);
-    HiFalse      = new HiInteger(0);
-    HiNone       = new HiObject();
+    HiTrue       = new HiString("True");
+    HiFalse      = new HiString("False");
+    HiNone       = new HiString("None");
 
     HiDict* klass_dict = new HiDict();
     klass_dict->put(new HiString("upper"), new FunctionObject(string_upper));
