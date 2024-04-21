@@ -20,7 +20,7 @@ template <typename T>
 void ArrayList<T>::insert(int index, T t) {
     add(NULL);
 
-    for (int i = _length; i > index; i--) {
+    for (int i = _length - 1; i > index; i--) {
         _array[i] = _array[i - 1];
     }
 

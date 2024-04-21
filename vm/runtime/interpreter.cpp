@@ -161,6 +161,13 @@ void Interpreter::run(CodeObject* codes) {
                 PUSH(w->subscr(v));
                 break;
 
+            case ByteCode::STORE_SUBSCR:
+                u = POP();
+                v = POP();
+                w = POP();
+                v->store_subscr(u, w);
+                break;
+
             case ByteCode::MAKE_FUNCTION:
                 w = POP(); // function name
                 v = POP();

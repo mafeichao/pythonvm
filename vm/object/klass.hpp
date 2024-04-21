@@ -44,6 +44,7 @@ public:
     virtual HiObject* call(ArrayList<HiObject*>* args) { return nullptr; }
 
     virtual HiObject* subscr (HiObject* x, HiObject* y)     { return nullptr; }
+    virtual void store_subscr  (HiObject* x, HiObject* y, HiObject* z) { return; }
     virtual HiObject* contains (HiObject* x, HiObject* y)   { return nullptr; }
 
 };
