@@ -250,6 +250,10 @@ void Interpreter::run(CodeObject* codes) {
                         PUSH(HI_FALSE);
                     break;
 
+                case ByteCode::IN:
+                    PUSH(v->contains(w));
+                    break;
+
                 default:
                     printf("Error: Unrecognized compare op %d\n", op_arg);
 

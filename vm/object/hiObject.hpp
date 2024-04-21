@@ -29,6 +29,7 @@ public:
 
     HiObject* getattr(HiObject* x);
     HiObject* subscr(HiObject* x);
+    HiObject* contains(HiObject* x);
 };
 
 #endif
