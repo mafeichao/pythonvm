@@ -8,3 +8,7 @@ print(lst[0])
 del lst[0]
 print(lst)
 
+lst = [1, 2, 3]
+print(lst.reverse())
+print(lst)
+
