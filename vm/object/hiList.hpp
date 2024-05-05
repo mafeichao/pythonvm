@@ -20,6 +20,7 @@ public:
     virtual HiObject* subscr (HiObject* x, HiObject* y);
     virtual void store_subscr (HiObject* x, HiObject* y, HiObject* z);
     virtual void del_subscr (HiObject* x, HiObject* y);
+    virtual HiObject* less     (HiObject* x, HiObject* y);
     virtual HiObject* iter(HiObject* x);
     virtual HiObject* contains (HiObject* x, HiObject* y);
 };
@@ -58,6 +59,7 @@ HiObject* list_append(ObjList args);
 HiObject* list_pop(ObjList args);
 HiObject* list_remove(ObjList args);
 HiObject* list_reverse(ObjList args);
+HiObject* list_sort(ObjList args);
 
 #endif
 

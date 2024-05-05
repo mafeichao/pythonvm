@@ -77,6 +77,30 @@ HiObject* StringKlass::subscr(HiObject* x, HiObject* y) {
     return new HiString(&(sx->value()[iy->value()]), 1);
 }
 
+HiObject* StringKlass::less(HiObject* x, HiObject* y) {
+    HiString* sx = (HiString*)x;
+    HiString* sy = (HiString*)y;
+
+    assert(sx && (sx->klass() == (Klass *)this));
+    assert(sy && (sy->klass() == (Klass *)this));
+
+    int len = sx->length() < sy->length() ?
+        sx->length() : sy->length();
+
+    for (int i = 0; i < len; i++) {
+        if (sx->value()[i] < sy->value()[i])
+            return Universe::HiTrue;
+        else if (sx->value()[i] > sy->value()[i])
+            return Universe::HiFalse;
+    }
+
+    if (sx->length() < sy->length()) {
+        return Universe::HiTrue;
+    }
+
+    return Universe::HiFalse;
+}
+
 HiObject* string_upper(ObjList args) {
     HiObject* arg0 = args->get(0);
     assert(arg0->klass() == StringKlass::get_instance());

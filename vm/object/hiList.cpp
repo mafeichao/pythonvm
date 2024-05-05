@@ -24,7 +24,11 @@ ListKlass::ListKlass() {
         new FunctionObject(list_remove));
     klass_dict->put(new HiString("reverse"),
         new FunctionObject(list_reverse));
+    klass_dict->put(new HiString("sort"),
+        new FunctionObject(list_sort));
+
     set_klass_dict(klass_dict);
+    set_name(new HiString("list"));
 }
 
 void ListKlass::print(HiObject* x) {
@@ -72,6 +76,31 @@ void ListKlass::del_subscr(HiObject* x, HiObject* y) {
     HiInteger* iy = (HiInteger*)y;
 
     lx->inner_list()->delete_index(iy->value());
+}
+
+HiObject* ListKlass::less(HiObject* x, HiObject* y) {
+    HiList * lx = (HiList*)x;
+    HiList * ly = (HiList*)y;
+
+    assert(lx && lx->klass() == (Klass*) this);
+    assert(ly && ly->klass() == (Klass*) this);
+
+    int len = lx->size() < ly->size() ?
+        lx->size() : ly->size();
+
+    for (int i = 0; i < len; i++) {
+        if (lx->get(i)->less(ly->get(i)) == Universe::HiTrue) {
+            return Universe::HiTrue;
+        }
+        else if (lx->get(i)->equal(ly->get(i)) != Universe::HiTrue) {
+            return Universe::HiFalse;
+        }
+    }
+
+    if (lx->size() < ly->size())
+        return Universe::HiTrue;
+
+    return Universe::HiFalse;
 }
 
 HiObject* ListKlass::contains(HiObject* x, HiObject* y) {
@@ -140,6 +169,24 @@ HiObject* list_reverse(ObjList args) {
 
         i++;
         j--;
+    }
+
+    return Universe::HiNone;
+}
+
+HiObject* list_sort(ObjList args) {
+    HiList* list = (HiList*)(args->get(0));
+    assert(list && list->klass() == ListKlass::get_instance());
+
+    // bubble sort
+    for (int i = 0; i < list->size(); i++) {
+        for (int j = list->size() - 1; j > i; j--) {
+            if (list->get(j)->less(list->get(j-1)) == Universe::HiTrue) {
+                HiObject* t = list->get(j);
+                list->set(j, list->get(j-1));
+                list->set(j-1, t);
+            }
+        }
     }
 
     return Universe::HiNone;

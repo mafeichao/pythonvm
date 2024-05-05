@@ -16,6 +16,7 @@ void Universe::genesis() {
 
     HiDict* klass_dict = new HiDict();
     klass_dict->put(new HiString("upper"), new FunctionObject(string_upper));
+    StringKlass::get_instance()->set_name(new HiString("str"));
     StringKlass::get_instance()->set_klass_dict(klass_dict);
 }
 
