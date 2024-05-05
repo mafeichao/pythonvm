@@ -42,6 +42,7 @@ public:
     virtual HiObject* mod(HiObject* x, HiObject* y) { return nullptr; }
 
     virtual HiObject* call(ArrayList<HiObject*>* args) { return nullptr; }
+    virtual HiObject* iter(HiObject* x)                { return nullptr; }
 
     virtual HiObject* subscr (HiObject* x, HiObject* y)                 { return nullptr; }
     virtual void store_subscr  (HiObject* x, HiObject* y, HiObject* z)  { return; }

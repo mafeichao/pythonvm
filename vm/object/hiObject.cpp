@@ -82,3 +82,7 @@ HiObject* HiObject::contains(HiObject* x) {
     return klass()->contains(this, x);
 }
 
+HiObject* HiObject::iter() {
+    return klass()->iter(this);
+}
+

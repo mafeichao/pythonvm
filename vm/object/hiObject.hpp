@@ -32,6 +32,7 @@ public:
 
     void      store_subscr(HiObject* x, HiObject* y);
     HiObject* contains(HiObject* x);
+    HiObject* iter();
     void      del_subscr(HiObject* x);
 };
 

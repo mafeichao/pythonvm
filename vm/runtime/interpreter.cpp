@@ -1,3 +1,4 @@
+#include "runtime/stringTable.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/frameObject.hpp"
@@ -10,8 +11,9 @@
 
 #include <string.h>
 
-#define PUSH(x)       _frame->stack()->add((x))
+#define PUSH(x)       _frame->stack()->append((x))
 #define POP()         _frame->stack()->pop()
+#define TOP()         _frame->stack()->top()
 
 #define HI_TRUE       Universe::HiTrue
 #define HI_FALSE      Universe::HiFalse
@@ -293,6 +295,22 @@ void Interpreter::run(CodeObject* codes) {
                 w = POP();
                 v = POP();
                 v->del_subscr(w);
+                break;
+
+            case ByteCode::GET_ITER:
+                v = POP();
+                PUSH(v->iter());
+                break;
+
+            case ByteCode::FOR_ITER:
+                v = TOP();
+                w = v->getattr(StringTable::get_instance()->next_str);
+                build_frame(w, NULL);
+
+                if (TOP() == NULL) {
+                    _frame->_pc += op_arg;
+                    POP();
+                }
                 break;
 
             default:
