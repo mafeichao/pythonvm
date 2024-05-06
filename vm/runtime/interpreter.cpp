@@ -157,6 +157,12 @@ void Interpreter::run(CodeObject* codes) {
                 PUSH(w->add(v));
                 break;
 
+            case ByteCode::BINARY_MULTIPLY:
+                v = POP();
+                w = POP();
+                PUSH(w->mul(v));
+                break;
+
             case ByteCode::BINARY_SUBSCR:
                 v = POP();
                 w = POP();

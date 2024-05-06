@@ -32,6 +32,42 @@ ListKlass::ListKlass() {
     set_name(new HiString("list"));
 }
 
+HiObject* ListKlass::add(HiObject* x, HiObject* y) {
+    HiList* lx = (HiList*)x;
+    assert(lx && lx->klass() == (Klass*) this);
+    HiList* ly = (HiList*)y;
+    assert(ly && ly->klass() == (Klass*) this);
+
+    HiList* z = new HiList();
+    for (int i = 0; i < lx->size(); i++) {
+        z->inner_list()->set(i, lx->inner_list()->get(i));
+    }
+
+    for (int i = 0; i < ly->size(); i++) {
+        z->inner_list()->set(i + lx->size(),
+                ly->inner_list()->get(i));
+    }
+
+    return z;
+}
+
+HiObject* ListKlass::mul(HiObject* x, HiObject* y) {
+    HiList * lx = (HiList*)x;
+    assert(lx && lx->klass() == (Klass*) this);
+    HiInteger* iy = (HiInteger*)y;
+    assert(iy && iy->klass() == IntegerKlass::get_instance());
+
+    HiList* z = new HiList();
+    for (int i = 0; i < iy->value(); i++) {
+        for (int j = 0; j < lx->size(); j++) {
+            z->inner_list()->set(i * lx->size() + j,
+                    lx->inner_list()->get(j));
+        }
+    }
+
+    return z;
+}
+
 void ListKlass::print(HiObject* x) {
     HiList * lx = (HiList*)x;
     assert(lx && lx->klass() == (Klass*) this);

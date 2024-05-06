@@ -12,3 +12,7 @@ lst = [1, 2, 3]
 print(lst.reverse())
 print(lst)
 
+a = [1, 2, 3]
+b = [3, 4]
+print(a + b)
+print(b * 2)
