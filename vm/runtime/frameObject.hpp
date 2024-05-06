@@ -2,10 +2,10 @@
 #define FRAME_OBJECT_HPP
 
 #include "code/codeObject.hpp"
-#include "util/map.hpp"
 #include "object/arrayList.hpp"
 
 class FunctionObject;
+class HiDict;
 
 class FrameObject {
 public:
@@ -18,8 +18,8 @@ public:
     HiList* _consts;
     HiList* _names;
 
-    Map<HiObject*, HiObject*>* _locals;
-    Map<HiObject*, HiObject*>* _globals;
+    HiDict* _locals;
+    HiDict* _globals;
     ObjList                    _fast_locals;
 
     CodeObject*           _codes;
@@ -36,9 +36,9 @@ public:
     HiList* consts()                { return _consts; }
     HiList* names()                 { return _names; }
 
-    Map<HiObject*, HiObject*>* locals()           { return _locals; }
-    Map<HiObject*, HiObject*>* globals()          { return _globals; }
-    ObjList                    fast_locals()      { return _fast_locals; }
+    HiDict* locals()                { return _locals; }
+    HiDict* globals()               { return _globals; }
+    ObjList fast_locals()           { return _fast_locals; }
 
     bool has_more_codes();
     unsigned char get_op_code();

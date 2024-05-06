@@ -3,6 +3,7 @@
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
 #include "object/hiObject.hpp"
+#include "object/hiDict.hpp"
 #include "util/map.hpp"
 
 HiString* Universe::HiTrue   = NULL;

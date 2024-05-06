@@ -7,6 +7,7 @@
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiList.hpp"
+#include "object/hiDict.hpp"
 #include "util/map.hpp"
 
 #include <string.h>
@@ -19,7 +20,7 @@
 #define HI_FALSE      Universe::HiFalse
 
 Interpreter::Interpreter() {
-    _builtins = new Map<HiObject*, HiObject*>();
+    _builtins = new HiDict();
 
     _builtins->put(new HiString("True"),     Universe::HiTrue);
     _builtins->put(new HiString("False"),    Universe::HiFalse);
@@ -317,6 +318,25 @@ void Interpreter::run(CodeObject* codes) {
                     _frame->_pc += op_arg;
                     POP();
                 }
+                break;
+
+            case ByteCode::BUILD_MAP:
+                v = new HiDict();
+                for (int i = 0; i < op_arg; i++) {
+                    ((HiDict*)v)->put(POP(), POP());
+                }
+                PUSH(v);
+                break;
+                
+            case ByteCode::BUILD_CONST_KEY_MAP:
+                lst = (HiList*)POP();
+
+                v = new HiDict();
+                for (int i = 0; i < op_arg; i++) {
+                    ((HiDict*)v)->put(lst->get(op_arg - i - 1), POP());
+                }
+
+                PUSH(v);
                 break;
 
             default:

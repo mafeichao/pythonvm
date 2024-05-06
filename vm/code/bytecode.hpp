@@ -66,6 +66,8 @@ public:
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;
 
+    static const unsigned char BUILD_CONST_KEY_MAP = 156;
+
     static const unsigned char LOAD_METHOD = 160;
     static const unsigned char CALL_METHOD = 161;
 

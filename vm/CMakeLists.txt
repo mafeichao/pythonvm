@@ -11,6 +11,7 @@ add_executable(pvm main.cpp
     object/hiInteger.cpp
     object/hiString.cpp
     object/hiList.cpp
+    object/hiDict.cpp
     object/arrayList.cpp
     runtime/stringTable.cpp
     runtime/universe.cpp
