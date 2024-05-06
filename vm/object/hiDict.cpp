@@ -2,6 +2,7 @@
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
 #include "runtime/universe.hpp"
+#include "runtime/functionObject.hpp"
 #include <assert.h>
 
 DictKlass* DictKlass::instance = NULL;
@@ -19,7 +20,10 @@ DictKlass::DictKlass() {
 
 void DictKlass::initialize() {
     HiDict* klass_dict = new HiDict();
-    klass_dict->put(new HiString("test"), new HiString("hello"));
+
+    klass_dict->put(new HiString("setdefault"),
+        new FunctionObject(dict_set_default));
+
     set_klass_dict(klass_dict);
 }
 
@@ -108,5 +112,16 @@ HiObject* DictIteratorKlass::next(HiObject* x) {
     }
     else // TODO : we need Traceback here to mark iteration end
         return NULL;
+}
+
+HiObject* dict_set_default(ObjList args) {
+    HiDict* dict = (HiDict*)(args->get(0));
+    HiObject* key = args->get(1);
+    HiObject* value = args->get(2);
+
+    if (!dict->has_key(key))
+        dict->put(key, value);
+
+    return Universe::HiNone;
 }
 

@@ -15,6 +15,8 @@ void Universe::genesis() {
     HiFalse      = new HiString("False");
     HiNone       = new HiString("None");
 
+    DictKlass::get_instance()->initialize();
+
     HiDict* klass_dict = new HiDict();
     klass_dict->put(new HiString("upper"), new FunctionObject(string_upper));
     StringKlass::get_instance()->set_name(new HiString("str"));

@@ -50,6 +50,12 @@ int Map<K, V>::index(K k) {
 }
 
 template <typename K, typename V>
+bool Map<K, V>::has_key(K k) {
+    int i = index(k);
+    return i >= 0;
+}
+
+template <typename K, typename V>
 void Map<K, V>::expand() {
     if (_size >= _length) {
         MapEntry<K, V>* new_entries = new MapEntry<K, V>[_length << 1];

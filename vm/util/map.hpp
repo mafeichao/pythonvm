@@ -30,6 +30,7 @@ public:
     V    get(K k);
     K    get_key(int index);
     V    remove(K k);
+    bool has_key(K k);
     int  index(K k);
     MapEntry<K, V>* entries() { return _entries; }
 };
