@@ -35,9 +35,7 @@ void ArrayList<T>::expand() {
     }
     delete[] _array;
     _array = new_array;
-
     _capacity <<= 1;
-    printf("expand an array to %d, length is %d\n", _capacity, _length);
 }
 
 template <typename T>

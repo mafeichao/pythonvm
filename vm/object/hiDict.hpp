@@ -19,6 +19,7 @@ public:
     virtual HiObject* iter(HiObject* x);
     virtual void print(HiObject* obj);
     virtual void store_subscr(HiObject* x, HiObject* y, HiObject* z);
+    virtual void del_subscr(HiObject* x, HiObject* y);
 
     virtual size_t size();
 };
@@ -50,6 +51,7 @@ public:
 };
 
 HiObject* dict_set_default(ObjList args);
+HiObject* dict_pop(ObjList args);
 
 #endif
 

@@ -23,6 +23,8 @@ void DictKlass::initialize() {
 
     klass_dict->put(new HiString("setdefault"),
         new FunctionObject(dict_set_default));
+    klass_dict->put(new HiString("pop"),
+        new FunctionObject(dict_pop));
 
     set_klass_dict(klass_dict);
 }
@@ -66,6 +68,11 @@ HiObject* DictKlass::subscr(HiObject* x, HiObject* y) {
 void DictKlass::store_subscr(HiObject* x, HiObject*y, HiObject* z) {
     assert(x && x->klass() == (Klass*) this);
     ((HiDict*)x)->put(y, z);
+}
+
+void DictKlass::del_subscr(HiObject* x, HiObject* y) {
+    assert(x && x->klass() == (Klass*) this);
+    ((HiDict*)x)->remove(y);
 }
 
 HiObject* DictKlass::iter(HiObject* x) {
@@ -123,5 +130,23 @@ HiObject* dict_set_default(ObjList args) {
         dict->put(key, value);
 
     return Universe::HiNone;
+}
+
+HiObject* dict_pop(ObjList args) {
+    HiDict* x = (HiDict*)args->get(0);
+    HiObject* y = args->get(1);
+    HiObject* z = Universe::HiNone;
+
+    if (x->has_key(y)) {
+        z = x->get(y);
+        x->remove(y);
+    }
+    else {
+        if (args->length() == 3) {
+            z = args->get(2);
+        }
+    }
+
+    return z;
 }
 

@@ -15,3 +15,8 @@ d.setdefault(2, 3)
 print(d[1])   # "hello"
 print(d[2])   # 3
 
+print(d.pop(1))
+del d[2]
+print(d)
+
+print(d.pop(1, 100))
