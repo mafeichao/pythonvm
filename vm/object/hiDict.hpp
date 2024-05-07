@@ -24,17 +24,6 @@ public:
     virtual size_t size();
 };
 
-class DictIteratorKlass : public Klass {
-private:
-    static DictIteratorKlass* instance;
-    DictIteratorKlass();
-
-public:
-    static DictIteratorKlass* get_instance();
-
-    virtual HiObject* next(HiObject* x);
-};
-
 class HiDict : public HiObject {
 friend class DictKlass;
 private:
@@ -52,6 +41,33 @@ public:
 
 HiObject* dict_set_default(ObjList args);
 HiObject* dict_pop(ObjList args);
+
+HiObject* dict_keys(ObjList args);
+HiObject* dict_values(ObjList args);
+HiObject* dict_items(ObjList args);
+
+class DictIteratorKlass : public Klass {
+private:
+    static DictIteratorKlass* instance;
+    DictIteratorKlass();
+
+public:
+    static DictIteratorKlass* get_instance();
+};
+
+class DictIterator : public HiObject {
+private:
+    HiDict*   _owner;
+    int       _iter_cnt;
+public:
+    DictIterator(HiDict* owner);
+
+    HiDict* owner()        { return _owner; }
+    int iter_cnt()         { return _iter_cnt; }
+    void inc_cnt()         { _iter_cnt++; }
+};
+
+HiObject* dictiterator_next(ObjList args);
 
 #endif
 

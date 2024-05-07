@@ -3,6 +3,7 @@
 #include "object/hiString.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
+#include "runtime/stringTable.hpp"
 #include <assert.h>
 
 DictKlass* DictKlass::instance = NULL;
@@ -25,6 +26,12 @@ void DictKlass::initialize() {
         new FunctionObject(dict_set_default));
     klass_dict->put(new HiString("pop"),
         new FunctionObject(dict_pop));
+    klass_dict->put(new HiString("keys"),
+            new FunctionObject(dict_keys));
+    klass_dict->put(new HiString("values"),
+            new FunctionObject(dict_values));
+    klass_dict->put(new HiString("items"),
+            new FunctionObject(dict_items));
 
     set_klass_dict(klass_dict);
 }
@@ -76,8 +83,7 @@ void DictKlass::del_subscr(HiObject* x, HiObject* y) {
 }
 
 HiObject* DictKlass::iter(HiObject* x) {
-    HiObject* obj = new HiObject();
-    return obj;
+    return new DictIterator((HiDict*)x);
 }
 
 HiDict::HiDict() {
@@ -93,6 +99,12 @@ HiDict::HiDict(Map<HiObject*, HiObject*>* x) {
 /*
  * Iterations for dict object
  */
+DictIterator::DictIterator(HiDict* dict) {
+    _owner = dict;
+    _iter_cnt = 0;
+    set_klass(DictIteratorKlass::get_instance());
+}
+
 DictIteratorKlass* DictIteratorKlass::instance = NULL;
 
 DictIteratorKlass* DictIteratorKlass::get_instance() {
@@ -104,21 +116,10 @@ DictIteratorKlass* DictIteratorKlass::get_instance() {
 }
 
 DictIteratorKlass::DictIteratorKlass() {
-}
-
-HiObject* DictIteratorKlass::next(HiObject* x) {
-    HiString* attr_name = new HiString("iter_cnt");
-    HiInteger* iter_cnt = (HiInteger*)(x->getattr(attr_name));
-
-    HiDict* adict = (HiDict*)(x->getattr(new HiString("dobj")));
-    if (iter_cnt->value() < adict->map()->size()) {
-        HiObject* obj = adict->map()->get_key(iter_cnt->value());
-        HiObject* cnt = iter_cnt->add(new HiInteger(1));
-        //x->setattr(attr_name, cnt);
-        return obj;
-    }
-    else // TODO : we need Traceback here to mark iteration end
-        return NULL;
+    HiDict* klass_dict = new HiDict();
+    klass_dict->put(StringTable::get_instance()->next_str,
+            new FunctionObject(dictiterator_next));
+    set_klass_dict(klass_dict);
 }
 
 HiObject* dict_set_default(ObjList args) {
@@ -148,5 +149,31 @@ HiObject* dict_pop(ObjList args) {
     }
 
     return z;
+}
+
+HiObject* dict_keys(ObjList args) {
+    return nullptr;
+}
+
+HiObject* dict_values(ObjList args) {
+    return nullptr;
+}
+
+HiObject* dict_items(ObjList args) {
+    return nullptr;
+}
+
+HiObject* dictiterator_next(ObjList args) {
+    DictIterator* iter = (DictIterator*)(args->get(0));
+
+    HiDict* adict = iter->owner();
+    int iter_cnt = iter->iter_cnt();
+    if (iter_cnt < adict->map()->size()) {
+        HiObject* obj = adict->map()->get_key(iter_cnt);
+        iter->inc_cnt();
+        return obj;
+    }
+    else // TODO : we need Traceback here to mark iteration end
+        return nullptr;
 }
 
