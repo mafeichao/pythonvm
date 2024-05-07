@@ -4,3 +4,8 @@ b = {3 : 100, 4 : 400}
 for k in a:
     print(k)
 
+for k in a.keys():
+    print(k)
+    print(a[k])
+
+print(3 in b.keys())

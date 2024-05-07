@@ -1,6 +1,7 @@
 #include "object/hiDict.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
+#include "object/hiList.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/stringTable.hpp"
@@ -152,15 +153,24 @@ HiObject* dict_pop(ObjList args) {
 }
 
 HiObject* dict_keys(ObjList args) {
-    return nullptr;
+    HiDict* x = (HiDict*)(args->get(0));
+    HiObject* it = new DictView(x);
+    it->set_klass(DictViewKlass<ITER_KEY>::get_instance());
+    return it;
 }
 
 HiObject* dict_values(ObjList args) {
-    return nullptr;
+    HiDict* x = (HiDict*)(args->get(0));
+    HiObject* it = new DictView(x);
+    it->set_klass(DictViewKlass<ITER_VALUE>::get_instance());
+    return it;
 }
 
 HiObject* dict_items(ObjList args) {
-    return nullptr;
+    HiDict* x = (HiDict*)(args->get(0));
+    HiObject* it = new DictView(x);
+    it->set_klass(DictViewKlass<ITER_ITEM>::get_instance());
+    return it;
 }
 
 HiObject* dictiterator_next(ObjList args) {
@@ -175,5 +185,85 @@ HiObject* dictiterator_next(ObjList args) {
     }
     else // TODO : we need Traceback here to mark iteration end
         return nullptr;
+}
+
+template<ITER_TYPE n>
+DictViewKlass<n>* DictViewKlass<n>::instance = NULL;
+
+template<ITER_TYPE n>
+DictViewKlass<n>* DictViewKlass<n>::get_instance() {
+    if (instance == NULL) {
+        instance = new DictViewKlass<n>();
+    }
+
+    return instance;
+}
+
+template<ITER_TYPE iter_type>
+DictViewKlass<iter_type>::DictViewKlass() {
+    const char* klass_names[] = {
+        "dict_keys",
+        "dict_values",
+        "dict_items",
+    };
+    HiDict* klass_dict = new HiDict();
+    klass_dict->put(StringTable::get_instance()->next_str,
+            new FunctionObject(dict_view_next<iter_type>));
+    set_klass_dict(klass_dict);
+    set_name(new HiString(klass_names[iter_type]));
+}
+
+DictView::DictView(HiDict* dict) {
+    _owner = dict;
+    _iter_cnt = 0;
+}
+
+template<ITER_TYPE iter_type>
+HiObject* dict_view_next(ObjList args) {
+    DictIterator* iter = (DictIterator*)(args->get(0));
+
+    HiDict* adict = iter->owner();
+    int iter_cnt = iter->iter_cnt();
+    if (iter_cnt < adict->map()->size()) {
+        HiObject* obj;
+        if (iter_type == ITER_KEY)
+            obj = adict->map()->get_key(iter_cnt);
+        else if (iter_type == ITER_VALUE) {
+            obj = adict->map()->get_value(iter_cnt);
+        }
+        else if (iter_type == ITER_ITEM) {
+            HiList* lobj = new HiList();
+            lobj->append(adict->map()->get_key(iter_cnt));
+            lobj->append(adict->map()->get_value(iter_cnt));
+            obj = lobj;
+        }
+        iter->inc_cnt();
+        return obj;
+    }
+    else // TODO : we need Traceback here to mark iteration end
+        return NULL;
+}
+
+template<ITER_TYPE iter_type>
+HiObject* DictViewKlass<iter_type>::contains(HiObject* x, HiObject* y) {
+    assert(x->klass() == DictViewKlass<iter_type>::get_instance());
+    HiDict* adict = ((DictView*)x)->owner();
+    assert(adict->klass() == DictKlass::get_instance());
+
+    bool flag = false;
+    if (iter_type == ITER_KEY) {
+        flag = adict->map()->has_key(y);
+    }
+    else if (iter_type == ITER_VALUE) {
+    }
+    else if (iter_type == ITER_ITEM) {
+    }
+
+    if (flag) {
+        return Universe::HiTrue;
+    }
+    else {
+        return Universe::HiFalse;
+    }
 }
 

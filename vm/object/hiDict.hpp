@@ -69,5 +69,39 @@ public:
 
 HiObject* dictiterator_next(ObjList args);
 
+// Dict views
+enum ITER_TYPE {
+    ITER_KEY = 0,
+    ITER_VALUE,
+    ITER_ITEM
+};
+
+template<ITER_TYPE n>
+class DictViewKlass : public Klass {
+private:
+    static DictViewKlass* instance;
+    DictViewKlass();
+
+public:
+    static DictViewKlass* get_instance();
+    virtual HiObject* iter(HiObject* x)  { return x; }
+    virtual HiObject* contains(HiObject* x, HiObject* y);
+};
+
+class DictView : public HiObject {
+private:
+    HiDict*   _owner;
+    int       _iter_cnt;
+public:
+    DictView(HiDict* owner);
+
+    HiDict* owner()        { return _owner; }
+    int iter_cnt()         { return _iter_cnt; }
+    void inc_cnt()         { _iter_cnt++; }
+};
+
+template<ITER_TYPE iter_type>
+HiObject* dict_view_next(ObjList args);
+
 #endif
 

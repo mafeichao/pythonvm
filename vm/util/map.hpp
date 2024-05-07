@@ -29,6 +29,7 @@ public:
     void put(K k, V v);
     V    get(K k);
     K    get_key(int index);
+    V    get_value(int index);
     V    remove(K k);
     bool has_key(K k);
     int  index(K k);
