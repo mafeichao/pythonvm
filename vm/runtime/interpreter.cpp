@@ -30,7 +30,7 @@ Interpreter::Interpreter() {
     _builtins->put(new HiString("len"),      new FunctionObject(len));
 }
 
-void Interpreter::build_frame(HiObject* callable, ObjList args) {
+void Interpreter::build_frame(HiObject* callable, ObjList args, HiList* kwargs) {
     if (callable->klass() == NativeFunctionKlass::get_instance()) {
         PUSH(((FunctionObject*)callable)->call(args));
     }
@@ -42,10 +42,10 @@ void Interpreter::build_frame(HiObject* callable, ObjList args) {
             args = new ArrayList<HiObject*>(1);
         }
         args->insert(0, method->owner());
-        build_frame(method->func(), args);
+        build_frame(method->func(), args, kwargs);
     }
     else if (callable->klass() == FunctionKlass::get_instance()) {
-        FrameObject* frame = new FrameObject((FunctionObject*) callable, args);
+        FrameObject* frame = new FrameObject((FunctionObject*) callable, args, kwargs);
         frame->set_sender(_frame);
         _frame = frame;
     }
@@ -74,9 +74,11 @@ void Interpreter::run(CodeObject* codes) {
 
         FunctionObject* fo;
         ArrayList<HiObject*>* args = nullptr;
-        HiList * lst;
+        HiList* kwargs = nullptr;
+        HiList* lst;
         HiInteger* lhs, * rhs;
         HiObject* v, * w, * u, * attr;
+        int arg_cnt = 0;
 
         switch (op_code) {
             case ByteCode::LOAD_CONST:
@@ -152,6 +154,7 @@ void Interpreter::run(CodeObject* codes) {
                 POP();
                 break;
 
+            case ByteCode::INPLACE_ADD:
             case ByteCode::BINARY_ADD:
                 v = POP();
                 w = POP();
@@ -162,6 +165,12 @@ void Interpreter::run(CodeObject* codes) {
                 v = POP();
                 w = POP();
                 PUSH(w->mul(v));
+                break;
+
+            case ByteCode::BINARY_TRUE_DIVIDE:
+                v = POP();
+                w = POP();
+                PUSH(w->true_div(v));
                 break;
 
             case ByteCode::BINARY_SUBSCR:
@@ -215,6 +224,25 @@ void Interpreter::run(CodeObject* codes) {
                     args = NULL;
                 }
                     
+                break;
+
+            case ByteCode::CALL_FUNCTION_KW:
+                assert(op_arg > 0);
+                arg_cnt = op_arg;
+                kwargs = POP()->as<HiList>();
+                args = new ArrayList<HiObject*>(arg_cnt);
+                while (arg_cnt--) {
+                    args->set(arg_cnt, POP());
+                }
+
+                fo = static_cast<FunctionObject*>(POP());
+                build_frame(fo, args, kwargs);
+
+                if (args != NULL) {
+                    delete args;
+                    args = NULL;
+                }
+
                 break;
 
             case ByteCode::RETURN_VALUE:

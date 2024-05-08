@@ -27,6 +27,8 @@ void DictKlass::initialize() {
         new FunctionObject(dict_set_default));
     klass_dict->put(new HiString("pop"),
         new FunctionObject(dict_pop));
+    klass_dict->put(new HiString("get"),
+        new FunctionObject(dict_get));
     klass_dict->put(new HiString("keys"),
             new FunctionObject(dict_keys));
     klass_dict->put(new HiString("values"),
@@ -42,14 +44,14 @@ void DictKlass::print(HiObject* obj) {
     assert(dict_obj && dict_obj->klass() == (Klass*) this);
 
     printf("{");   
-    int size = dict_obj->_map->size();
-    if (size >= 1) {
+    int length = dict_obj->length();
+    if (length >= 1) {
         dict_obj->_map->entries()[0]._k->print();
         printf(":");   
         dict_obj->_map->entries()[0]._v->print();
     }
 
-    for (int i = 1; i < size; i++) {
+    for (int i = 1; i < length; i++) {
         printf(", ");   
         dict_obj->_map->entries()[i]._k->print();
         printf(":");   
@@ -152,6 +154,10 @@ HiObject* dict_pop(ObjList args) {
     return z;
 }
 
+HiObject* dict_get(ObjList args) {
+    return args->get(0)->as<HiDict>()->get(args->get(1));
+}
+
 HiObject* dict_keys(ObjList args) {
     HiDict* x = (HiDict*)(args->get(0));
     HiObject* it = new DictView(x);
@@ -178,7 +184,7 @@ HiObject* dictiterator_next(ObjList args) {
 
     HiDict* adict = iter->owner();
     int iter_cnt = iter->iter_cnt();
-    if (iter_cnt < adict->map()->size()) {
+    if (iter_cnt < adict->map()->length()) {
         HiObject* obj = adict->map()->get_key(iter_cnt);
         iter->inc_cnt();
         return obj;
@@ -224,7 +230,7 @@ HiObject* dict_view_next(ObjList args) {
 
     HiDict* adict = iter->owner();
     int iter_cnt = iter->iter_cnt();
-    if (iter_cnt < adict->map()->size()) {
+    if (iter_cnt < adict->map()->length()) {
         HiObject* obj;
         if (iter_type == ITER_KEY)
             obj = adict->map()->get_key(iter_cnt);

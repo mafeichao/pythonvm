@@ -1,4 +1,8 @@
 #include "arrayList.hpp"
+#include "object/hiObject.hpp"
+#include "object/hiString.hpp"
+#include "runtime/universe.hpp"
+
 #include <stdio.h>
 
 template <typename T>
@@ -75,6 +79,17 @@ void ArrayList<T>::delete_index(int index) {
         _array[i] = _array[i+1];
     }
     _length--;
+}
+
+template <typename T>
+int ArrayList<T>::index(T t) {
+    for (int i = 0; i < _length; i++) {
+        if (_array[i]->equal(t) == Universe::HiTrue) {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 class HiObject;

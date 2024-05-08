@@ -19,6 +19,7 @@ public:
     HiObject* mul(HiObject* x);
     HiObject* div(HiObject* x);
     HiObject* mod(HiObject* x);
+    HiObject* true_div(HiObject* x);
 
     HiObject* greater  (HiObject* x);
     HiObject* less     (HiObject* x);
@@ -34,6 +35,9 @@ public:
     HiObject* contains(HiObject* x);
     HiObject* iter();
     void      del_subscr(HiObject* x);
+
+    template<typename T>
+    T* as();
 };
 
 #endif

@@ -20,7 +20,7 @@ FrameObject::FrameObject(CodeObject* codes) {
     _sender  = NULL;
 }
 
-FrameObject::FrameObject (FunctionObject* func, ObjList args) {
+FrameObject::FrameObject (FunctionObject* func, ObjList args, HiList* kwargs) {
     _codes   = func->_func_code;
     _consts  = _codes->_consts;
     _names   = _codes->_names;
@@ -29,25 +29,100 @@ FrameObject::FrameObject (FunctionObject* func, ObjList args) {
     _globals = func->_globals;
     _fast_locals = new ArrayList<HiObject*>();
 
+    const int argcnt  = _codes->_argcount;
+    const int na = args == nullptr ? 0 : args->length();
+    const int nk = kwargs == nullptr ? 0 : kwargs->size();
+    int kw_pos = argcnt;
+
+    if (na < argcnt) {
+        _codes->_co_name->print();
+        printf(" missing %d required positional argument\n", argcnt - na);
+        assert(false);
+    }
+
     if (func->_defaults) {
         int dft_cnt = func->_defaults->length();
-        int argcnt  = _codes->_argcount;
+        int argnum  = _codes->_argcount;
 
         while (dft_cnt--) {
-            _fast_locals->set(--argcnt, func->_defaults->get(dft_cnt));
+            _fast_locals->set(--argnum, func->_defaults->get(dft_cnt));
         }
     }
 
-    if (args) {
-        for (int i = 0; i < args->length(); i++) {
-            _fast_locals->set(i, args->get(i));
+    HiList* alist = nullptr;
+    if (_codes->_flag & FunctionObject::CO_VARARGS) {
+        alist = new HiList();
+    }
+
+    HiDict* adict = nullptr;
+    if (_codes->_flag & FunctionObject::CO_VARKEYWORDS) {
+        adict = new HiDict();
+    }
+
+    for (int i = 0; i < argcnt; i++) {
+        _fast_locals->set(i, args->get(i));
+    }
+
+    if (argcnt < na - nk) {
+        if (_codes->_flag & FunctionObject::CO_VARARGS) {
+            for (int i = argcnt; i < na - nk; i++) {
+                alist->append(args->get(i));
+            }
         }
+        else {
+            report_error("got an unexpected keyword argument", 
+                _codes->_co_name, args->get(argcnt));
+        }
+    }
+
+    if (nk > 0) {
+        for (int i = 0; i < nk; i++) {
+            HiObject* key = kwargs->get(i);
+            HiObject* value = args->get(na - nk + i);
+
+            int index = _codes->_var_names->index(key);
+
+            if (index < 0 || index >= argcnt) {
+                if (_codes->_flag & FunctionObject::CO_VARKEYWORDS) {
+                    adict->put(key, value);
+                }
+                else {
+                    report_error("got an unexpected keyword argument", 
+                        _codes->_co_name, key);
+                }
+                continue;
+            }
+
+            if (index < na - nk) {
+                report_error("got multiple values for argument", _codes->_co_name, key);
+            }
+
+            _fast_locals->set(index, value);
+        }
+    }
+
+    if (_codes->_flag & FunctionObject::CO_VARARGS) {
+        _fast_locals->add(alist);
+    }
+
+    if (_codes->_flag & FunctionObject::CO_VARKEYWORDS) {
+        _fast_locals->add(adict);
     }
 
     _stack   = new HiList();
 
     _pc      = 0;
     _sender  = NULL;
+}
+
+void FrameObject::report_error(const char* msg, HiObject* func_name, HiObject* arg_name) {
+    func_name->print();
+    printf("() ");
+    printf("%s", msg);
+    printf("'");
+    arg_name->print();
+    printf("'\n");
+    assert(false);
 }
 
 int FrameObject::get_op_arg() {

@@ -37,10 +37,12 @@ public:
     HiObject* get(HiObject* k)         { return _map->get(k); }
     bool has_key(HiObject* k)          { return _map->has_key(k); }
     HiObject* remove(HiObject* k)      { return _map->remove(k); }
+    int length()                       { return _map->length(); }
 };
 
 HiObject* dict_set_default(ObjList args);
 HiObject* dict_pop(ObjList args);
+HiObject* dict_get(ObjList args);
 
 HiObject* dict_keys(ObjList args);
 HiObject* dict_values(ObjList args);

@@ -21,6 +21,7 @@ public:
     void set(int index, T t);
     int  length();
     int  capacity();
+    int  index(T t);
     T    pop();
     void delete_index(int index);
 };

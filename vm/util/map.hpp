@@ -18,14 +18,14 @@ template <typename K, typename V>
 class Map {
 private:
     MapEntry<K, V>* _entries;
-    int _size;
     int _length;
+    int _capacity;
     
     void expand();
 public:
     Map();
 
-    int  size() { return _size; }
+    int  length() { return _length; }
     void put(K k, V v);
     V    get(K k);
     K    get_key(int index);

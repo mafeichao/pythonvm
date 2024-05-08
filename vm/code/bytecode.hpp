@@ -15,6 +15,7 @@ public:
     static const unsigned char BINARY_DIVIDE = 21;
     static const unsigned char BINARY_ADD = 23;
     static const unsigned char BINARY_SUBSTRACT = 24;
+    static const unsigned char BINARY_TRUE_DIVIDE = 27;
 
     static const unsigned char INPLACE_ADD = 55;
     static const unsigned char STORE_MAP = 54;
@@ -65,6 +66,7 @@ public:
 
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;
+    static const unsigned char CALL_FUNCTION_KW = 141;
 
     static const unsigned char BUILD_CONST_KEY_MAP = 156;
 

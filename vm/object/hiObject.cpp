@@ -1,6 +1,7 @@
 #include "object/hiObject.hpp"
 #include "object/hiString.hpp"
 #include "object/hiDict.hpp"
+#include "object/hiList.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 
@@ -30,6 +31,10 @@ HiObject* HiObject::div(HiObject * rhs) {
 
 HiObject* HiObject::mod(HiObject * rhs) {
     return klass()->mod(this, rhs);
+}
+
+HiObject* HiObject::true_div(HiObject * rhs) {
+    return klass()->div(this, rhs);
 }
 
 HiObject* HiObject::less(HiObject * rhs) {
@@ -85,5 +90,22 @@ HiObject* HiObject::contains(HiObject* x) {
 
 HiObject* HiObject::iter() {
     return klass()->iter(this);
+}
+
+template<typename T>
+T* HiObject::as() {
+   return (T*)this;
+}
+
+template<>
+HiList* HiObject::as<HiList>() {
+    assert(this->klass() == ListKlass::get_instance());
+    return (HiList*)this;
+}
+
+template<>
+HiDict* HiObject::as<HiDict>() {
+    assert(this->klass() == DictKlass::get_instance());
+    return (HiDict*)this;
 }
 

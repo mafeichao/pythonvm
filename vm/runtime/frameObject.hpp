@@ -6,11 +6,12 @@
 
 class FunctionObject;
 class HiDict;
+class HiList;
 
 class FrameObject {
 public:
     FrameObject(CodeObject* codes);
-    FrameObject(FunctionObject* func, ObjList args);
+    FrameObject(FunctionObject* func, ObjList args, HiList* kwargs);
     ~FrameObject() {};
 
     HiList* _stack;
@@ -43,6 +44,7 @@ public:
     bool has_more_codes();
     unsigned char get_op_code();
     int  get_op_arg();
+    void report_error(const char* msg, HiObject* func_name, HiObject* arg_name);
 };
 
 #endif
