@@ -4,6 +4,8 @@
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
 
+#include <algorithm>
+
 // this constructor is used for module only.
 FrameObject::FrameObject(CodeObject* codes) {
     _codes   = codes;
@@ -32,16 +34,15 @@ FrameObject::FrameObject (FunctionObject* func, ObjList args, HiList* kwargs) {
     const int argcnt  = _codes->_argcount;
     const int na = args == nullptr ? 0 : args->length();
     const int nk = kwargs == nullptr ? 0 : kwargs->size();
-    int kw_pos = argcnt;
+    int dft_cnt = func->_defaults == nullptr ? 0 : func->_defaults->length();
 
-    if (na < argcnt) {
+    if (na + dft_cnt < argcnt) {
         _codes->_co_name->print();
         printf(" missing %d required positional argument\n", argcnt - na);
         assert(false);
     }
 
     if (func->_defaults) {
-        int dft_cnt = func->_defaults->length();
         int argnum  = _codes->_argcount;
 
         while (dft_cnt--) {
@@ -59,7 +60,7 @@ FrameObject::FrameObject (FunctionObject* func, ObjList args, HiList* kwargs) {
         adict = new HiDict();
     }
 
-    for (int i = 0; i < argcnt; i++) {
+    for (int i = 0; i < std::min(argcnt, na - nk); i++) {
         _fast_locals->set(i, args->get(i));
     }
 
@@ -109,6 +110,26 @@ FrameObject::FrameObject (FunctionObject* func, ObjList args, HiList* kwargs) {
         _fast_locals->add(adict);
     }
 
+    // 处理闭包中的cell vars
+    _closure = nullptr;
+
+    HiList* cells = _codes->_cell_vars;
+    if (cells && cells->size() > 0) {
+        _closure = new HiList();
+
+        for (int i = 0; i < cells->size(); i++) {
+            _closure->append(nullptr);
+        }
+    }
+
+    if (func->closure() && func->closure()->size() > 0) {
+        if (_closure == nullptr)
+            _closure = func->closure();
+        else {
+            _closure = _closure->add(func->closure())->as<HiList>();
+        }
+    }
+
     _stack   = new HiList();
 
     _pc      = 0;
@@ -136,3 +157,10 @@ unsigned char FrameObject::get_op_code() {
 bool FrameObject::has_more_codes() {
     return _pc < _codes->_bytecodes->length();
 }
+
+HiObject* FrameObject::get_cell_from_parameter(int i) {
+    HiObject* cell_name = _codes->_cell_vars->get(i);
+    i = _codes->_var_names->index(cell_name);
+    return _fast_locals->get(i);
+}
+

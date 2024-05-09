@@ -36,7 +36,7 @@ CodeObject* BinaryFileParser::parse() {
         int index = 0;
         if (ref_flag) {
             index = _cache.length();
-            _cache.add(NULL);
+            _cache.add(nullptr);
         }
 
         CodeObject* result = get_code_object();
@@ -123,11 +123,12 @@ HiString* BinaryFileParser::get_name() {
         s = _string_table.get(file_stream->read_int());
     }
     else if (ch == 'r') {
-        s = static_cast<HiString*>(_cache.get(file_stream->read_int()));
+        s = _cache.get(file_stream->read_int())->as<HiString>();
     }
      
     if (ref_flag) {
         _cache.add(s);
+        log(_cache.length() - 1, s);
     }
 
     return s;
@@ -144,8 +145,10 @@ HiString* BinaryFileParser::get_byte_codes() {
 
     HiString* s = get_string(true);
 
-    if (ref_flag)
+    if (ref_flag) {
         _cache.add(s);
+        log(_cache.length() - 1, s);
+    }
 
     return s;
 }
@@ -171,15 +174,21 @@ HiList* BinaryFileParser::try_to_get_tuple() {
 
     HiList* result = NULL;
     if (obj_type == ')') {
+        int index = _cache.length();
+        if (ref_flag) {
+            _cache.add(nullptr);
+        }
+
         result = get_tuple();
         
         if (ref_flag) {
-            _cache.add(result);
+            _cache.set(index, result);
+            log(index, result);
         }
     }
     else if (obj_type == 'r') {
         int index = file_stream->read_int();
-        result = static_cast<HiList*>(_cache.get(index));
+        result = _cache.get(index)->as<HiList>();
     }
     else {
         file_stream->unread();
@@ -221,21 +230,16 @@ HiList* BinaryFileParser::get_tuple() {
 
         HiObject* obj = nullptr;
 
+        // 需要先占位，最后再设置，避免递归结构出问题
+        if (ref_flag) {
+            index = _cache.length();
+            _cache.add(nullptr);
+        }
+
         switch (obj_type) {
         case 'c':
             printf("got a code object\n");
-
-            // 代码对象，需要先占位，最后再设置
-            if (ref_flag) {
-                index = _cache.length();
-                _cache.add(NULL);
-            }
-
             obj = get_code_object();
-
-            if (ref_flag) {
-                _cache.set(index, obj);
-            }
             break;
         case 'i':
             obj = new HiInteger(file_stream->read_int());
@@ -273,11 +277,18 @@ HiList* BinaryFileParser::get_tuple() {
         }
 
         list->append(obj);
-        if (ref_flag && obj_type != 'c') {
-            _cache.add(obj);
+        if (ref_flag) {
+            _cache.set(index, obj);
+            log(index, obj);
         }
     }
 
     return list;
+}
+
+void BinaryFileParser::log(int index, HiObject* o) {
+    printf("cache an object, %d : ", index);
+    o->print();
+    printf("\n");
 }
 

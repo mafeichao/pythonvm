@@ -41,6 +41,7 @@ public:
     static const unsigned char HAVE_ARGUMENT = 90; /* Opcodes from here have an argument: */
 
     static const unsigned char STORE_NAME = 90; /* Index in name list */
+    static const unsigned char UNPACK_SEQUENCE = 92;
     static const unsigned char FOR_ITER = 93;
     static const unsigned char STORE_ATTR = 95;  /* Index in name list */
     static const unsigned char STORE_GLOBAL = 97;
@@ -66,6 +67,11 @@ public:
 
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;
+
+    static const unsigned char LOAD_CLOSURE = 135; /* Load free variable from closure */
+    static const unsigned char LOAD_DEREF = 136; /* Load and dereference from closure cell */
+    static const unsigned char STORE_DEREF = 137; /* Store into cell */
+
     static const unsigned char CALL_FUNCTION_KW = 141;
 
     static const unsigned char BUILD_CONST_KEY_MAP = 156;

@@ -2,6 +2,7 @@
 #include "object/hiString.hpp"
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
+#include "runtime/cellObject.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 
@@ -107,5 +108,17 @@ template<>
 HiDict* HiObject::as<HiDict>() {
     assert(this->klass() == DictKlass::get_instance());
     return (HiDict*)this;
+}
+
+template<>
+HiString* HiObject::as<HiString>() {
+    assert(this->klass() == StringKlass::get_instance());
+    return (HiString*)this;
+}
+
+template<>
+CellObject* HiObject::as<CellObject>() {
+    assert(this->klass() == CellKlass::get_instance());
+    return (CellObject*)this;
 }
 

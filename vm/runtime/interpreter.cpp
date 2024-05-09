@@ -3,6 +3,7 @@
 #include "runtime/interpreter.hpp"
 #include "runtime/frameObject.hpp"
 #include "runtime/functionObject.hpp"
+#include "runtime/cellObject.hpp"
 #include "object/arrayList.hpp"
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
@@ -150,6 +151,14 @@ void Interpreter::run(CodeObject* codes) {
                 _frame->globals()->put(v, POP());
                 break;
 
+            case ByteCode::UNPACK_SEQUENCE:
+                v = POP();
+
+                while (op_arg--) {
+                    PUSH(v->subscr(new HiInteger(op_arg)));
+                }
+                break;
+
             case ByteCode::POP_TOP:
                 POP();
                 break;
@@ -191,8 +200,14 @@ void Interpreter::run(CodeObject* codes) {
                 v = POP();
                 fo = new FunctionObject(v);
                 fo->set_globals(_frame->globals());
+                if (op_arg & 0x8) {
+                    fo->set_closure(POP()->as<HiList>());
+                }
+
+                op_arg &= 0x7;
+
                 if (op_arg == 1) {
-                    HiList* t = (HiList*)POP();
+                    HiList* t = POP()->as<HiList>();
                     args = new ArrayList<HiObject*>();
                     for (int i = 0; i < t->size(); i++) {
                         args->add(t->get(i));
@@ -205,6 +220,42 @@ void Interpreter::run(CodeObject* codes) {
                     delete args;
                     args = NULL;
                 }
+                break;
+
+            case ByteCode::LOAD_CLOSURE:
+                v = _frame->closure()->get(op_arg);
+                if (v == NULL) {
+                    _frame->closure()->set(op_arg, (_frame->get_cell_from_parameter(op_arg)));
+                }
+
+                v = _frame->closure()->get(op_arg);
+                if (v->klass() == CellKlass::get_instance()) {
+                    PUSH(v);
+                }
+                else
+                    PUSH(new CellObject(_frame->closure(), op_arg));
+
+                break;
+
+            case ByteCode::LOAD_DEREF:
+                v = _frame->closure()->get(op_arg);
+                if (v->klass() == CellKlass::get_instance()) {
+                    v = v->as<CellObject>()->value();
+                }
+                PUSH(v);
+                break;
+
+            case ByteCode::STORE_DEREF:
+                v = _frame->closure()->get(op_arg);
+                w = POP();
+
+                if (v == nullptr || v->klass() != CellKlass::get_instance()) {
+                    _frame->closure()->set(op_arg, w);
+                }
+                else {
+                    v->as<CellObject>()->set_value(w);
+                }
+
                 break;
 
             case ByteCode::CALL_METHOD:

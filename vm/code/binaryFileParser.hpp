@@ -36,6 +36,8 @@ public:
     HiList*   get_cell_vars();
     HiList*   get_tuple();
     HiList*   try_to_get_tuple();
+
+    void        log(int index, HiObject* o);
 };
 
 #endif
