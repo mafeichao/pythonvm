@@ -4,6 +4,8 @@
 #include "object/hiObject.hpp"
 #include "util/map.hpp"
 
+class HiList;
+
 class DictKlass : public Klass {
 private:
     DictKlass();
@@ -40,13 +42,13 @@ public:
     int length()                       { return _map->length(); }
 };
 
-HiObject* dict_set_default(ObjList args);
-HiObject* dict_pop(ObjList args);
-HiObject* dict_get(ObjList args);
+HiObject* dict_set_default(HiList* args);
+HiObject* dict_pop(HiList* args);
+HiObject* dict_get(HiList* args);
 
-HiObject* dict_keys(ObjList args);
-HiObject* dict_values(ObjList args);
-HiObject* dict_items(ObjList args);
+HiObject* dict_keys(HiList* args);
+HiObject* dict_values(HiList* args);
+HiObject* dict_items(HiList* args);
 
 class DictIteratorKlass : public Klass {
 private:
@@ -69,7 +71,7 @@ public:
     void inc_cnt()         { _iter_cnt++; }
 };
 
-HiObject* dictiterator_next(ObjList args);
+HiObject* dictiterator_next(HiList* args);
 
 // Dict views
 enum ITER_TYPE {
@@ -103,7 +105,7 @@ public:
 };
 
 template<ITER_TYPE iter_type>
-HiObject* dict_view_next(ObjList args);
+HiObject* dict_view_next(HiList* args);
 
 #endif
 

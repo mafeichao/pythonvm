@@ -31,7 +31,7 @@ Interpreter::Interpreter() {
     _builtins->put(new HiString("len"),      new FunctionObject(len));
 }
 
-void Interpreter::build_frame(HiObject* callable, ObjList args, HiList* kwargs) {
+void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) {
     if (callable->klass() == NativeFunctionKlass::get_instance()) {
         PUSH(((FunctionObject*)callable)->call(args));
     }
@@ -40,7 +40,7 @@ void Interpreter::build_frame(HiObject* callable, ObjList args, HiList* kwargs) 
         // return value is ignored here, because they are handled
         // by other pathes.
         if (!args) {
-            args = new ArrayList<HiObject*>(1);
+            args = new HiList();
         }
         args->insert(0, method->owner());
         build_frame(method->func(), args, kwargs);
@@ -74,7 +74,7 @@ void Interpreter::run(CodeObject* codes) {
         int op_arg = _frame->get_op_arg();
 
         FunctionObject* fo;
-        ArrayList<HiObject*>* args = nullptr;
+        HiList* args = nullptr;
         HiList* kwargs = nullptr;
         HiList* lst;
         HiInteger* lhs, * rhs;
@@ -208,18 +208,14 @@ void Interpreter::run(CodeObject* codes) {
 
                 if (op_arg == 1) {
                     HiList* t = POP()->as<HiList>();
-                    args = new ArrayList<HiObject*>();
-                    for (int i = 0; i < t->size(); i++) {
-                        args->add(t->get(i));
+                    args = new HiList();
+                    for (int i = 0; i < t->length(); i++) {
+                        args->append(t->get(i));
                     }
                 }
                 fo->set_default(args);
                 PUSH(fo);
 
-                if (args != NULL) {
-                    delete args;
-                    args = NULL;
-                }
                 break;
 
             case ByteCode::LOAD_CLOSURE:
@@ -261,7 +257,7 @@ void Interpreter::run(CodeObject* codes) {
             case ByteCode::CALL_METHOD:
             case ByteCode::CALL_FUNCTION:
                 if (op_arg > 0) {
-                    args = new ArrayList<HiObject*>(op_arg);
+                    args = new HiList();
                     while (op_arg--) {
                         args->set(op_arg, POP());
                     }
@@ -270,29 +266,19 @@ void Interpreter::run(CodeObject* codes) {
                 fo = static_cast<FunctionObject*>(POP());
                 build_frame(fo, args);
 
-                if (args != NULL) {
-                    delete args;
-                    args = NULL;
-                }
-                    
                 break;
 
             case ByteCode::CALL_FUNCTION_KW:
                 assert(op_arg > 0);
                 arg_cnt = op_arg;
                 kwargs = POP()->as<HiList>();
-                args = new ArrayList<HiObject*>(arg_cnt);
+                args = new HiList();
                 while (arg_cnt--) {
                     args->set(arg_cnt, POP());
                 }
 
                 fo = static_cast<FunctionObject*>(POP());
                 build_frame(fo, args, kwargs);
-
-                if (args != NULL) {
-                    delete args;
-                    args = NULL;
-                }
 
                 break;
 

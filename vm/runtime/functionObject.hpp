@@ -15,10 +15,10 @@ public:
     virtual void print(HiObject* obj);
 };
 
-HiObject* len(ObjList args);
-HiObject* object_print(ObjList args);
+HiObject* len(HiList* args);
+HiObject* object_print(HiList* args);
 
-typedef HiObject* (*NativeFuncPointer)(ObjList args);
+typedef HiObject* (*NativeFuncPointer)(HiList* args);
 
 class FunctionObject : public HiObject {
 friend class FunctionKlass;
@@ -28,7 +28,7 @@ private:
     CodeObject* _func_code;
     HiString*   _func_name;
     HiDict*     _globals;
-    ObjList     _defaults;
+    HiList*     _defaults;
     HiList*     _closure;
 
     NativeFuncPointer _native_func;
@@ -62,13 +62,13 @@ public:
     HiDict*    globals()     { return _globals; }
     void set_globals(HiDict* x) { _globals = x; }
 
-    void set_default(ObjList defaults);
-    ObjList defaults()       { return _defaults; }
+    void set_default(HiList* defaults);
+    HiList* defaults()       { return _defaults; }
 
     void set_closure(HiList* x) { _closure = x; }
     HiList* closure()        { return _closure; }
 
-    HiObject*  call(ObjList args);
+    HiObject*  call(HiList* args);
 };
 
 // Method objects.

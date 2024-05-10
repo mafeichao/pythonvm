@@ -34,18 +34,16 @@ ListKlass::ListKlass() {
 }
 
 HiObject* ListKlass::add(HiObject* x, HiObject* y) {
-    HiList* lx = (HiList*)x;
-    assert(lx && lx->klass() == (Klass*) this);
-    HiList* ly = (HiList*)y;
-    assert(ly && ly->klass() == (Klass*) this);
+    HiList* lx = x->as<HiList>();
+    HiList* ly = y->as<HiList>();
 
     HiList* z = new HiList();
-    for (int i = 0; i < lx->size(); i++) {
+    for (int i = 0; i < lx->length(); i++) {
         z->inner_list()->set(i, lx->inner_list()->get(i));
     }
 
-    for (int i = 0; i < ly->size(); i++) {
-        z->inner_list()->set(i + lx->size(),
+    for (int i = 0; i < ly->length(); i++) {
+        z->inner_list()->set(i + lx->length(),
                 ly->inner_list()->get(i));
     }
 
@@ -53,15 +51,13 @@ HiObject* ListKlass::add(HiObject* x, HiObject* y) {
 }
 
 HiObject* ListKlass::mul(HiObject* x, HiObject* y) {
-    HiList * lx = (HiList*)x;
-    assert(lx && lx->klass() == (Klass*) this);
-    HiInteger* iy = (HiInteger*)y;
-    assert(iy && iy->klass() == IntegerKlass::get_instance());
+    HiList* lx = x->as<HiList>();
+    HiInteger* iy = y->as<HiInteger>();
 
     HiList* z = new HiList();
     for (int i = 0; i < iy->value(); i++) {
-        for (int j = 0; j < lx->size(); j++) {
-            z->inner_list()->set(i * lx->size() + j,
+        for (int j = 0; j < lx->length(); j++) {
+            z->inner_list()->set(i * lx->length() + j,
                     lx->inner_list()->get(j));
         }
     }
@@ -70,8 +66,7 @@ HiObject* ListKlass::mul(HiObject* x, HiObject* y) {
 }
 
 void ListKlass::print(HiObject* x) {
-    HiList * lx = (HiList*)x;
-    assert(lx && lx->klass() == (Klass*) this);
+    HiList * lx = x->as<HiList>();
 
     printf("[");
 
@@ -87,44 +82,32 @@ void ListKlass::print(HiObject* x) {
 }
 
 HiObject* ListKlass::subscr(HiObject* x, HiObject* y) {
-    assert(x && x->klass() == (Klass*) this);
-    assert(y && y->klass() == (Klass*) IntegerKlass::get_instance());
-
-    HiList * lx = (HiList*)x;
-    HiInteger* iy = (HiInteger*)y;
+    HiList * lx = x->as<HiList>();
+    HiInteger* iy = y->as<HiInteger>();
     
     return lx->inner_list()->get(iy->value());
 }
 
 void ListKlass::store_subscr(HiObject* x, HiObject* y, HiObject* z) {
-    assert(x && x->klass() == (Klass*) this);
-    assert(y && y->klass() == IntegerKlass::get_instance());
-
-    HiList * lx = (HiList*)x;
-    HiInteger* iy = (HiInteger*)y;
+    HiList * lx = x->as<HiList>();
+    HiInteger* iy = y->as<HiInteger>();
 
     lx->inner_list()->set(iy->value(), z);
 }
 
 void ListKlass::del_subscr(HiObject* x, HiObject* y) {
-    assert(x && x->klass() == (Klass*) this);
-    assert(y && y->klass() == IntegerKlass::get_instance());
-
-    HiList * lx = (HiList*)x;
-    HiInteger* iy = (HiInteger*)y;
+    HiList * lx = x->as<HiList>();
+    HiInteger* iy = y->as<HiInteger>();
 
     lx->inner_list()->delete_index(iy->value());
 }
 
 HiObject* ListKlass::less(HiObject* x, HiObject* y) {
-    HiList * lx = (HiList*)x;
-    HiList * ly = (HiList*)y;
+    HiList* lx = x->as<HiList>();
+    HiList* ly = y->as<HiList>();
 
-    assert(lx && lx->klass() == (Klass*) this);
-    assert(ly && ly->klass() == (Klass*) this);
-
-    int len = lx->size() < ly->size() ?
-        lx->size() : ly->size();
+    int len = lx->length() < ly->length() ?
+        lx->length() : ly->length();
 
     for (int i = 0; i < len; i++) {
         if (lx->get(i)->less(ly->get(i)) == Universe::HiTrue) {
@@ -135,15 +118,14 @@ HiObject* ListKlass::less(HiObject* x, HiObject* y) {
         }
     }
 
-    if (lx->size() < ly->size())
+    if (lx->length() < ly->length())
         return Universe::HiTrue;
 
     return Universe::HiFalse;
 }
 
 HiObject* ListKlass::contains(HiObject* x, HiObject* y) {
-    HiList * lx = (HiList*)x;
-    assert(lx && lx->klass() == (Klass*) this);
+    HiList * lx = x->as<HiList>();
 
     int size = lx->_inner_list->length();
     for (int i = 1; i < size; i++) {
@@ -155,8 +137,7 @@ HiObject* ListKlass::contains(HiObject* x, HiObject* y) {
 }
 
 HiObject* ListKlass::iter(HiObject* x) {
-    assert(x && x->klass() == this);
-    return new ListIterator((HiList*)x);
+    return new ListIterator(x->as<HiList>());
 }
 
 HiList::HiList() {
@@ -169,18 +150,16 @@ HiList::HiList(ObjList ol) {
     _inner_list = ol;
 }
 
-HiObject* list_append(ObjList args) {
+HiObject* list_append(HiList* args) {
     ((HiList*)(args->get(0)))->append(args->get(1));
     return Universe::HiNone;
 }
 
-HiObject* list_pop(ObjList args) {
-    HiList* list = (HiList*)(args->get(0));
-    assert(list && list->klass() == ListKlass::get_instance());
-    return list->pop();
+HiObject* list_pop(HiList* args) {
+    return args->get(0)->as<HiList>()->pop();
 }
 
-HiObject* list_remove(ObjList args) {
+HiObject* list_remove(HiList* args) {
     HiList* list = (HiList*)(args->get(0));
     HiObject* target = (HiObject*)(args->get(1));
 
@@ -196,11 +175,11 @@ HiObject* list_remove(ObjList args) {
     return Universe::HiNone;
 }
 
-HiObject* list_reverse(ObjList args) {
-    HiList* list = (HiList*)(args->get(0));
+HiObject* list_reverse(HiList* args) {
+    HiList* list = args->get(0)->as<HiList>();
 
     int i = 0;
-    int j = list->size() - 1;
+    int j = list->length() - 1;
     while (i < j) {
         HiObject* t = list->get(i);
         list->set(i, list->get(j));
@@ -213,13 +192,12 @@ HiObject* list_reverse(ObjList args) {
     return Universe::HiNone;
 }
 
-HiObject* list_sort(ObjList args) {
-    HiList* list = (HiList*)(args->get(0));
-    assert(list && list->klass() == ListKlass::get_instance());
+HiObject* list_sort(HiList* args) {
+    HiList* list = args->get(0)->as<HiList>();
 
     // bubble sort
-    for (int i = 0; i < list->size(); i++) {
-        for (int j = list->size() - 1; j > i; j--) {
+    for (int i = 0; i < list->length(); i++) {
+        for (int j = list->length() - 1; j > i; j--) {
             if (list->get(j)->less(list->get(j-1)) == Universe::HiTrue) {
                 HiObject* t = list->get(j);
                 list->set(j, list->get(j-1));
@@ -256,7 +234,7 @@ ListIterator::ListIterator(HiList* list) {
     set_klass(ListIteratorKlass::get_instance());
 }
 
-HiObject* listiterator_next(ObjList args) {
+HiObject* listiterator_next(HiList* args) {
     ListIterator* iter = (ListIterator*)(args->get(0));
 
     HiList* alist = iter->owner();

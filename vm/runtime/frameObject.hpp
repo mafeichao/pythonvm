@@ -11,7 +11,7 @@ class HiList;
 class FrameObject {
 public:
     FrameObject(CodeObject* codes);
-    FrameObject(FunctionObject* func, ObjList args, HiList* kwargs);
+    FrameObject(FunctionObject* func, HiList* args, HiList* kwargs);
     ~FrameObject() {};
 
     HiList* _stack;

@@ -22,7 +22,7 @@ FrameObject::FrameObject(CodeObject* codes) {
     _sender  = NULL;
 }
 
-FrameObject::FrameObject (FunctionObject* func, ObjList args, HiList* kwargs) {
+FrameObject::FrameObject (FunctionObject* func, HiList* args, HiList* kwargs) {
     _codes   = func->_func_code;
     _consts  = _codes->_consts;
     _names   = _codes->_names;
@@ -33,7 +33,7 @@ FrameObject::FrameObject (FunctionObject* func, ObjList args, HiList* kwargs) {
 
     const int argcnt  = _codes->_argcount;
     const int na = args == nullptr ? 0 : args->length();
-    const int nk = kwargs == nullptr ? 0 : kwargs->size();
+    const int nk = kwargs == nullptr ? 0 : kwargs->length();
     int dft_cnt = func->_defaults == nullptr ? 0 : func->_defaults->length();
 
     if (na + dft_cnt < argcnt) {
@@ -114,15 +114,15 @@ FrameObject::FrameObject (FunctionObject* func, ObjList args, HiList* kwargs) {
     _closure = nullptr;
 
     HiList* cells = _codes->_cell_vars;
-    if (cells && cells->size() > 0) {
+    if (cells && cells->length() > 0) {
         _closure = new HiList();
 
-        for (int i = 0; i < cells->size(); i++) {
+        for (int i = 0; i < cells->length(); i++) {
             _closure->append(nullptr);
         }
     }
 
-    if (func->closure() && func->closure()->size() > 0) {
+    if (func->closure() && func->closure()->length() > 0) {
         if (_closure == nullptr)
             _closure = func->closure();
         else {

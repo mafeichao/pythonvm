@@ -125,7 +125,7 @@ DictIteratorKlass::DictIteratorKlass() {
     set_klass_dict(klass_dict);
 }
 
-HiObject* dict_set_default(ObjList args) {
+HiObject* dict_set_default(HiList* args) {
     HiDict* dict = (HiDict*)(args->get(0));
     HiObject* key = args->get(1);
     HiObject* value = args->get(2);
@@ -136,7 +136,7 @@ HiObject* dict_set_default(ObjList args) {
     return Universe::HiNone;
 }
 
-HiObject* dict_pop(ObjList args) {
+HiObject* dict_pop(HiList* args) {
     HiDict* x = (HiDict*)args->get(0);
     HiObject* y = args->get(1);
     HiObject* z = Universe::HiNone;
@@ -154,32 +154,32 @@ HiObject* dict_pop(ObjList args) {
     return z;
 }
 
-HiObject* dict_get(ObjList args) {
+HiObject* dict_get(HiList* args) {
     return args->get(0)->as<HiDict>()->get(args->get(1));
 }
 
-HiObject* dict_keys(ObjList args) {
+HiObject* dict_keys(HiList* args) {
     HiDict* x = (HiDict*)(args->get(0));
     HiObject* it = new DictView(x);
     it->set_klass(DictViewKlass<ITER_KEY>::get_instance());
     return it;
 }
 
-HiObject* dict_values(ObjList args) {
+HiObject* dict_values(HiList* args) {
     HiDict* x = (HiDict*)(args->get(0));
     HiObject* it = new DictView(x);
     it->set_klass(DictViewKlass<ITER_VALUE>::get_instance());
     return it;
 }
 
-HiObject* dict_items(ObjList args) {
+HiObject* dict_items(HiList* args) {
     HiDict* x = (HiDict*)(args->get(0));
     HiObject* it = new DictView(x);
     it->set_klass(DictViewKlass<ITER_ITEM>::get_instance());
     return it;
 }
 
-HiObject* dictiterator_next(ObjList args) {
+HiObject* dictiterator_next(HiList* args) {
     DictIterator* iter = (DictIterator*)(args->get(0));
 
     HiDict* adict = iter->owner();
@@ -225,7 +225,7 @@ DictView::DictView(HiDict* dict) {
 }
 
 template<ITER_TYPE iter_type>
-HiObject* dict_view_next(ObjList args) {
+HiObject* dict_view_next(HiList* args) {
     DictIterator* iter = (DictIterator*)(args->get(0));
 
     HiDict* adict = iter->owner();

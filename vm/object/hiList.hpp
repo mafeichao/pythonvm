@@ -39,20 +39,21 @@ public:
     HiList(ObjList ol);
     ArrayList<HiObject*>* inner_list()  { return _inner_list; }
 
-    int size()                          { return _inner_list->length(); }
+    int length()                        { return _inner_list->length(); }
+    void insert(int i, HiObject* obj)   { _inner_list->insert(i, obj); }
     void append(HiObject* obj)          { _inner_list->add(obj); }
     HiObject* pop()                     { return _inner_list->pop(); }
     HiObject* get(int index)            { return _inner_list->get(index); }
     void      set(int i, HiObject* o)   { _inner_list->set(i, o); }
-    HiObject* top()                     { return get(size() - 1); }
+    HiObject* top()                     { return get(length() - 1); }
     int       index(HiObject* obj)      { return _inner_list->index(obj); }
 };
 
-HiObject* list_append(ObjList args);
-HiObject* list_pop(ObjList args);
-HiObject* list_remove(ObjList args);
-HiObject* list_reverse(ObjList args);
-HiObject* list_sort(ObjList args);
+HiObject* list_append(HiList* args);
+HiObject* list_pop(HiList* args);
+HiObject* list_remove(HiList* args);
+HiObject* list_reverse(HiList* args);
+HiObject* list_sort(HiList* args);
 
 class ListIteratorKlass : public Klass {
 private:
@@ -75,7 +76,7 @@ public:
     void inc_cnt()         { _iter_cnt++; }
 };
 
-HiObject* listiterator_next(ObjList args);
+HiObject* listiterator_next(HiList* args);
 
 #endif
 

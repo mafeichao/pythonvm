@@ -1,5 +1,6 @@
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
+#include "object/hiList.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include <string.h>
@@ -101,7 +102,7 @@ HiObject* StringKlass::less(HiObject* x, HiObject* y) {
     return Universe::HiFalse;
 }
 
-HiObject* string_upper(ObjList args) {
+HiObject* string_upper(HiList* args) {
     HiObject* arg0 = args->get(0);
     assert(arg0->klass() == StringKlass::get_instance());
 

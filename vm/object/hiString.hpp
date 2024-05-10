@@ -4,7 +4,9 @@
 #include "object/hiObject.hpp"
 #include "object/arrayList.hpp"
 
-HiObject* string_upper(ObjList args);
+class HiList;
+
+HiObject* string_upper(HiList* args);
 
 class StringKlass : public Klass {
 private:

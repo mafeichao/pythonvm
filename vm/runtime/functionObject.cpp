@@ -1,5 +1,6 @@
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
+#include "object/hiList.hpp"
 #include "object/hiDict.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
@@ -48,13 +49,13 @@ FunctionObject::FunctionObject(NativeFuncPointer nfp) {
     set_klass(NativeFunctionKlass::get_instance());
 }
 
-void FunctionObject::set_default(ArrayList<HiObject*>* defaults) {
+void FunctionObject::set_default(HiList* defaults) {
     if (defaults == nullptr) {
         _defaults = nullptr;
         return;
     }
 
-    _defaults = new ArrayList<HiObject*>(defaults->length());
+    _defaults = new HiList();
 
     for (int i = 0; i < defaults->length(); i++) {
         _defaults->set(i, defaults->get(i));
@@ -77,7 +78,7 @@ NativeFunctionKlass::NativeFunctionKlass() {
     set_super(FunctionKlass::get_instance());
 }
 
-HiObject* FunctionObject::call(ObjList args) {
+HiObject* FunctionObject::call(HiList* args) {
     return (*_native_func)(args);
 }
 
@@ -136,14 +137,11 @@ bool MethodObject::is_function(HiObject *x) {
     return false;
 }
 
-HiObject* len(ObjList args) {
-    HiObject* arg0 = args->get(0);
-    assert(arg0->klass() == StringKlass::get_instance());
-
-    return new HiInteger(((HiString*)arg0)->length());
+HiObject* len(HiList* args) {
+    return new HiInteger(args->get(0)->as<HiString>()->length());
 }
 
-HiObject* object_print(ObjList args) {
+HiObject* object_print(HiList* args) {
     HiObject* arg0 = args->get(0);
     arg0->print();
     printf("\n");

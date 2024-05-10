@@ -10,6 +10,7 @@
 
 BinaryFileParser::BinaryFileParser(BufferedInputStream* buf_file_stream) {
     file_stream = buf_file_stream;
+    _debug_level = 0;
 }
 
 CodeObject* BinaryFileParser::parse() {
@@ -287,6 +288,10 @@ HiList* BinaryFileParser::get_tuple() {
 }
 
 void BinaryFileParser::log(int index, HiObject* o) {
+    if (_debug_level <= 0) {
+        return;
+    }
+
     printf("cache an object, %d : ", index);
     o->print();
     printf("\n");

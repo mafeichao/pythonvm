@@ -15,6 +15,8 @@ private:
     ArrayList<HiString*> _string_table;
     ArrayList<HiObject*> _cache;
 
+    int _debug_level;
+
 public:
     BinaryFileParser(BufferedInputStream* stream);
 

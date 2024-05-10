@@ -1,4 +1,5 @@
 #include "object/hiObject.hpp"
+#include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
@@ -120,5 +121,11 @@ template<>
 CellObject* HiObject::as<CellObject>() {
     assert(this->klass() == CellKlass::get_instance());
     return (CellObject*)this;
+}
+
+template<>
+HiInteger* HiObject::as<HiInteger>() {
+    assert(this->klass() == IntegerKlass::get_instance());
+    return (HiInteger*)this;
 }
 
