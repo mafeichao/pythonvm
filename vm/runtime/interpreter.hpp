@@ -12,12 +12,17 @@ private:
     HiDict*         _builtins;
     FrameObject*    _frame;
 
-public:
+    static Interpreter*   _instance;
     Interpreter();
+
+public:
+    static Interpreter* get_instance();
 
     void run(CodeObject* codes);
     void build_frame(HiObject* callable, HiList* args, HiList* kwargs = nullptr);
     void leave_frame(HiObject* ret_value);
+
+    HiObject* call_virtual    (HiObject* func, HiList* args);
 };
 
 #endif

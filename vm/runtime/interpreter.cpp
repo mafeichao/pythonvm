@@ -20,6 +20,16 @@
 #define HI_TRUE       Universe::HiTrue
 #define HI_FALSE      Universe::HiFalse
 
+Interpreter* Interpreter::_instance = NULL;
+
+Interpreter* Interpreter::get_instance() {
+    if (_instance == NULL) {
+        _instance = new Interpreter();
+    }
+
+    return _instance;
+}
+
 Interpreter::Interpreter() {
     _builtins = new HiDict();
 
@@ -64,6 +74,25 @@ void Interpreter::leave_frame(HiObject* return_value) {
     PUSH(return_value);
 
     delete temp;
+}
+
+HiObject* Interpreter::call_virtual(HiObject* func, HiList* args) {
+    if (func->klass() == NativeFunctionKlass::get_instance()) {
+        // we do not create a virtual frame, but native frame.
+        return ((FunctionObject*)func)->call(args);
+    }
+    else if (MethodObject::is_method(func)) {
+        MethodObject* method = (MethodObject*) func;
+        // return value is ignored here, because they are handled
+        // by other pathes.
+        if (!args) {
+            args = new HiList();
+        }
+        args->insert(0, method->owner());
+        return call_virtual(method->func(), args);
+    }
+
+    return Universe::HiNone;
 }
 
 void Interpreter::run(CodeObject* codes) {
@@ -282,6 +311,14 @@ void Interpreter::run(CodeObject* codes) {
 
                 break;
 
+            case ByteCode::CALL_FUNCTION_EX:
+                assert(op_arg == 0);
+                args = POP()->as<HiList>();
+                fo = static_cast<FunctionObject*>(POP());
+                build_frame(fo, args, kwargs);
+
+                break;
+
             case ByteCode::RETURN_VALUE:
                 leave_frame(POP());
                 if (!_frame)
@@ -394,7 +431,7 @@ void Interpreter::run(CodeObject* codes) {
                 break;
                 
             case ByteCode::BUILD_CONST_KEY_MAP:
-                lst = (HiList*)POP();
+                lst = POP()->as<HiList>();
 
                 v = new HiDict();
                 for (int i = 0; i < op_arg; i++) {
@@ -402,6 +439,23 @@ void Interpreter::run(CodeObject* codes) {
                 }
 
                 PUSH(v);
+                break;
+
+            case ByteCode::BUILD_TUPLE_UNPACK_WITH_CALL:
+                v = POP();
+                args = new HiList();
+                op_arg--;
+
+                while (op_arg--) {
+                    w = POP();
+                    args->append(w);
+                    args->append(v);
+                    list_extend(args);
+                    v = args->get(0);
+                    args->clear();
+                }
+                PUSH(w);
+
                 break;
 
             default:

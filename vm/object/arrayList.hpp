@@ -23,6 +23,7 @@ public:
     int  capacity();
     int  index(T t);
     T    pop();
+    void clear();
     void delete_index(int index);
 };
 

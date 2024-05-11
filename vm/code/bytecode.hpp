@@ -73,8 +73,10 @@ public:
     static const unsigned char STORE_DEREF = 137; /* Store into cell */
 
     static const unsigned char CALL_FUNCTION_KW = 141;
+    static const unsigned char CALL_FUNCTION_EX = 142;
 
     static const unsigned char BUILD_CONST_KEY_MAP = 156;
+    static const unsigned char BUILD_TUPLE_UNPACK_WITH_CALL = 158;
 
     static const unsigned char LOAD_METHOD = 160;
     static const unsigned char CALL_METHOD = 161;

@@ -5,6 +5,7 @@
 #include "runtime/stringTable.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
+#include "runtime/interpreter.hpp"
 #include <assert.h>
 
 ListKlass* ListKlass::instance = nullptr;
@@ -28,6 +29,8 @@ ListKlass::ListKlass() {
         new FunctionObject(list_reverse));
     klass_dict->put(new HiString("sort"),
         new FunctionObject(list_sort));
+    klass_dict->put(new HiString("extend"),
+        new FunctionObject(list_extend));
 
     set_klass_dict(klass_dict);
     set_name(new HiString("list"));
@@ -204,6 +207,21 @@ HiObject* list_sort(HiList* args) {
                 list->set(j-1, t);
             }
         }
+    }
+
+    return Universe::HiNone;
+}
+
+HiObject* list_extend(HiList* args) {
+    HiList* lx = (HiList*)(args->get(0));
+    HiObject* obj = args->get(1);
+
+    HiObject* next_func = obj->iter()->getattr(StringTable::get_instance()->next_str);
+    assert(next_func != Universe::HiNone);
+
+    HiObject* to;
+    while ((to = Interpreter::get_instance()->call_virtual(next_func, nullptr)) != nullptr) {
+        lx->append(to);
     }
 
     return Universe::HiNone;

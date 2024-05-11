@@ -92,6 +92,11 @@ int ArrayList<T>::index(T t) {
     return -1;
 }
 
+template <typename T>
+void ArrayList<T>::clear() {
+    _length = 0;
+}
+
 class HiObject;
 template class ArrayList<HiObject*>;
 

@@ -47,6 +47,7 @@ public:
     void      set(int i, HiObject* o)   { _inner_list->set(i, o); }
     HiObject* top()                     { return get(length() - 1); }
     int       index(HiObject* obj)      { return _inner_list->index(obj); }
+    void      clear()                   { _inner_list->clear(); }
 };
 
 HiObject* list_append(HiList* args);
@@ -54,6 +55,7 @@ HiObject* list_pop(HiList* args);
 HiObject* list_remove(HiList* args);
 HiObject* list_reverse(HiList* args);
 HiObject* list_sort(HiList* args);
+HiObject* list_extend(HiList* args);
 
 class ListIteratorKlass : public Klass {
 private:
