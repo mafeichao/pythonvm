@@ -158,14 +158,25 @@ HiString* BinaryFileParser::get_no_table() {
     char object_type = file_stream->read();
     bool ref_flag = (object_type & 0x80) != 0;
     char ch = object_type & 0x7f;
-    
-    if (ch != 's' && ch != 't') {
-        printf("expect a string for no table, but got %c\n", ch);
+    HiString* s = nullptr;
+
+    if (ch == 's' || ch == 't') {
+        s =  get_string(true);
+    }
+    else if (ch == 'r') {
+        s = _cache.get(file_stream->read_int())->as<HiString>();
+    }
+    else {
         file_stream->unread();
-        return NULL;
+        printf("expect a string for no table, but got %c\n", ch);
     }
 
-    return get_string(true);
+    if (ref_flag) {
+        _cache.add(s);
+        log(_cache.length() - 1, s);
+    }
+    
+    return s;
 }
 
 HiList* BinaryFileParser::try_to_get_tuple() {
