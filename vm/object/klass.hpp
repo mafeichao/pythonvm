@@ -7,10 +7,12 @@
 class HiObject;
 class HiString;
 class HiDict;
+class HiTypeObject;
 
 class Klass {
 private:
     Klass*        _super;
+    HiTypeObject* _type_object;
     HiString*     _name;
     HiDict*       _klass_dict;
 
@@ -19,6 +21,9 @@ public:
 
     void set_super(Klass* x)              { _super = x; }
     Klass* super()                        { return _super; }
+
+    void set_type_object(HiTypeObject* x) { _type_object = x; }
+    HiTypeObject* type_object()           { return _type_object; }
 
     void set_name(HiString* x)            { _name = x; }
     HiString* name()                      { return _name; }
@@ -48,6 +53,21 @@ public:
     virtual void store_subscr  (HiObject* x, HiObject* y, HiObject* z)  { return; }
     virtual void del_subscr    (HiObject* x, HiObject* y)               { return; }
     virtual HiObject* contains (HiObject* x, HiObject* y)               { return nullptr; }
+};
+
+/*
+ * meta-klass for the object system.
+ */
+class TypeKlass : public Klass {
+private:
+    TypeKlass() {}
+    static TypeKlass* instance;
+
+public:
+    static TypeKlass* get_instance();
+    void initialize();
+
+    virtual void print(HiObject* obj);
 };
 
 #endif

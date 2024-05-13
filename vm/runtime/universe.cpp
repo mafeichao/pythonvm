@@ -4,6 +4,7 @@
 #include "object/hiString.hpp"
 #include "object/hiObject.hpp"
 #include "object/hiDict.hpp"
+#include "object/hiList.hpp"
 #include "util/map.hpp"
 
 HiString* Universe::HiTrue   = NULL;
@@ -15,12 +16,10 @@ void Universe::genesis() {
     HiFalse      = new HiString("False");
     HiNone       = new HiString("None");
 
+    TypeKlass::get_instance()->initialize();
     DictKlass::get_instance()->initialize();
-
-    HiDict* klass_dict = new HiDict();
-    klass_dict->put(new HiString("upper"), new FunctionObject(string_upper));
-    StringKlass::get_instance()->set_name(new HiString("str"));
-    StringKlass::get_instance()->set_klass_dict(klass_dict);
+    StringKlass::get_instance()->initialize();
+    ListKlass::get_instance()->initialize();
 }
 
 void Universe::destroy() {

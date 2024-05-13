@@ -17,7 +17,7 @@ ListKlass* ListKlass::get_instance() {
     return instance;
 }
 
-ListKlass::ListKlass() {
+void ListKlass::initialize() {
     HiDict * klass_dict = new HiDict();
     klass_dict->put(new HiString("append"), 
         new FunctionObject(list_append));
@@ -33,7 +33,11 @@ ListKlass::ListKlass() {
         new FunctionObject(list_extend));
 
     set_klass_dict(klass_dict);
+    (new HiTypeObject())->set_own_klass(this);
     set_name(new HiString("list"));
+}
+
+ListKlass::ListKlass() {
 }
 
 HiObject* ListKlass::add(HiObject* x, HiObject* y) {

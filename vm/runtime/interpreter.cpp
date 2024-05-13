@@ -37,6 +37,11 @@ Interpreter::Interpreter() {
     _builtins->put(new HiString("False"),    Universe::HiFalse);
     _builtins->put(new HiString("None"),     Universe::HiNone);
 
+    _builtins->put(new HiString("int"),      IntegerKlass::get_instance()->type_object());
+    _builtins->put(new HiString("str"),      StringKlass::get_instance()->type_object());
+    _builtins->put(new HiString("list"),     ListKlass::get_instance()->type_object());
+    _builtins->put(new HiString("dict"),     DictKlass::get_instance()->type_object());
+
     _builtins->put(new HiString("print"),    new FunctionObject(object_print));
     _builtins->put(new HiString("len"),      new FunctionObject(len));
 }

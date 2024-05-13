@@ -1,6 +1,7 @@
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiList.hpp"
+#include "object/hiDict.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include <string.h>
@@ -15,6 +16,15 @@ StringKlass* StringKlass::get_instance() {
         instance = new StringKlass();
 
     return instance;
+}
+
+void StringKlass::initialize() {
+    HiDict* klass_dict = new HiDict();
+    klass_dict->put(new HiString("upper"), new FunctionObject(string_upper));
+
+    set_klass_dict(klass_dict);
+    (new HiTypeObject())->set_own_klass(this);
+    set_name(new HiString("str"));
 }
 
 HiObject* StringKlass::equal(HiObject* x, HiObject* y) {
@@ -42,9 +52,11 @@ void StringKlass::print(HiObject* obj) {
     HiString* str_obj = (HiString*) obj;
     assert(str_obj && str_obj->klass() == (Klass*)this);
 
+    printf("'");
     for (int i = 0; i < str_obj->length(); i++) {
         printf("%c", str_obj->value()[i]);
     }
+    printf("'");
 }
 
 

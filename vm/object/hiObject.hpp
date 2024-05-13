@@ -40,5 +40,16 @@ public:
     T* as();
 };
 
+class HiTypeObject : public HiObject {
+private:
+    Klass*  _own_klass;
+
+public:
+    HiTypeObject();
+
+    void    set_own_klass(Klass* k);
+    Klass*  own_klass()             { return _own_klass; }
+};
+
 #endif
 

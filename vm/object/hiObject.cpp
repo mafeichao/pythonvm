@@ -129,3 +129,43 @@ HiInteger* HiObject::as<HiInteger>() {
     return (HiInteger*)this;
 }
 
+template<>
+HiTypeObject* HiObject::as<HiTypeObject>() {
+    assert(this->klass() == TypeKlass::get_instance());
+    return (HiTypeObject*)this;
+}
+
+/*
+ * TypeObject is a special object
+ */
+TypeKlass* TypeKlass::instance = NULL;
+
+TypeKlass* TypeKlass::get_instance() {
+    if (instance == NULL)
+        instance = new TypeKlass();
+
+    return instance;
+}
+
+void TypeKlass::initialize() {
+    HiTypeObject* tp_obj = new HiTypeObject();
+    set_name(new HiString("type"));
+    tp_obj->set_own_klass(this);
+}
+
+void TypeKlass::print(HiObject* obj) {
+    Klass* own_klass = obj->as<HiTypeObject>()->own_klass();
+    printf("<class ");
+    own_klass->name()->print();
+    printf(">");
+}
+
+HiTypeObject::HiTypeObject() {
+    set_klass(TypeKlass::get_instance());
+}
+
+void HiTypeObject::set_own_klass(Klass* k) {
+    _own_klass = k;
+    k->set_type_object(this);
+}
+
