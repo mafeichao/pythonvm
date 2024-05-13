@@ -1,6 +1,7 @@
 #include "object/klass.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
+#include "object/hiList.hpp"
 #include "runtime/universe.hpp"
 
 #include <stdio.h>
@@ -168,5 +169,12 @@ HiObject* IntegerKlass::mod(HiObject* x, HiObject* y) {
     assert(iy->value() != 0);
 
     return new HiInteger(ix->value() % iy->value());
+}
+
+HiObject* IntegerKlass::allocate_instance(HiList* args) {
+    if (!args || args->length() == 0)
+        return new HiInteger(0);
+    else
+        return nullptr;
 }
 

@@ -140,3 +140,11 @@ HiObject* string_upper(HiList* args) {
     return str_obj;
 }
 
+HiObject* StringKlass::allocate_instance(HiList* args) {
+    if (!args || args->length() == 0) {
+        return new HiString("");
+    }
+    else
+        return args->get(0)->as<HiString>();
+}
+

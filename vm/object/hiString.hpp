@@ -22,6 +22,8 @@ public:
     virtual HiObject* less   (HiObject* x, HiObject* y);
 
     virtual void print(HiObject* obj);
+
+    virtual HiObject* allocate_instance(HiList* args);
 };
 
 class HiString : public HiObject {

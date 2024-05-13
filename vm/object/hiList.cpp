@@ -144,6 +144,13 @@ HiObject* ListKlass::contains(HiObject* x, HiObject* y) {
     return Universe::HiFalse;
 }
 
+HiObject* ListKlass::allocate_instance(HiList* args) {
+    if (!args || args->length() == 0)
+        return new HiList();
+    else
+        return nullptr;
+}
+
 HiObject* ListKlass::iter(HiObject* x) {
     return new ListIterator(x->as<HiList>());
 }

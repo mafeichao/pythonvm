@@ -88,6 +88,14 @@ void DictKlass::del_subscr(HiObject* x, HiObject* y) {
     ((HiDict*)x)->remove(y);
 }
 
+
+HiObject* DictKlass::allocate_instance(HiList* args) {
+    if (!args || args->length() == 0)
+        return new HiDict();
+    else
+        return nullptr;
+}
+
 HiObject* DictKlass::iter(HiObject* x) {
     return new DictIterator((HiDict*)x);
 }

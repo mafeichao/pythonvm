@@ -27,6 +27,8 @@ public:
     virtual HiObject* less     (HiObject* x, HiObject* y);
     virtual HiObject* iter(HiObject* x);
     virtual HiObject* contains (HiObject* x, HiObject* y);
+
+    virtual HiObject* allocate_instance(HiList* args);
 };
 
 class HiList : public HiObject {

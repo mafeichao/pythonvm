@@ -67,6 +67,9 @@ void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) 
         frame->set_sender(_frame);
         _frame = frame;
     }
+    else if (callable->klass() == TypeKlass::get_instance()) {
+        PUSH(callable->as<HiTypeObject>()->own_klass()->allocate_instance(args));
+    }
 }
 
 void Interpreter::leave_frame(HiObject* return_value) {

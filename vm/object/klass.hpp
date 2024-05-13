@@ -7,6 +7,7 @@
 class HiObject;
 class HiString;
 class HiDict;
+class HiList;
 class HiTypeObject;
 
 class Klass {
@@ -53,6 +54,8 @@ public:
     virtual void store_subscr  (HiObject* x, HiObject* y, HiObject* z)  { return; }
     virtual void del_subscr    (HiObject* x, HiObject* y)               { return; }
     virtual HiObject* contains (HiObject* x, HiObject* y)               { return nullptr; }
+
+    virtual HiObject* allocate_instance(HiList* args)                   { return nullptr; }
 };
 
 /*
