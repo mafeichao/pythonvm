@@ -151,6 +151,7 @@ void TypeKlass::initialize() {
     HiTypeObject* tp_obj = new HiTypeObject();
     set_name(new HiString("type"));
     tp_obj->set_own_klass(this);
+    set_super(ObjectKlass::get_instance());
 }
 
 void TypeKlass::print(HiObject* obj) {
@@ -167,5 +168,27 @@ HiTypeObject::HiTypeObject() {
 void HiTypeObject::set_own_klass(Klass* k) {
     _own_klass = k;
     k->set_type_object(this);
+}
+
+/*
+ * Klass for object.
+ */
+ObjectKlass* ObjectKlass::instance = NULL;
+
+ObjectKlass::ObjectKlass() {
+}
+
+void ObjectKlass::initialize() {
+    set_name(new HiString("object"));
+    (new HiTypeObject())->set_own_klass(this);
+    set_super(nullptr);
+    set_klass_dict(new HiDict());
+}
+
+ObjectKlass* ObjectKlass::get_instance() {
+    if (instance == NULL)
+        instance = new ObjectKlass();
+
+    return instance;
 }
 

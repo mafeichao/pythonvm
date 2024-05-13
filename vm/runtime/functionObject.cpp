@@ -149,3 +149,23 @@ HiObject* object_print(HiList* args) {
     return Universe::HiNone;
 }
 
+HiObject* isinstance(HiList* args) {
+    HiObject* x = args->get(0);
+    HiTypeObject* y = args->get(1)->as<HiTypeObject>();
+
+    Klass* k = x->klass();
+    while (k != nullptr) {
+        if (k == y->own_klass())
+            return Universe::HiTrue;
+
+        k = k->super();
+    }
+
+    return Universe::HiFalse;
+}
+
+HiObject* type_of(HiList* args) {
+    HiObject* arg0 = args->get(0);
+    return arg0->klass()->type_object();
+}
+

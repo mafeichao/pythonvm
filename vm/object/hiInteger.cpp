@@ -8,8 +8,12 @@
 IntegerKlass* IntegerKlass::instance = NULL;
 
 IntegerKlass::IntegerKlass() {
+}
+
+void IntegerKlass::initialize() {
     set_name(new HiString("int"));
     (new HiTypeObject())->set_own_klass(this);
+    set_super(ObjectKlass::get_instance());
 }
 
 HiInteger::HiInteger(int x) {

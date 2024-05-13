@@ -44,6 +44,8 @@ Interpreter::Interpreter() {
 
     _builtins->put(new HiString("print"),    new FunctionObject(object_print));
     _builtins->put(new HiString("len"),      new FunctionObject(len));
+    _builtins->put(new HiString("type"),     new FunctionObject(type_of));
+    _builtins->put(new HiString("isinstance"),new FunctionObject(isinstance));
 }
 
 void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) {

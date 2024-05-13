@@ -17,6 +17,8 @@ public:
 
 HiObject* len(HiList* args);
 HiObject* object_print(HiList* args);
+HiObject* isinstance(HiList* args);
+HiObject* type_of(HiList* args);
 
 typedef HiObject* (*NativeFuncPointer)(HiList* args);
 
