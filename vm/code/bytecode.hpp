@@ -28,8 +28,8 @@ public:
 
     static const unsigned char GET_ITER = 68;
 
-    static const unsigned char PRINT_ITEM = 71;
-    static const unsigned char PRINT_NEWLINE = 72;
+    static const unsigned char LOAD_BUILD_CLASS = 71;
+    static const unsigned char YIELD_FROM = 72;
 
     static const unsigned char BREAK_LOOP = 80;
     static const unsigned char LOAD_LOCALS = 82;

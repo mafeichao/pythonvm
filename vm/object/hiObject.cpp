@@ -62,10 +62,7 @@ HiObject* HiObject::le(HiObject * rhs) {
 HiObject* HiObject::getattr(HiObject* x) {
     HiObject* result = Universe::HiNone;
 
-    result = klass()->klass_dict()->get(x);
-
-    if (result == Universe::HiNone)
-        return result;
+    result = klass()->getattr(this, x);
 
     // Only klass attribute needs bind.
     if (MethodObject::is_function(result)) {
@@ -135,39 +132,10 @@ HiTypeObject* HiObject::as<HiTypeObject>() {
     return (HiTypeObject*)this;
 }
 
-/*
- * TypeObject is a special object
- */
-TypeKlass* TypeKlass::instance = NULL;
-
-TypeKlass* TypeKlass::get_instance() {
-    if (instance == NULL)
-        instance = new TypeKlass();
-
-    return instance;
-}
-
-void TypeKlass::initialize() {
-    HiTypeObject* tp_obj = new HiTypeObject();
-    set_name(new HiString("type"));
-    tp_obj->set_own_klass(this);
-    set_super(ObjectKlass::get_instance());
-}
-
-void TypeKlass::print(HiObject* obj) {
-    Klass* own_klass = obj->as<HiTypeObject>()->own_klass();
-    printf("<class ");
-    own_klass->name()->print();
-    printf(">");
-}
-
-HiTypeObject::HiTypeObject() {
-    set_klass(TypeKlass::get_instance());
-}
-
-void HiTypeObject::set_own_klass(Klass* k) {
-    _own_klass = k;
-    k->set_type_object(this);
+template<>
+FunctionObject* HiObject::as<FunctionObject>() {
+    assert(this->klass() == FunctionKlass::get_instance());
+    return (FunctionObject*)this;
 }
 
 /*

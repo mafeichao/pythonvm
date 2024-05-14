@@ -20,6 +20,8 @@ private:
 public:
     Klass() {};
 
+    static HiObject* create_klass(HiDict* x, HiList* supers, HiString* name);
+
     void set_super(Klass* x)              { _super = x; }
     Klass* super()                        { return _super; }
 
@@ -50,6 +52,7 @@ public:
     virtual HiObject* call(ArrayList<HiObject*>* args) { return nullptr; }
     virtual HiObject* iter(HiObject* x)                { return nullptr; }
 
+    virtual HiObject* getattr(HiObject* x, HiObject* y);
     virtual HiObject* subscr (HiObject* x, HiObject* y)                 { return nullptr; }
     virtual void store_subscr  (HiObject* x, HiObject* y, HiObject* z)  { return; }
     virtual void del_subscr    (HiObject* x, HiObject* y)               { return; }
@@ -70,6 +73,7 @@ public:
     static TypeKlass* get_instance();
     void initialize();
 
+    virtual HiObject* getattr(HiObject* x, HiObject* y);
     virtual void print(HiObject* obj);
 };
 

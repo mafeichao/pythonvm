@@ -1,6 +1,8 @@
 #ifndef STRING_TABLE_HPP
 #define STRING_TABLE_HPP
 
+#define ST(x) (StringTable::get_instance()->x##_str)
+
 class HiString;
 class OopClosure;
 
@@ -13,6 +15,8 @@ public:
     static StringTable* get_instance();
     
     HiString* next_str;
+    HiString* name_str;
+    HiString* build_class_str;
 };
 
 #endif

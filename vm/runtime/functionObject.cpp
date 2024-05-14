@@ -1,7 +1,9 @@
+#include "object/klass.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
+#include "runtime/interpreter.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 
@@ -167,5 +169,33 @@ HiObject* isinstance(HiList* args) {
 HiObject* type_of(HiList* args) {
     HiObject* arg0 = args->get(0);
     return arg0->klass()->type_object();
+}
+
+HiObject* build_type_object(HiList* args) {
+    int length = args->length();
+    assert(length >= 2);
+    FunctionObject* cls_def = args->get(0)->as<FunctionObject>();
+    HiString* name = args->get(1)->as<HiString>();
+    HiList* super_list = new HiList();
+
+    for (int i = 2; i < length; i++) {
+        super_list->append(args->get(i));
+    }
+
+    HiDict* locals = new HiDict();
+    internal_exec(cls_def, nullptr, locals);
+    return Klass::create_klass(locals, super_list, name);
+}
+
+HiObject* internal_exec(FunctionObject* callable, HiDict* globals, HiDict* locals) {
+    if (globals) {
+        callable->set_globals(globals);
+    }
+
+    if (locals) {
+        callable->set_locals(locals);
+    }
+
+    return Interpreter::get_instance()->call_virtual(callable, nullptr);
 }
 

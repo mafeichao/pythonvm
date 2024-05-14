@@ -4,6 +4,8 @@
 #include "code/codeObject.hpp"
 #include "object/klass.hpp"
 
+class FunctionObject;
+
 class FunctionKlass : public Klass {
 private:
     FunctionKlass();
@@ -19,6 +21,8 @@ HiObject* len(HiList* args);
 HiObject* object_print(HiList* args);
 HiObject* isinstance(HiList* args);
 HiObject* type_of(HiList* args);
+HiObject* build_type_object(HiList* args);
+HiObject* internal_exec(FunctionObject* callable, HiDict* globals, HiDict* locals);
 
 typedef HiObject* (*NativeFuncPointer)(HiList* args);
 
@@ -30,6 +34,7 @@ private:
     CodeObject* _func_code;
     HiString*   _func_name;
     HiDict*     _globals;
+    HiDict*     _locals;
     HiList*     _defaults;
     HiList*     _closure;
 
@@ -53,6 +58,7 @@ public:
         _func_name = nullptr;
         _flags     = 0;
         _globals   = nullptr;
+        _locals    = nullptr;
         _defaults  = nullptr;
 
         set_klass(klass);
@@ -61,8 +67,10 @@ public:
     HiString*  func_name()   { return _func_name; }
     int  flags()             { return _flags; }
 
-    HiDict*    globals()     { return _globals; }
+    HiDict*    globals()        { return _globals; }
     void set_globals(HiDict* x) { _globals = x; }
+    HiDict*    locals()         { return _locals; }
+    void set_locals(HiDict* x)  { _locals = x; }
 
     void set_default(HiList* defaults);
     HiList* defaults()       { return _defaults; }

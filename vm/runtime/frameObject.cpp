@@ -27,7 +27,7 @@ FrameObject::FrameObject (FunctionObject* func, HiList* args, HiList* kwargs) {
     _consts  = _codes->_consts;
     _names   = _codes->_names;
 
-    _locals  = new HiDict();
+    _locals  = func->_locals ? func->_locals : new HiDict();
     _globals = func->_globals;
     _fast_locals = new ArrayList<HiObject*>();
 
