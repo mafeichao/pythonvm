@@ -58,7 +58,7 @@ public:
     virtual void del_subscr    (HiObject* x, HiObject* y)               { return; }
     virtual HiObject* contains (HiObject* x, HiObject* y)               { return nullptr; }
 
-    virtual HiObject* allocate_instance(HiList* args)                   { return nullptr; }
+    virtual HiObject* allocate_instance(HiList* args);
 };
 
 /*

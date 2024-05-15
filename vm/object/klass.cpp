@@ -29,6 +29,12 @@ HiObject* Klass::create_klass(HiDict* klass_dict, HiList* supers_list, HiString*
     return type_obj;
 }
 
+HiObject* Klass::allocate_instance(HiList* args) {
+    HiObject* inst = new HiObject();
+    inst->set_klass(this);
+    return inst;
+}
+
 /*
  * TypeObject is a special object
  */

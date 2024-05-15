@@ -1,4 +1,5 @@
 class A(object):
     value = 1 
 
-print(A.value)
+a = A()
+print(a.value)
