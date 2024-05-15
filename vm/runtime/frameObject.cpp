@@ -20,6 +20,7 @@ FrameObject::FrameObject(CodeObject* codes) {
 
     _pc      = 0;
     _sender  = NULL;
+    _entry_frame = true;
 }
 
 FrameObject::FrameObject (FunctionObject* func, HiList* args, HiList* kwargs) {
@@ -134,6 +135,7 @@ FrameObject::FrameObject (FunctionObject* func, HiList* args, HiList* kwargs) {
 
     _pc      = 0;
     _sender  = NULL;
+    _entry_frame = false;
 }
 
 void FrameObject::report_error(const char* msg, HiObject* func_name, HiObject* arg_name) {

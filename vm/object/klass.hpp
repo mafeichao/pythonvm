@@ -53,6 +53,7 @@ public:
     virtual HiObject* iter(HiObject* x)                { return nullptr; }
 
     virtual HiObject* getattr(HiObject* x, HiObject* y);
+    virtual HiObject* setattr(HiObject* obj, HiObject* x, HiObject* y);
     virtual HiObject* subscr (HiObject* x, HiObject* y)                 { return nullptr; }
     virtual void store_subscr  (HiObject* x, HiObject* y, HiObject* z)  { return; }
     virtual void del_subscr    (HiObject* x, HiObject* y)               { return; }
@@ -74,6 +75,7 @@ public:
     void initialize();
 
     virtual HiObject* getattr(HiObject* x, HiObject* y);
+    virtual HiObject* setattr(HiObject* o, HiObject* x, HiObject* y);
     virtual void print(HiObject* obj);
 };
 

@@ -2,14 +2,35 @@
 #include "runtime/universe.hpp"
 #include "runtime/stringTable.hpp"
 #include "runtime/interpreter.hpp"
+#include "runtime/functionObject.hpp"
 #include "object/hiObject.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
 #include "object/hiString.hpp"
 
+// getattr for normal object.
+// a = A()
+// a.b = 1
 HiObject* Klass::getattr(HiObject* x, HiObject* y) {
-    return _klass_dict->get(y);
+    if (x->obj_dict()->has_key(y)) {
+        return x->obj_dict()->get(y);
+    }
+
+    HiObject* result = _klass_dict->get(y);
+    // Only klass attribute needs bind.
+    if (!MethodObject::is_method(result) &&
+        MethodObject::is_function(result)) {
+        result = new MethodObject(result->as<FunctionObject>(), x);
+    }
+
+    return result;
+}
+
+// setattr for normal object.
+HiObject* Klass::setattr(HiObject* obj, HiObject* x, HiObject* y) {
+    obj->obj_dict()->put(x, y);
+    return Universe::HiNone;
 }
 
 HiObject* Klass::create_klass(HiDict* klass_dict, HiList* supers_list, HiString* name) {
@@ -32,6 +53,10 @@ HiObject* Klass::create_klass(HiDict* klass_dict, HiList* supers_list, HiString*
 HiObject* Klass::allocate_instance(HiList* args) {
     HiObject* inst = new HiObject();
     inst->set_klass(this);
+    HiObject* constructor = inst->getattr(ST(init));
+    if (constructor != Universe::HiNone) {
+        Interpreter::get_instance()->call_virtual(constructor, args);
+    }
     return inst;
 }
 
@@ -63,6 +88,11 @@ void TypeKlass::print(HiObject* obj) {
 
 HiObject* TypeKlass::getattr(HiObject* x, HiObject* y) {
     return x->as<HiTypeObject>()->own_klass()->klass_dict()->get(y);
+}
+
+HiObject* TypeKlass::setattr(HiObject* obj, HiObject* x, HiObject* y) {
+    obj->as<HiTypeObject>()->own_klass()->klass_dict()->put(x, y);
+    return Universe::HiNone;
 }
 
 HiTypeObject::HiTypeObject() {

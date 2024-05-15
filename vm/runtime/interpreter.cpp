@@ -193,6 +193,13 @@ void Interpreter::eval_frame() {
                 PUSH(Universe::HiNone);
                 break;
 
+            case ByteCode::STORE_ATTR:
+                u = POP();
+                v = _frame->_names->get(op_arg);
+                w = POP();
+                u->setattr(v, w);
+                break;
+
             case ByteCode::LOAD_ATTR:
             case ByteCode::LOAD_METHOD:
                 v = POP();

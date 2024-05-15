@@ -15,6 +15,7 @@ public:
     static StringTable* get_instance();
     
     HiString* next_str;
+    HiString* init_str;
     HiString* name_str;
     HiString* build_class_str;
 };

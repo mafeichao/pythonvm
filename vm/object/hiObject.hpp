@@ -7,10 +7,14 @@
 class HiObject {
 private:
     Klass*  _klass;
+    HiDict* _obj_dict;
 
 public:
     Klass* klass()             { assert(_klass != NULL); return _klass; }
     void set_klass(Klass* x)   { _klass = x; }
+
+    HiDict* obj_dict();
+    void set_obj_dict(HiDict* d)    { _obj_dict = d; }
 
     void print();
 
@@ -29,6 +33,7 @@ public:
     HiObject* le       (HiObject* x);
 
     HiObject* getattr(HiObject* x);
+    HiObject* setattr(HiObject* x, HiObject* y);
     HiObject* subscr(HiObject* x);
 
     void      store_subscr(HiObject* x, HiObject* y);

@@ -7,6 +7,14 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 
+HiDict* HiObject::obj_dict() {
+    if (!_obj_dict) {
+        _obj_dict = new HiDict();
+    }
+
+    return _obj_dict;
+}
+
 void HiObject::print() {
     klass()->print(this);
 }
@@ -60,15 +68,11 @@ HiObject* HiObject::le(HiObject * rhs) {
 }
 
 HiObject* HiObject::getattr(HiObject* x) {
-    HiObject* result = Universe::HiNone;
+    return klass()->getattr(this, x);
+}
 
-    result = klass()->getattr(this, x);
-
-    // Only klass attribute needs bind.
-    if (MethodObject::is_function(result)) {
-        result = new MethodObject((FunctionObject*)result, this);
-    }
-    return result;
+HiObject* HiObject::setattr(HiObject* x, HiObject* y) {
+    return klass()->setattr(this, x, y);
 }
 
 HiObject* HiObject::subscr(HiObject* x) {
@@ -134,7 +138,9 @@ HiTypeObject* HiObject::as<HiTypeObject>() {
 
 template<>
 FunctionObject* HiObject::as<FunctionObject>() {
-    assert(this->klass() == FunctionKlass::get_instance());
+    assert(this->klass() == FunctionKlass::get_instance() ||
+        this->klass() == NativeFunctionKlass::get_instance() ||
+        this->klass() == MethodKlass::get_instance());
     return (FunctionObject*)this;
 }
 
