@@ -35,6 +35,7 @@ public:
     HiDict* klass_dict()                  { return _klass_dict; }
 
     virtual void print(HiObject* obj) {};
+    virtual HiObject* call     (HiObject* x, HiList* args, HiDict* kwargs);
 
     virtual HiObject* greater  (HiObject* x, HiObject* y) { return nullptr; }
     virtual HiObject* less     (HiObject* x, HiObject* y) { return nullptr; }
@@ -77,6 +78,8 @@ public:
     virtual HiObject* getattr(HiObject* x, HiObject* y);
     virtual HiObject* setattr(HiObject* o, HiObject* x, HiObject* y);
     virtual void print(HiObject* obj);
+
+    virtual HiObject* call(HiObject* x, HiList* args, HiDict* kwargs);
 };
 
 #endif

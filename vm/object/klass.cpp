@@ -9,6 +9,18 @@
 #include "object/hiList.hpp"
 #include "object/hiString.hpp"
 
+HiObject* Klass::call(HiObject* x, HiList* args, HiDict* kwargs) {
+    HiObject* callable = x->getattr(ST(call));
+
+    if (callable == Universe::HiNone) {
+        x->print();
+        printf(" is non-callable\n");
+        assert(false);
+    }
+
+    return callable->call(args, kwargs);
+}
+
 // getattr for normal object.
 // a = A()
 // a.b = 1
@@ -93,6 +105,38 @@ HiObject* TypeKlass::getattr(HiObject* x, HiObject* y) {
 HiObject* TypeKlass::setattr(HiObject* obj, HiObject* x, HiObject* y) {
     obj->as<HiTypeObject>()->own_klass()->klass_dict()->put(x, y);
     return Universe::HiNone;
+}
+
+HiObject* TypeKlass::call(HiObject* x, HiList* args, HiDict* kwargs) {
+    // The type object.
+    HiTypeObject* to = x->as<HiTypeObject>();
+    if (to->klass() != to->own_klass()) {
+        return to->own_klass()->allocate_instance(args);
+    }
+
+    if (args->length() == 1) {
+        return type_of(args, nullptr);
+    }
+    else if (args->length() == 3) {
+        HiString* name = args->get(0)->as<HiString>();
+        HiList* supers = args->get(1)->as<HiList>();
+        HiDict* attrs  = args->get(2)->as<HiDict>();
+
+        HiTypeObject* inst = new HiTypeObject();
+        inst->set_klass(this);
+        inst->set_own_klass(new Klass());
+        if (supers->length() > 0) {
+            inst->own_klass()->set_super(supers->get(0)->as<HiTypeObject>()->own_klass());
+        }
+        inst->own_klass()->set_klass_dict(attrs);
+
+        return inst;
+    }
+    else {
+        return to->own_klass()->allocate_instance(args);
+    }
+
+    return nullptr;
 }
 
 HiTypeObject::HiTypeObject() {

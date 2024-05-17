@@ -115,7 +115,7 @@ HiObject* StringKlass::less(HiObject* x, HiObject* y) {
     return Universe::HiFalse;
 }
 
-HiObject* string_upper(HiList* args) {
+HiObject* string_upper(HiList* args, HiDict* kwargs) {
     HiObject* arg0 = args->get(0);
     assert(arg0->klass() == StringKlass::get_instance());
 

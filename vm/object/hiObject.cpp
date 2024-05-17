@@ -19,6 +19,10 @@ void HiObject::print() {
     klass()->print(this);
 }
 
+HiObject* HiObject::call(HiList* args, HiDict* kwargs) {
+    return klass()->call(this, args, kwargs);
+}
+
 HiObject* HiObject::greater(HiObject * rhs) {
     return klass()->greater(this, rhs);
 }

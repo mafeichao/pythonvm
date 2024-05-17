@@ -53,12 +53,12 @@ public:
     void      clear()                   { _inner_list->clear(); }
 };
 
-HiObject* list_append(HiList* args);
-HiObject* list_pop(HiList* args);
-HiObject* list_remove(HiList* args);
-HiObject* list_reverse(HiList* args);
-HiObject* list_sort(HiList* args);
-HiObject* list_extend(HiList* args);
+HiObject* list_append(HiList* args, HiDict* kwargs);
+HiObject* list_pop(HiList* args, HiDict* kwargs);
+HiObject* list_remove(HiList* args, HiDict* kwargs);
+HiObject* list_reverse(HiList* args, HiDict* kwargs);
+HiObject* list_sort(HiList* args, HiDict* kwargs);
+HiObject* list_extend(HiList* args, HiDict* kwargs);
 
 class ListIteratorKlass : public Klass {
 private:
@@ -81,7 +81,7 @@ public:
     void inc_cnt()         { _iter_cnt++; }
 };
 
-HiObject* listiterator_next(HiList* args);
+HiObject* listiterator_next(HiList* args, HiDict* kwargs);
 
 #endif
 

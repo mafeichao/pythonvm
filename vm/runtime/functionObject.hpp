@@ -17,14 +17,14 @@ public:
     virtual void print(HiObject* obj);
 };
 
-HiObject* len(HiList* args);
-HiObject* object_print(HiList* args);
-HiObject* isinstance(HiList* args);
-HiObject* type_of(HiList* args);
-HiObject* build_type_object(HiList* args);
+HiObject* len(HiList* args, HiDict* kwargs);
+HiObject* object_print(HiList* args, HiDict* kwargs);
+HiObject* isinstance(HiList* args, HiDict* kwargs);
+HiObject* type_of(HiList* args, HiDict* kwargs);
+HiObject* build_type_object(HiList* args, HiDict* kwargs);
 HiObject* internal_exec(FunctionObject* callable, HiDict* globals, HiDict* locals);
 
-typedef HiObject* (*NativeFuncPointer)(HiList* args);
+typedef HiObject* (*NativeFuncPointer)(HiList* args, HiDict* kwargs);
 
 class FunctionObject : public HiObject {
 friend class FunctionKlass;
@@ -77,8 +77,7 @@ public:
 
     void set_closure(HiList* x) { _closure = x; }
     HiList* closure()        { return _closure; }
-
-    HiObject*  call(HiList* args);
+    NativeFuncPointer nfp()     { return _native_func; }
 };
 
 // Method objects.
@@ -123,6 +122,8 @@ private:
 
 public:
     static NativeFunctionKlass* get_instance();
+
+    virtual HiObject* call(HiObject* x, HiList* args, HiDict* kwargs);
 };
 
 #endif

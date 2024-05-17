@@ -37,6 +37,7 @@ Interpreter::Interpreter() {
     _builtins->put(new HiString("False"),    Universe::HiFalse);
     _builtins->put(new HiString("None"),     Universe::HiNone);
 
+    _builtins->put(new HiString("type"),     TypeKlass::get_instance()->type_object());
     _builtins->put(new HiString("object"),   ObjectKlass::get_instance()->type_object());
     _builtins->put(new HiString("int"),      IntegerKlass::get_instance()->type_object());
     _builtins->put(new HiString("str"),      StringKlass::get_instance()->type_object());
@@ -45,17 +46,13 @@ Interpreter::Interpreter() {
 
     _builtins->put(new HiString("print"),    new FunctionObject(object_print));
     _builtins->put(new HiString("len"),      new FunctionObject(len));
-    _builtins->put(new HiString("type"),     new FunctionObject(type_of));
     _builtins->put(new HiString("isinstance"),new FunctionObject(isinstance));
 
     _builtins->put(ST(build_class),          new FunctionObject(build_type_object));
 }
 
 void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) {
-    if (callable->klass() == NativeFunctionKlass::get_instance()) {
-        PUSH(((FunctionObject*)callable)->call(args));
-    }
-    else if (MethodObject::is_method(callable)) {
+    if (MethodObject::is_method(callable)) {
         MethodObject* method = (MethodObject*) callable;
         // return value is ignored here, because they are handled
         // by other pathes.
@@ -70,15 +67,15 @@ void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) 
         frame->set_sender(_frame);
         _frame = frame;
     }
-    else if (callable->klass() == TypeKlass::get_instance()) {
-        PUSH(callable->as<HiTypeObject>()->own_klass()->allocate_instance(args));
+    else {
+        PUSH(callable->call(args, nullptr));
     }
 }
 
 HiObject* Interpreter::call_virtual(HiObject* func, HiList* args) {
     if (func->klass() == NativeFunctionKlass::get_instance()) {
         // we do not create a virtual frame, but native frame.
-        return ((FunctionObject*)func)->call(args);
+        return func->as<FunctionObject>()->call(args, nullptr);
     }
     else if (MethodObject::is_method(func)) {
         MethodObject* method = (MethodObject*) func;
@@ -509,7 +506,7 @@ void Interpreter::eval_frame() {
                     w = POP();
                     args->append(w);
                     args->append(v);
-                    list_extend(args);
+                    list_extend(args, nullptr);
                     v = args->get(0);
                     args->clear();
                 }

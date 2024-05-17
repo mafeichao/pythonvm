@@ -44,13 +44,13 @@ public:
     int length()                       { return _map->length(); }
 };
 
-HiObject* dict_set_default(HiList* args);
-HiObject* dict_pop(HiList* args);
-HiObject* dict_get(HiList* args);
+HiObject* dict_set_default(HiList* args, HiDict* kwargs);
+HiObject* dict_pop(HiList* args, HiDict* kwargs);
+HiObject* dict_get(HiList* args, HiDict* kwargs);
 
-HiObject* dict_keys(HiList* args);
-HiObject* dict_values(HiList* args);
-HiObject* dict_items(HiList* args);
+HiObject* dict_keys(HiList* args, HiDict* kwargs);
+HiObject* dict_values(HiList* args, HiDict* kwargs);
+HiObject* dict_items(HiList* args, HiDict* kwargs);
 
 class DictIteratorKlass : public Klass {
 private:
@@ -73,7 +73,7 @@ public:
     void inc_cnt()         { _iter_cnt++; }
 };
 
-HiObject* dictiterator_next(HiList* args);
+HiObject* dictiterator_next(HiList* args, HiDict* kwargs);
 
 // Dict views
 enum ITER_TYPE {
@@ -107,7 +107,7 @@ public:
 };
 
 template<ITER_TYPE iter_type>
-HiObject* dict_view_next(HiList* args);
+HiObject* dict_view_next(HiList* args, HiDict* kwargs);
 
 #endif
 

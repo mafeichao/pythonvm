@@ -17,6 +17,7 @@ public:
     void set_obj_dict(HiDict* d)    { _obj_dict = d; }
 
     void print();
+    HiObject* call(HiList* args, HiDict* kwargs);
 
     HiObject* add(HiObject* x);
     HiObject* sub(HiObject* x);

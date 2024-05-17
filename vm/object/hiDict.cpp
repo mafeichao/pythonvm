@@ -136,7 +136,7 @@ DictIteratorKlass::DictIteratorKlass() {
     set_klass_dict(klass_dict);
 }
 
-HiObject* dict_set_default(HiList* args) {
+HiObject* dict_set_default(HiList* args, HiDict* kwargs) {
     HiDict* dict = (HiDict*)(args->get(0));
     HiObject* key = args->get(1);
     HiObject* value = args->get(2);
@@ -147,7 +147,7 @@ HiObject* dict_set_default(HiList* args) {
     return Universe::HiNone;
 }
 
-HiObject* dict_pop(HiList* args) {
+HiObject* dict_pop(HiList* args, HiDict* kwargs) {
     HiDict* x = (HiDict*)args->get(0);
     HiObject* y = args->get(1);
     HiObject* z = Universe::HiNone;
@@ -165,32 +165,32 @@ HiObject* dict_pop(HiList* args) {
     return z;
 }
 
-HiObject* dict_get(HiList* args) {
+HiObject* dict_get(HiList* args, HiDict* kwargs) {
     return args->get(0)->as<HiDict>()->get(args->get(1));
 }
 
-HiObject* dict_keys(HiList* args) {
+HiObject* dict_keys(HiList* args, HiDict* kwargs) {
     HiDict* x = (HiDict*)(args->get(0));
     HiObject* it = new DictView(x);
     it->set_klass(DictViewKlass<ITER_KEY>::get_instance());
     return it;
 }
 
-HiObject* dict_values(HiList* args) {
+HiObject* dict_values(HiList* args, HiDict* kwargs) {
     HiDict* x = (HiDict*)(args->get(0));
     HiObject* it = new DictView(x);
     it->set_klass(DictViewKlass<ITER_VALUE>::get_instance());
     return it;
 }
 
-HiObject* dict_items(HiList* args) {
+HiObject* dict_items(HiList* args, HiDict* kwargs) {
     HiDict* x = (HiDict*)(args->get(0));
     HiObject* it = new DictView(x);
     it->set_klass(DictViewKlass<ITER_ITEM>::get_instance());
     return it;
 }
 
-HiObject* dictiterator_next(HiList* args) {
+HiObject* dictiterator_next(HiList* args, HiDict* kwargs) {
     DictIterator* iter = (DictIterator*)(args->get(0));
 
     HiDict* adict = iter->owner();
@@ -236,7 +236,7 @@ DictView::DictView(HiDict* dict) {
 }
 
 template<ITER_TYPE iter_type>
-HiObject* dict_view_next(HiList* args) {
+HiObject* dict_view_next(HiList* args, HiDict* kwargs) {
     DictIterator* iter = (DictIterator*)(args->get(0));
 
     HiDict* adict = iter->owner();

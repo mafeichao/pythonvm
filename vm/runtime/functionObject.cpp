@@ -80,8 +80,8 @@ NativeFunctionKlass::NativeFunctionKlass() {
     set_super(FunctionKlass::get_instance());
 }
 
-HiObject* FunctionObject::call(HiList* args) {
-    return (*_native_func)(args);
+HiObject* NativeFunctionKlass::call(HiObject* x, HiList* args, HiDict* kwargs) {
+    return (*(x->as<FunctionObject>()->nfp()))(args, kwargs);
 }
 
 /*
@@ -139,11 +139,11 @@ bool MethodObject::is_function(HiObject *x) {
     return false;
 }
 
-HiObject* len(HiList* args) {
+HiObject* len(HiList* args, HiDict* kwargs) {
     return new HiInteger(args->get(0)->as<HiString>()->length());
 }
 
-HiObject* object_print(HiList* args) {
+HiObject* object_print(HiList* args, HiDict* kwargs) {
     HiObject* arg0 = args->get(0);
     arg0->print();
     printf("\n");
@@ -151,7 +151,7 @@ HiObject* object_print(HiList* args) {
     return Universe::HiNone;
 }
 
-HiObject* isinstance(HiList* args) {
+HiObject* isinstance(HiList* args, HiDict* kwargs) {
     HiObject* x = args->get(0);
     HiTypeObject* y = args->get(1)->as<HiTypeObject>();
 
@@ -166,12 +166,12 @@ HiObject* isinstance(HiList* args) {
     return Universe::HiFalse;
 }
 
-HiObject* type_of(HiList* args) {
+HiObject* type_of(HiList* args, HiDict* kwargs) {
     HiObject* arg0 = args->get(0);
     return arg0->klass()->type_object();
 }
 
-HiObject* build_type_object(HiList* args) {
+HiObject* build_type_object(HiList* args, HiDict* kwargs) {
     int length = args->length();
     assert(length >= 2);
     FunctionObject* cls_def = args->get(0)->as<FunctionObject>();

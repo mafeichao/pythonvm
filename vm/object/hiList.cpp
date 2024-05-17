@@ -165,16 +165,16 @@ HiList::HiList(ObjList ol) {
     _inner_list = ol;
 }
 
-HiObject* list_append(HiList* args) {
+HiObject* list_append(HiList* args, HiDict* kwargs) {
     ((HiList*)(args->get(0)))->append(args->get(1));
     return Universe::HiNone;
 }
 
-HiObject* list_pop(HiList* args) {
+HiObject* list_pop(HiList* args, HiDict* kwargs) {
     return args->get(0)->as<HiList>()->pop();
 }
 
-HiObject* list_remove(HiList* args) {
+HiObject* list_remove(HiList* args, HiDict* kwargs) {
     HiList* list = (HiList*)(args->get(0));
     HiObject* target = (HiObject*)(args->get(1));
 
@@ -190,7 +190,7 @@ HiObject* list_remove(HiList* args) {
     return Universe::HiNone;
 }
 
-HiObject* list_reverse(HiList* args) {
+HiObject* list_reverse(HiList* args, HiDict* kwargs) {
     HiList* list = args->get(0)->as<HiList>();
 
     int i = 0;
@@ -207,7 +207,7 @@ HiObject* list_reverse(HiList* args) {
     return Universe::HiNone;
 }
 
-HiObject* list_sort(HiList* args) {
+HiObject* list_sort(HiList* args, HiDict* kwargs) {
     HiList* list = args->get(0)->as<HiList>();
 
     // bubble sort
@@ -224,7 +224,7 @@ HiObject* list_sort(HiList* args) {
     return Universe::HiNone;
 }
 
-HiObject* list_extend(HiList* args) {
+HiObject* list_extend(HiList* args, HiDict* kwargs) {
     HiList* lx = (HiList*)(args->get(0));
     HiObject* obj = args->get(1);
 
@@ -264,7 +264,7 @@ ListIterator::ListIterator(HiList* list) {
     set_klass(ListIteratorKlass::get_instance());
 }
 
-HiObject* listiterator_next(HiList* args) {
+HiObject* listiterator_next(HiList* args, HiDict* kwargs) {
     ListIterator* iter = (ListIterator*)(args->get(0));
 
     HiList* alist = iter->owner();
