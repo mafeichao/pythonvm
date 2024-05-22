@@ -75,3 +75,4 @@ void PrintVisitor::visit(BinaryOp* op) {
 void PrintVisitor::visit(ConstInt* n) {
     printf("LOAD_CONST\t%d\n", n->_value);
 }
+

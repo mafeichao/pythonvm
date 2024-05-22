@@ -2,6 +2,8 @@
 #define CODE_OBJECT_HPP
 
 #include <vector>
+#include <iostream>
+#include <string>
 using namespace std;
 
 #include "codegen.hpp"

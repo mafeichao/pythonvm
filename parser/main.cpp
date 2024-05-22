@@ -3,6 +3,9 @@
 #include "codegen.hpp"
 #include "codeobj.hpp"
 
+#include <string>
+using namespace std;
+
 void test_lexer(const char* filename) {
     Lexer lexer(filename);
     Token* t = NULL;
