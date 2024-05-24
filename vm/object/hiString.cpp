@@ -60,6 +60,9 @@ void StringKlass::print(HiObject* obj) {
     printf("'");
 }
 
+HiObject* StringKlass::len(HiObject* obj) {
+    return new HiInteger(obj->as<HiString>()->length());
+}
 
 HiString::HiString(const char* x) {
     _length = strlen(x);

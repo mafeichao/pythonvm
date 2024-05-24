@@ -16,6 +16,7 @@ public:
     
     HiString* next_str;
     HiString* init_str;
+    HiString* len_str;
     HiString* name_str;
     HiString* _new_str;
     HiString* call_str;

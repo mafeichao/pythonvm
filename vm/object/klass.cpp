@@ -65,9 +65,12 @@ HiObject* Klass::create_klass(HiDict* klass_dict, HiList* supers_list, HiString*
 HiObject* Klass::allocate_instance(HiList* args) {
     HiObject* inst = new HiObject();
     inst->set_klass(this);
-    if (_klass_dict->has_key(ST(init))) {
-        Interpreter::get_instance()->call_virtual(_klass_dict->get(ST(init)), args);
+    HiObject* init_func = inst->getattr(ST(init));
+
+    if (init_func != Universe::HiNone) {
+        Interpreter::get_instance()->call_virtual(init_func, args);
     }
+
     return inst;
 }
 
@@ -75,6 +78,10 @@ HiObject* Klass::add(HiObject* lhs, HiObject* rhs) {
     HiList* args = new HiList();
     args->append(rhs);
     return find_and_call(lhs, args, ST(add));
+}
+
+HiObject* Klass::len(HiObject* obj) {
+    return find_and_call(obj, nullptr, ST(len));
 }
 
 HiObject* Klass::find_and_call(HiObject* lhs, HiList* args, HiObject* func_name) {
@@ -149,9 +156,6 @@ HiObject* TypeKlass::call(HiObject* x, HiList* args, HiDict* kwargs) {
         inst->own_klass()->set_klass_dict(attrs);
 
         return inst;
-    }
-    else {
-        return to->own_klass()->allocate_instance(args);
     }
 
     return nullptr;

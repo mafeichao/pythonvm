@@ -13,6 +13,7 @@ StringTable* StringTable::get_instance() {
 StringTable::StringTable() {
     next_str = new HiString("__next__");
     init_str = new HiString("__init__");
+    len_str  = new HiString("__len__");
     name_str = new HiString("__name__");
     _new_str = new HiString("__new__");
     call_str = new HiString("__call__");

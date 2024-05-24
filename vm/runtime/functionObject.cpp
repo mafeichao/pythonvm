@@ -139,16 +139,16 @@ bool MethodObject::is_function(HiObject *x) {
     return false;
 }
 
-HiObject* len(HiList* args, HiDict* kwargs) {
-    return new HiInteger(args->get(0)->as<HiString>()->length());
-}
-
 HiObject* object_print(HiList* args, HiDict* kwargs) {
     HiObject* arg0 = args->get(0);
     arg0->print();
     printf("\n");
 
     return Universe::HiNone;
+}
+
+HiObject* object_len(HiList* args, HiDict* kwargs) {
+    return args->get(0)->len();
 }
 
 HiObject* isinstance(HiList* args, HiDict* kwargs) {
