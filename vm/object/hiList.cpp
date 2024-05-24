@@ -37,7 +37,9 @@ void ListKlass::initialize() {
     set_klass_dict(klass_dict);
     (new HiTypeObject())->set_own_klass(this);
     set_name(new HiString("list"));
-    set_super(ObjectKlass::get_instance());
+
+    add_super(ObjectKlass::get_instance());
+    order_supers();
 }
 
 ListKlass::ListKlass() {
@@ -171,6 +173,13 @@ HiList::HiList(ObjList ol) {
     _inner_list = ol;
 }
 
+void HiList::remove(HiObject* o) {
+    int index = _inner_list->index(o);
+    if (index >= 0) {
+        _inner_list->delete_index(index);
+    }
+}
+
 HiObject* list_append(HiList* args, HiDict* kwargs) {
     ((HiList*)(args->get(0)))->append(args->get(1));
     return Universe::HiNone;
@@ -185,17 +194,9 @@ HiObject* list_pop(HiList* args, HiDict* kwargs) {
 }
 
 HiObject* list_remove(HiList* args, HiDict* kwargs) {
-    HiList* list = (HiList*)(args->get(0));
-    HiObject* target = (HiObject*)(args->get(1));
-
-    assert(list && list->klass() == ListKlass::get_instance());
-
-    for (int i = 0; i < list->inner_list()->length(); i++) {
-        if (list->get(i)->equal(target) == (HiObject*)Universe::HiTrue) {
-            list->inner_list()->delete_index(i);
-            return Universe::HiNone;
-        }
-    }
+    HiList* list = args->get(0)->as<HiList>();
+    HiObject* target = args->get(1);
+    list->remove(target);
 
     return Universe::HiNone;
 }

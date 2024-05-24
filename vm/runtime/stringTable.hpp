@@ -22,6 +22,7 @@ public:
     HiString* getattr_str;
     HiString* init_str;
     HiString* len_str;
+    HiString* mro_str;
     HiString* name_str;
     HiString* _new_str;
     HiString* next_str;

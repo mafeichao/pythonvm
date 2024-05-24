@@ -2,6 +2,7 @@
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
 #include "object/hiList.hpp"
+#include "object/hiDict.hpp"
 #include "runtime/universe.hpp"
 
 #include <stdio.h>
@@ -12,9 +13,12 @@ IntegerKlass::IntegerKlass() {
 }
 
 void IntegerKlass::initialize() {
+    set_klass_dict(new HiDict());
     set_name(new HiString("int"));
     (new HiTypeObject())->set_own_klass(this);
-    set_super(ObjectKlass::get_instance());
+
+    add_super(ObjectKlass::get_instance());
+    order_supers();
 }
 
 HiInteger::HiInteger(int x) {

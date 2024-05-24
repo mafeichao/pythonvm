@@ -74,9 +74,9 @@ void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) 
 }
 
 HiObject* Interpreter::call_virtual(HiObject* func, HiList* args) {
-    if (func->klass() == NativeFunctionKlass::get_instance()) {
+    if (MethodObject::is_native(func)) {
         // we do not create a virtual frame, but native frame.
-        return func->as<FunctionObject>()->call(args, nullptr);
+        return func->call(args, nullptr);
     }
     else if (MethodObject::is_method(func)) {
         MethodObject* method = (MethodObject*) func;

@@ -12,18 +12,26 @@ class HiTypeObject;
 
 class Klass {
 private:
-    Klass*        _super;
+    HiList*       _super;
+    HiList*       _mro;
     HiTypeObject* _type_object;
     HiString*     _name;
     HiDict*       _klass_dict;
 
+    HiList* linear(HiTypeObject* obj);
+    HiList* merge(HiList* supers);
+    HiObject* find_in_mro(HiObject* obj, HiString* name);
+
 public:
-    Klass() {};
+    Klass():_super(nullptr), _mro(nullptr) {};
 
     static HiObject* create_klass(HiDict* x, HiList* supers, HiString* name);
 
-    void set_super(Klass* x)              { _super = x; }
-    Klass* super()                        { return _super; }
+    void order_supers();
+    void add_super(Klass* x);
+    HiList* super()                       { return _super; }
+    void set_super_list(HiList* x)        { _super = x; }
+    HiList* mro()                         { return _mro; }
 
     void set_type_object(HiTypeObject* x) { _type_object = x; }
     HiTypeObject* type_object()           { return _type_object; }
@@ -79,6 +87,7 @@ public:
 
     virtual HiObject* getattr(HiObject* x, HiObject* y);
     virtual HiObject* setattr(HiObject* o, HiObject* x, HiObject* y);
+    virtual HiObject* equal(HiObject* x, HiObject* y);
     virtual void print(HiObject* obj);
 
     virtual HiObject* call(HiObject* x, HiList* args, HiDict* kwargs);

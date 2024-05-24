@@ -19,6 +19,7 @@ StringTable::StringTable() {
     getattr_str = new HiString("__getattr__");
     init_str = new HiString("__init__");
     len_str  = new HiString("__len__");
+    mro_str  = new HiString("__mro__");
     name_str = new HiString("__name__");
     _new_str = new HiString("__new__");
     next_str = new HiString("__next__");

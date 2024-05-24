@@ -57,6 +57,7 @@ public:
 
     void    set_own_klass(Klass* k);
     Klass*  own_klass()             { return _own_klass; }
+    HiList* mro()                   { return _own_klass->mro(); }
 };
 
 class ObjectKlass : public Klass {

@@ -77,7 +77,6 @@ NativeFunctionKlass* NativeFunctionKlass::get_instance() {
 }
 
 NativeFunctionKlass::NativeFunctionKlass() {
-    set_super(FunctionKlass::get_instance());
 }
 
 HiObject* NativeFunctionKlass::call(HiObject* x, HiList* args, HiDict* kwargs) {
@@ -99,7 +98,6 @@ MethodKlass* MethodKlass::get_instance() {
 
 MethodKlass::MethodKlass() {
     set_klass_dict(new HiDict());
-    set_super(FunctionKlass::get_instance());
 }
 
 /*
@@ -110,11 +108,6 @@ bool MethodObject::is_native(HiObject *x) {
     if (k == (Klass*) NativeFunctionKlass::get_instance())
         return true;
 
-    while (k->super() != NULL) {
-        k = k->super();
-        if (k == (Klass*) NativeFunctionKlass::get_instance())
-            return true;
-    }
     return false;
 }
 
@@ -129,12 +122,6 @@ bool MethodObject::is_function(HiObject *x) {
     Klass* k = x->klass();
     if (k == (Klass*) FunctionKlass::get_instance())
         return true;
-
-    while (k->super() != NULL) {
-        k = k->super();
-        if (k == (Klass*) FunctionKlass::get_instance())
-            return true;
-    }
 
     return false;
 }
@@ -156,15 +143,11 @@ HiObject* object_len(HiList* args, HiDict* kwargs) {
 }
 
 HiObject* isinstance(HiList* args, HiDict* kwargs) {
-    HiObject* x = args->get(0);
+    HiTypeObject* x = args->get(0)->klass()->type_object();
     HiTypeObject* y = args->get(1)->as<HiTypeObject>();
 
-    Klass* k = x->klass();
-    while (k != nullptr) {
-        if (k == y->own_klass())
-            return Universe::HiTrue;
-
-        k = k->super();
+    if (x->mro()->index(y) > 0) {
+        return Universe::HiTrue;
     }
 
     return Universe::HiFalse;

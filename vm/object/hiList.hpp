@@ -50,9 +50,11 @@ public:
     HiObject* pop()                     { return _inner_list->pop(); }
     HiObject* get(int index)            { return _inner_list->get(index); }
     void      set(int i, HiObject* o)   { _inner_list->set(i, o); }
+    void      remove(HiObject* o);
     HiObject* top()                     { return get(length() - 1); }
     int       index(HiObject* obj)      { return _inner_list->index(obj); }
     void      clear()                   { _inner_list->clear(); }
+    bool      empty()                   { return _inner_list->length() == 0; }
 };
 
 HiObject* list_append(HiList* args, HiDict* kwargs);

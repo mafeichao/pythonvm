@@ -167,8 +167,10 @@ ObjectKlass::ObjectKlass() {
 void ObjectKlass::initialize() {
     set_name(new HiString("object"));
     (new HiTypeObject())->set_own_klass(this);
-    set_super(nullptr);
+    set_super_list(nullptr);
     set_klass_dict(new HiDict());
+
+    order_supers();
 }
 
 ObjectKlass* ObjectKlass::get_instance() {
