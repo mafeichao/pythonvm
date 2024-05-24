@@ -43,10 +43,22 @@ HiObject* Klass::call(HiObject* x, HiList* args, HiDict* kwargs) {
 // a = A()
 // a.b = 1
 HiObject* Klass::getattr(HiObject* x, HiObject* y) {
+    HiObject* func = x->klass()->klass_dict()->get(ST(getattr));
+
+    // 如果类里定义了__getattr__方法，就先调用这个方法
+    if (func != Universe::HiNone) {
+        func = new MethodObject(func->as<FunctionObject>(), x);
+        HiList* args = new HiList();
+        args->append(y);
+        return Interpreter::get_instance()->call_virtual(func, args);
+    }
+
+    // 如果没有定义 __getattr__方法，优化去对象字典里找
     if (x->obj_dict()->has_key(y)) {
         return x->obj_dict()->get(y);
     }
 
+    // 如果对象字典里也没有，就去类里找
     HiObject* result = _klass_dict->get(y);
     // Only klass attribute needs bind.
     if (!MethodObject::is_method(result) &&
@@ -59,8 +71,19 @@ HiObject* Klass::getattr(HiObject* x, HiObject* y) {
 
 // setattr for normal object.
 HiObject* Klass::setattr(HiObject* obj, HiObject* x, HiObject* y) {
-    obj->obj_dict()->put(x, y);
-    return Universe::HiNone;
+    HiObject* func = obj->klass()->klass_dict()->get(ST(setattr));
+
+    // 如果未定义__setattr__方法，就直接放到对象的obj_dict中
+    if (func == Universe::HiNone) {
+        obj->obj_dict()->put(x, y);
+        return Universe::HiNone;
+    }
+
+    func = new MethodObject(func->as<FunctionObject>(), obj);
+    HiList* args = new HiList();
+    args->append(x);
+    args->append(y);
+    return Interpreter::get_instance()->call_virtual(func, args);
 }
 
 HiObject* Klass::subscr(HiObject* x, HiObject* y) {

@@ -21,6 +21,8 @@ void ListKlass::initialize() {
     HiDict * klass_dict = new HiDict();
     klass_dict->put(new HiString("append"), 
         new FunctionObject(list_append));
+    klass_dict->put(new HiString("index"), 
+        new FunctionObject(list_index));
     klass_dict->put(new HiString("pop"),
         new FunctionObject(list_pop));
     klass_dict->put(new HiString("remove"),
@@ -172,6 +174,10 @@ HiList::HiList(ObjList ol) {
 HiObject* list_append(HiList* args, HiDict* kwargs) {
     ((HiList*)(args->get(0)))->append(args->get(1));
     return Universe::HiNone;
+}
+
+HiObject* list_index(HiList* args, HiDict* kwargs) {
+    return new HiInteger(args->get(0)->as<HiList>()->index(args->get(1)));
 }
 
 HiObject* list_pop(HiList* args, HiDict* kwargs) {

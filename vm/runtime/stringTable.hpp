@@ -19,6 +19,7 @@ public:
     HiString* call_str;
     HiString* delitem_str;
     HiString* getitem_str;
+    HiString* getattr_str;
     HiString* init_str;
     HiString* len_str;
     HiString* name_str;
@@ -26,6 +27,7 @@ public:
     HiString* next_str;
     HiString* repr_str;
     HiString* setitem_str;
+    HiString* setattr_str;
     HiString* str_str;
 };
 

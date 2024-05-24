@@ -56,6 +56,7 @@ public:
 };
 
 HiObject* list_append(HiList* args, HiDict* kwargs);
+HiObject* list_index(HiList* args, HiDict* kwargs);
 HiObject* list_pop(HiList* args, HiDict* kwargs);
 HiObject* list_remove(HiList* args, HiDict* kwargs);
 HiObject* list_reverse(HiList* args, HiDict* kwargs);
