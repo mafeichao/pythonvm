@@ -36,7 +36,7 @@ HiObject* Klass::call(HiObject* x, HiList* args, HiDict* kwargs) {
         assert(false);
     }
 
-    return callable->call(args, kwargs);
+    return Interpreter::get_instance()->call_virtual(callable, args);
 }
 
 // getattr for normal object.
@@ -61,6 +61,25 @@ HiObject* Klass::getattr(HiObject* x, HiObject* y) {
 HiObject* Klass::setattr(HiObject* obj, HiObject* x, HiObject* y) {
     obj->obj_dict()->put(x, y);
     return Universe::HiNone;
+}
+
+HiObject* Klass::subscr(HiObject* x, HiObject* y) {
+    HiList* args = new HiList();
+    args->append(y);
+    return find_and_call(x, args, ST(getitem));
+}
+
+void Klass::store_subscr(HiObject* x, HiObject* y, HiObject* z) {
+    HiList* args = new HiList();
+    args->append(y);
+    args->append(z);
+    find_and_call(x, args, ST(setitem));
+}
+
+void Klass::del_subscr(HiObject* x, HiObject* y) {
+    HiList* args = new HiList();
+    args->append(y);
+    find_and_call(x, args, ST(delitem));
 }
 
 HiObject* Klass::create_klass(HiDict* klass_dict, HiList* supers_list, HiString* name) {

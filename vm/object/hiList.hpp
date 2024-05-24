@@ -17,10 +17,12 @@ public:
     static ListKlass* get_instance();
     void initialize();
 
+    virtual HiObject* len(HiObject* x);
+    virtual void print(HiObject* obj);
+
     virtual HiObject* add(HiObject* x, HiObject* y);
     virtual HiObject* mul(HiObject* x, HiObject* y);
 
-    virtual void print(HiObject* obj);
     virtual HiObject* subscr (HiObject* x, HiObject* y);
     virtual void store_subscr (HiObject* x, HiObject* y, HiObject* z);
     virtual void del_subscr (HiObject* x, HiObject* y);

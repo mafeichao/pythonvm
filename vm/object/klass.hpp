@@ -56,9 +56,9 @@ public:
 
     virtual HiObject* getattr(HiObject* x, HiObject* y);
     virtual HiObject* setattr(HiObject* obj, HiObject* x, HiObject* y);
-    virtual HiObject* subscr (HiObject* x, HiObject* y)                 { return nullptr; }
-    virtual void store_subscr  (HiObject* x, HiObject* y, HiObject* z)  { return; }
-    virtual void del_subscr    (HiObject* x, HiObject* y)               { return; }
+    virtual HiObject* subscr (HiObject* x, HiObject* y);
+    virtual void store_subscr  (HiObject* x, HiObject* y, HiObject* z);
+    virtual void del_subscr    (HiObject* x, HiObject* y);
     virtual HiObject* contains (HiObject* x, HiObject* y)               { return nullptr; }
 
     virtual HiObject* allocate_instance(HiList* args);

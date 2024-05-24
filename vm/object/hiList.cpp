@@ -73,6 +73,10 @@ HiObject* ListKlass::mul(HiObject* x, HiObject* y) {
     return z;
 }
 
+HiObject* ListKlass::len(HiObject* x) {
+    return new HiInteger(x->as<HiList>()->length());
+}
+
 void ListKlass::print(HiObject* x) {
     HiList * lx = x->as<HiList>();
 

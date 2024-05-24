@@ -14,12 +14,15 @@ StringTable::StringTable() {
     add_str  = new HiString("__add__");
     build_class_str = new HiString("__build_class__");
     call_str = new HiString("__call__");
+    delitem_str = new HiString("__delitem__");
+    getitem_str = new HiString("__getitem__");
     init_str = new HiString("__init__");
     len_str  = new HiString("__len__");
     name_str = new HiString("__name__");
     _new_str = new HiString("__new__");
     next_str = new HiString("__next__");
     repr_str = new HiString("__repr__");
+    setitem_str = new HiString("__setitem__");
     str_str  = new HiString("__str__");
 }
 

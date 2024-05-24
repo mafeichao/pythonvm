@@ -88,6 +88,14 @@ void DictKlass::del_subscr(HiObject* x, HiObject* y) {
     ((HiDict*)x)->remove(y);
 }
 
+HiObject* DictKlass::contains(HiObject* x, HiObject* y) {
+    if (x->as<HiDict>()->has_key(y)) {
+        return Universe::HiTrue;
+    }
+    else {
+        return Universe::HiFalse;
+    }
+}
 
 HiObject* DictKlass::allocate_instance(HiList* args) {
     if (!args || args->length() == 0)
@@ -264,8 +272,7 @@ HiObject* dict_view_next(HiList* args, HiDict* kwargs) {
 template<ITER_TYPE iter_type>
 HiObject* DictViewKlass<iter_type>::contains(HiObject* x, HiObject* y) {
     assert(x->klass() == DictViewKlass<iter_type>::get_instance());
-    HiDict* adict = ((DictView*)x)->owner();
-    assert(adict->klass() == DictKlass::get_instance());
+    HiDict* adict = ((DictView*)x)->owner()->as<HiDict>();
 
     bool flag = false;
     if (iter_type == ITER_KEY) {
