@@ -139,6 +139,10 @@ bool MethodObject::is_function(HiObject *x) {
     return false;
 }
 
+HiObject* object_repr(HiList* args, HiDict* kwargs) {
+    return args->get(0)->repr();
+}
+
 HiObject* object_print(HiList* args, HiDict* kwargs) {
     HiObject* arg0 = args->get(0);
     arg0->print();

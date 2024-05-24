@@ -34,8 +34,9 @@ public:
     void set_klass_dict(HiDict* dict)     { _klass_dict = dict; }
     HiDict* klass_dict()                  { return _klass_dict; }
 
-    virtual void print(HiObject* obj) {};
+    virtual void print(HiObject* obj);
     virtual HiObject* len(HiObject* obj); 
+    virtual HiObject* repr(HiObject* obj); 
 
     virtual HiObject* greater  (HiObject* x, HiObject* y) { return nullptr; }
     virtual HiObject* less     (HiObject* x, HiObject* y) { return nullptr; }

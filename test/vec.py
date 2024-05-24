@@ -9,6 +9,14 @@ class Vector(object):
     def __len__(self):
         return self.x * self.x + self.y * self.y
 
-print(len(Vector(3, 4)))
+    def __str__(self):
+        return "hello"
+
+    def __repr__(self):
+        return "world"
+
+v = Vector(3, 4)
+print(v)
+print(len(v))
 print(len("hello"))
 

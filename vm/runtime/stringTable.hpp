@@ -14,14 +14,16 @@ private:
 public:
     static StringTable* get_instance();
     
-    HiString* next_str;
+    HiString* add_str;
+    HiString* build_class_str;
+    HiString* call_str;
     HiString* init_str;
     HiString* len_str;
     HiString* name_str;
     HiString* _new_str;
-    HiString* call_str;
-    HiString* add_str;
-    HiString* build_class_str;
+    HiString* next_str;
+    HiString* repr_str;
+    HiString* str_str;
 };
 
 #endif

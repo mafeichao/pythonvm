@@ -17,6 +17,7 @@ public:
     virtual void print(HiObject* obj);
 };
 
+HiObject* object_repr(HiList* args, HiDict* kwargs);
 HiObject* object_print(HiList* args, HiDict* kwargs);
 HiObject* object_len(HiList* args, HiDict* kwargs);
 HiObject* isinstance(HiList* args, HiDict* kwargs);

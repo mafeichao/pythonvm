@@ -44,11 +44,12 @@ Interpreter::Interpreter() {
     _builtins->put(new HiString("list"),     ListKlass::get_instance()->type_object());
     _builtins->put(new HiString("dict"),     DictKlass::get_instance()->type_object());
 
-    _builtins->put(new HiString("print"),    new FunctionObject(object_print));
-    _builtins->put(new HiString("len"),      new FunctionObject(object_len));
-    _builtins->put(new HiString("isinstance"),new FunctionObject(isinstance));
+    _builtins->put(new HiString("print"),       new FunctionObject(object_print));
+    _builtins->put(new HiString("len"),         new FunctionObject(object_len));
+    _builtins->put(new HiString("repr"),        new FunctionObject(object_repr));
+    _builtins->put(new HiString("isinstance"),  new FunctionObject(isinstance));
 
-    _builtins->put(ST(build_class),          new FunctionObject(build_type_object));
+    _builtins->put(ST(build_class),             new FunctionObject(build_type_object));
 }
 
 void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) {

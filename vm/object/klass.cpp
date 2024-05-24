@@ -9,6 +9,24 @@
 #include "object/hiList.hpp"
 #include "object/hiString.hpp"
 
+void Klass::print(HiObject* x) {
+    HiObject* func = x->getattr(ST(str));
+    if (func != Universe::HiNone) {
+        HiObject* s = Interpreter::get_instance()->call_virtual(func, nullptr);
+        s->as<HiString>()->print();
+        return;
+    }
+
+    func = x->getattr(ST(repr));
+    if (func != Universe::HiNone) {
+        HiObject* r = Interpreter::get_instance()->call_virtual(func, nullptr);
+        r->as<HiString>()->print();
+        return;
+    }
+
+    printf("<object at %p>", x);
+}
+
 HiObject* Klass::call(HiObject* x, HiList* args, HiDict* kwargs) {
     HiObject* callable = x->getattr(ST(call));
 
@@ -82,6 +100,10 @@ HiObject* Klass::add(HiObject* lhs, HiObject* rhs) {
 
 HiObject* Klass::len(HiObject* obj) {
     return find_and_call(obj, nullptr, ST(len));
+}
+
+HiObject* Klass::repr(HiObject* obj) {
+    return find_and_call(obj, nullptr, ST(repr));
 }
 
 HiObject* Klass::find_and_call(HiObject* lhs, HiList* args, HiObject* func_name) {

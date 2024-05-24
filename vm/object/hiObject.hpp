@@ -18,6 +18,7 @@ public:
 
     void print();
     HiObject* len();
+    HiObject* repr();
     HiObject* call(HiList* args, HiDict* kwargs);
 
     HiObject* add(HiObject* x);
