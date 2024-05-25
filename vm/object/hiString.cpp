@@ -68,7 +68,7 @@ HiObject* StringKlass::len(HiObject* obj) {
 
 HiString::HiString(const char* x) {
     _length = strlen(x);
-    _value = new char[_length];
+    _value = new char[_length + 1];
     strcpy(_value, x);
 
     set_klass(StringKlass::get_instance());

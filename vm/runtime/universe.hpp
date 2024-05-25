@@ -6,12 +6,14 @@
 class HiInteger;
 class HiObject;
 class HiString;
+class Heap;
 
 class Universe {
 public:
     static HiString* HiTrue;
     static HiString* HiFalse;
     static HiString* HiNone;
+    static Heap*     heap;
 
 public:
     static void genesis();

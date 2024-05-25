@@ -5,13 +5,17 @@
 #include "object/hiObject.hpp"
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
+#include "memory/heap.hpp"
 #include "util/map.hpp"
 
-HiString* Universe::HiTrue   = NULL;
-HiString* Universe::HiFalse  = NULL;
-HiString* Universe::HiNone   = NULL;
+HiString* Universe::HiTrue   = nullptr;
+HiString* Universe::HiFalse  = nullptr;
+HiString* Universe::HiNone   = nullptr;
+Heap*     Universe::heap     = nullptr;
 
 void Universe::genesis() {
+    heap = Heap::get_instance();
+
     HiTrue       = new HiString("True");
     HiFalse      = new HiString("False");
     HiNone       = new HiString("None");

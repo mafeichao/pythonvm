@@ -46,6 +46,8 @@ public:
 
     template<typename T>
     T* as();
+
+    void* operator new(size_t size);
 };
 
 class HiTypeObject : public HiObject {

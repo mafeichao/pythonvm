@@ -3,6 +3,7 @@
 #include "object/hiString.hpp"
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
+#include "memory/heap.hpp"
 #include "runtime/cellObject.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
@@ -105,6 +106,10 @@ HiObject* HiObject::contains(HiObject* x) {
 
 HiObject* HiObject::iter() {
     return klass()->iter(this);
+}
+
+void* HiObject::operator new(size_t size) {
+    return Universe::heap->allocate(size);
 }
 
 template<typename T>

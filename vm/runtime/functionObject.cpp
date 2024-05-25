@@ -34,6 +34,7 @@ FunctionObject::FunctionObject(HiObject* code_object) {
     _func_code = co;
     _func_name = co->_co_name;
     _flags     = co->_flag;
+    _locals    = nullptr;
     _globals   = nullptr;
     _closure   = nullptr;
 
@@ -44,6 +45,7 @@ FunctionObject::FunctionObject(NativeFuncPointer nfp) {
     _func_code = nullptr;
     _func_name = nullptr;
     _flags     = 0;
+    _locals    = nullptr;
     _globals   = nullptr;
     _closure   = nullptr;
     _native_func = nfp;

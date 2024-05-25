@@ -58,8 +58,9 @@ public:
         _func_code = nullptr;
         _func_name = nullptr;
         _flags     = 0;
-        _globals   = nullptr;
         _locals    = nullptr;
+        _globals   = nullptr;
+        _closure   = nullptr;
         _defaults  = nullptr;
 
         set_klass(klass);
