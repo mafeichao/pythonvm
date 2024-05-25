@@ -4,7 +4,11 @@
 #include "object/hiDict.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
-#include <string.h>
+#include "memory/heap.hpp"
+#include <new>
+#include <cstring>
+
+using namespace std;
 
 StringKlass* StringKlass::instance = nullptr;
 
@@ -68,7 +72,8 @@ HiObject* StringKlass::len(HiObject* obj) {
 
 HiString::HiString(const char* x) {
     _length = strlen(x);
-    _value = new char[_length + 1];
+    void* temp = Universe::heap->allocate(sizeof(char) * (_length + 1));
+    _value = new (temp)char[_length + 1];
     strcpy(_value, x);
 
     set_klass(StringKlass::get_instance());
@@ -76,7 +81,7 @@ HiString::HiString(const char* x) {
 
 HiString::HiString(const char * x, const int length) {
     _length = length;
-    _value = new char[length];
+    _value = new (Universe::heap->allocate(sizeof(char) * _length)) char[length];
 
     // do not use strcpy here, since '\0' is allowed.
     for (int i = 0; i < length; i++) {

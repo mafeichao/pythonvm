@@ -10,6 +10,11 @@ StringTable* StringTable::get_instance() {
     return instance;
 }
 
+void StringTable::destroy() {
+    delete instance;
+    instance = nullptr;
+}
+
 StringTable::StringTable() {
     add_str  = new HiString("__add__");
     build_class_str = new HiString("__build_class__");

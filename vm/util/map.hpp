@@ -12,6 +12,8 @@ public:
     MapEntry(const MapEntry<K, V>& entry);
     MapEntry(K k, V v) : _k(k), _v(v) {}
     MapEntry() : _k(0), _v(0) {}
+
+    void* operator new[](size_t size);
 };
 
 template <typename K, typename V>
@@ -34,6 +36,8 @@ public:
     bool has_key(K k);
     int  index(K k);
     MapEntry<K, V>* entries() { return _entries; }
+
+    void* operator new(size_t size);
 };
 
 #endif

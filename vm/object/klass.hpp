@@ -23,7 +23,7 @@ private:
     HiObject* find_in_mro(HiObject* obj, HiString* name);
 
 public:
-    Klass():_super(nullptr), _mro(nullptr) {};
+    Klass();
 
     static HiObject* create_klass(HiDict* x, HiList* supers, HiString* name);
 
@@ -71,6 +71,8 @@ public:
 
     virtual HiObject* allocate_instance(HiList* args);
     HiObject* find_and_call(HiObject* lhs, HiList* args, HiObject* func_name);
+
+    void* operator new(size_t size);
 };
 
 /*

@@ -6,7 +6,10 @@
 class HiInteger;
 class HiObject;
 class HiString;
+class Klass;
 class Heap;
+
+template<typename T> class ArrayList;
 
 class Universe {
 public:
@@ -14,6 +17,7 @@ public:
     static HiString* HiFalse;
     static HiString* HiNone;
     static Heap*     heap;
+    static ArrayList<Klass*>* klasses;
 
 public:
     static void genesis();

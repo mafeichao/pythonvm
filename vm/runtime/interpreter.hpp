@@ -19,6 +19,7 @@ private:
      void      destroy_frame   ();
 
 public:
+    static void destroy();
     static Interpreter* get_instance();
 
     void run(CodeObject* codes);

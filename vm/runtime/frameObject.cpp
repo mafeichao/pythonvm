@@ -30,7 +30,7 @@ FrameObject::FrameObject (FunctionObject* func, HiList* args, HiList* kwargs) {
 
     _locals  = func->_locals ? func->_locals : new HiDict();
     _globals = func->_globals;
-    _fast_locals = new ArrayList<HiObject*>();
+    _fast_locals = new HiList();
 
     const int argcnt  = _codes->_argcount;
     const int na = args == nullptr ? 0 : args->length();
@@ -104,11 +104,11 @@ FrameObject::FrameObject (FunctionObject* func, HiList* args, HiList* kwargs) {
     }
 
     if (_codes->_flag & FunctionObject::CO_VARARGS) {
-        _fast_locals->add(alist);
+        _fast_locals->append(alist);
     }
 
     if (_codes->_flag & FunctionObject::CO_VARKEYWORDS) {
-        _fast_locals->add(adict);
+        _fast_locals->append(adict);
     }
 
     // 处理闭包中的cell vars

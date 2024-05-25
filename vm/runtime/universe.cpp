@@ -1,5 +1,6 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
+#include "object/klass.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
 #include "object/hiObject.hpp"
@@ -12,9 +13,11 @@ HiString* Universe::HiTrue   = nullptr;
 HiString* Universe::HiFalse  = nullptr;
 HiString* Universe::HiNone   = nullptr;
 Heap*     Universe::heap     = nullptr;
+ArrayList<Klass*>* Universe::klasses = nullptr;
 
 void Universe::genesis() {
     heap = Heap::get_instance();
+    klasses = new ArrayList<Klass*>();
 
     HiTrue       = new HiString("True");
     HiFalse      = new HiString("False");
@@ -29,5 +32,6 @@ void Universe::genesis() {
 }
 
 void Universe::destroy() {
+    delete heap;
 }
 

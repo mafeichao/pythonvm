@@ -1,15 +1,20 @@
 #include "arrayList.hpp"
 #include "object/hiObject.hpp"
 #include "object/hiString.hpp"
+#include "object/klass.hpp"
 #include "runtime/universe.hpp"
+#include "memory/heap.hpp"
+#include <new>
+#include <cstdio>
 
-#include <stdio.h>
+using namespace std;
 
 template <typename T>
 ArrayList<T>::ArrayList(int n) {
     _capacity = n;
     _length   = 0;
-    _array  = new T[n];
+    void* temp = Universe::heap->allocate(sizeof(T) * (n << 1));
+    _array  = new (temp)T[n];
 }
 
 template <typename T>
@@ -33,11 +38,11 @@ void ArrayList<T>::insert(int index, T t) {
 
 template <typename T>
 void ArrayList<T>::expand() {
-    T* new_array = new T[_capacity << 1];
-    for (int i = 0; i < _capacity; i++) {
+    void* temp = Universe::heap->allocate(sizeof(T) * (_length << 1));
+    T* new_array = new (temp)T[_length << 1];
+    for (int i = 0; i < _length; i++) {
         new_array[i] = _array[i];
     }
-    delete[] _array;
     _array = new_array;
     _capacity <<= 1;
 }
@@ -82,6 +87,11 @@ void ArrayList<T>::delete_index(int index) {
 }
 
 template <typename T>
+void* ArrayList<T>::operator new(size_t size) {
+    return Universe::heap->allocate(size);
+}
+
+template <typename T>
 int ArrayList<T>::index(T t) {
     for (int i = 0; i < _length; i++) {
         if (_array[i]->equal(t) == Universe::HiTrue) {
@@ -102,4 +112,18 @@ template class ArrayList<HiObject*>;
 
 class HiString;
 template class ArrayList<HiString*>;
+
+template<>
+int ArrayList<Klass*>::index(Klass* t) {
+    for (int i = 0; i < _length; i++) {
+        if (_array[i] == t) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+class Klass;
+template class ArrayList<Klass*>;
 

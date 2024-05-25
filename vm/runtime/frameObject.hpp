@@ -22,7 +22,7 @@ public:
     HiDict* _locals;
     HiDict* _globals;
     HiList*               _closure;
-    ObjList               _fast_locals;
+    HiList*               _fast_locals;
 
     CodeObject*           _codes;
     FrameObject*          _sender;
@@ -44,7 +44,7 @@ public:
 
     HiDict* locals()                { return _locals; }
     HiDict* globals()               { return _globals; }
-    ObjList fast_locals()           { return _fast_locals; }
+    HiList* fast_locals()           { return _fast_locals; }
 
     HiList* closure()               { return _closure; }
     HiObject* get_cell_from_parameter(int i );

@@ -52,6 +52,11 @@ Interpreter::Interpreter() {
     _builtins->put(ST(build_class),             new FunctionObject(build_type_object));
 }
 
+void Interpreter::destroy() {
+    delete _instance;
+    _instance = nullptr;
+}
+
 void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) {
     if (MethodObject::is_method(callable)) {
         MethodObject* method = (MethodObject*) callable;

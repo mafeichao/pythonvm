@@ -8,6 +8,16 @@
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
 #include "object/hiString.hpp"
+#include "memory/heap.hpp"
+
+Klass::Klass() {
+    Universe::klasses->add(this);
+    _super          = nullptr;
+    _mro            = nullptr;
+    _type_object    = nullptr;
+    _name           = nullptr;
+    _klass_dict     = nullptr;
+}
 
 void Klass::add_super(Klass* klass) {
     if (_super == nullptr)
@@ -255,13 +265,17 @@ HiObject* Klass::find_and_call(HiObject* lhs, HiList* args, HiObject* func_name)
     return Universe::HiNone;
 }
 
+void* Klass::operator new(size_t size) {
+    return Universe::heap->allocate_meta(size);
+}
+
 /*
  * TypeObject is a special object
  */
-TypeKlass* TypeKlass::instance = NULL;
+TypeKlass* TypeKlass::instance = nullptr;
 
 TypeKlass* TypeKlass::get_instance() {
-    if (instance == NULL)
+    if (instance == nullptr)
         instance = new TypeKlass();
 
     return instance;

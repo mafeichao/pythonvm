@@ -2,6 +2,7 @@
 #include "runtime/universe.hpp"
 #include "object/hiObject.hpp"
 #include "object/hiString.hpp"
+#include "memory/heap.hpp"
 
 template <typename K, typename V>
 Map<K, V>::Map() {
@@ -63,7 +64,6 @@ void Map<K, V>::expand() {
             new_entries[i] = _entries[i];
         }
         _capacity <<= 1;
-        delete[] _entries;
         _entries = new_entries;
     }
 }
@@ -88,6 +88,16 @@ K Map<K, V>::get_key(int index) {
 template <typename K, typename V>
 V Map<K, V>::get_value(int index) {
     return _entries[index]._v;
+}
+
+template <typename K, typename V>
+void* MapEntry<K, V>::operator new[](size_t size) {
+    return Universe::heap->allocate(size);
+}
+
+template <typename K, typename V>
+void* Map<K, V>::operator new(size_t size) {
+    return Universe::heap->allocate(size);
 }
 
 template class Map<HiObject*, HiObject*>;

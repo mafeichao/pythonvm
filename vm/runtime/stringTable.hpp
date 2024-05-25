@@ -13,6 +13,7 @@ private:
 
 public:
     static StringTable* get_instance();
+    static void destroy();
     
     HiString* add_str;
     HiString* build_class_str;
