@@ -2,6 +2,7 @@
 #include "object/hiInteger.hpp"
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
+#include "object/typeObject.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "memory/heap.hpp"

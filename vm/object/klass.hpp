@@ -75,25 +75,5 @@ public:
     void* operator new(size_t size);
 };
 
-/*
- * meta-klass for the object system.
- */
-class TypeKlass : public Klass {
-private:
-    TypeKlass() {}
-    static TypeKlass* instance;
-
-public:
-    static TypeKlass* get_instance();
-    void initialize();
-
-    virtual HiObject* getattr(HiObject* x, HiObject* y);
-    virtual HiObject* setattr(HiObject* o, HiObject* x, HiObject* y);
-    virtual HiObject* equal(HiObject* x, HiObject* y);
-    virtual void print(HiObject* obj);
-
-    virtual HiObject* call(HiObject* x, HiList* args, HiDict* kwargs);
-};
-
 #endif
 

@@ -6,6 +6,7 @@
 #include "object/hiObject.hpp"
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
+#include "object/typeObject.hpp"
 #include "memory/heap.hpp"
 #include "util/map.hpp"
 

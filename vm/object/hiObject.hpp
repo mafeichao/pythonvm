@@ -50,18 +50,6 @@ public:
     void* operator new(size_t size);
 };
 
-class HiTypeObject : public HiObject {
-private:
-    Klass*  _own_klass;
-
-public:
-    HiTypeObject();
-
-    void    set_own_klass(Klass* k);
-    Klass*  own_klass()             { return _own_klass; }
-    HiList* mro()                   { return _own_klass->mro(); }
-};
-
 class ObjectKlass : public Klass {
 private:
     ObjectKlass();

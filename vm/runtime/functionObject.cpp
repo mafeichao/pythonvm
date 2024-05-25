@@ -3,6 +3,7 @@
 #include "object/hiString.hpp"
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
+#include "object/typeObject.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"

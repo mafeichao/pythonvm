@@ -9,6 +9,7 @@
 #include "object/hiInteger.hpp"
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
+#include "object/typeObject.hpp"
 #include "util/map.hpp"
 
 #include <string.h>
