@@ -16,8 +16,6 @@ public:
     MapEntry(const MapEntry<K, V>& entry);
     MapEntry(K k, V v) : _k(k), _v(v) {}
     MapEntry() : _k(0), _v(0) {}
-
-    void* operator new[](size_t size);
 };
 
 template <typename K, typename V>
@@ -28,9 +26,10 @@ private:
     int _capacity;
     
     void expand();
-public:
     Map();
 
+public:
+    static Map<K, V>* new_instance(int n);
     int  length() { return _length; }
     void put(K k, V v);
     V    get(K k);

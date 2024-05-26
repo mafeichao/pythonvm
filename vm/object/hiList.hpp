@@ -41,11 +41,13 @@ friend class ListKlass;
 
 private:
     ArrayList<HiObject*>* _inner_list;
+    HiList();
 
 public:
-    HiList();
+    static HiList* new_instance();
     HiList(ObjList ol);
     ArrayList<HiObject*>* inner_list()  { return _inner_list; }
+    void set_inner_list(ArrayList<HiObject*>* t) { _inner_list = t; }
 
     int length()                        { return _inner_list->length(); }
     void insert(int i, HiObject* obj)   { _inner_list->insert(i, obj); }

@@ -1,6 +1,7 @@
 #include "runtime/universe.hpp"
 #include "memory/heap.hpp"
 #include "memory/oopClosure.hpp"
+#include <cassert>
 #include <cstdlib>
 #include <cstdint>
 #include <cstring>
@@ -53,6 +54,11 @@ Heap::~Heap() {
 void* Heap::allocate(size_t size, bool force_gc) {
     if (!eden->can_alloc(size) || force_gc) {
         gc();
+    }
+
+    if (!eden->can_alloc(size)) {
+        printf("Out of memory!\n");
+        assert(false);
     }
 
     return eden->allocate(size);

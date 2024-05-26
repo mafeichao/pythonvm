@@ -5,6 +5,7 @@
 #include "runtime/universe.hpp"
 #include "memory/heap.hpp"
 #include "memory/oopClosure.hpp"
+#include "util/handles.hpp"
 #include <new>
 #include <cstdio>
 
@@ -14,8 +15,15 @@ template <typename T>
 ArrayList<T>::ArrayList(int n) {
     _capacity = n;
     _length   = 0;
-    void* temp = Universe::heap->allocate(sizeof(T) * (n << 1));
-    _array  = new (temp)T[n];
+    _array  = nullptr;
+}
+
+template <typename T>
+ArrayList<T>* ArrayList<T>::new_instance(int n) {
+    Handle<ArrayList<T>*> inst = new ArrayList<T>(n);
+    void* temp = Universe::heap->allocate(sizeof(T) * n);
+    inst->_array = new (temp) T[n];
+    return inst;
 }
 
 template <typename T>
@@ -39,6 +47,7 @@ void ArrayList<T>::insert(int index, T t) {
 
 template <typename T>
 void ArrayList<T>::expand() {
+    assert(_capacity > 0 && _length >= _capacity);
     void* temp = Universe::heap->allocate(sizeof(T) * (_length << 1), false);
     T* new_array = new (temp)T[_length << 1];
     for (int i = 0; i < _length; i++) {

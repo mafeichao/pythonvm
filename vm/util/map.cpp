@@ -1,15 +1,30 @@
 #include "util/map.hpp"
+#include "util/handles.hpp"
 #include "runtime/universe.hpp"
 #include "object/hiObject.hpp"
 #include "object/hiString.hpp"
 #include "memory/heap.hpp"
 #include "memory/oopClosure.hpp"
+#include <new>
+#include <cstdio>
+using namespace std;
 
 template <typename K, typename V>
 Map<K, V>::Map() {
-    _entries = new MapEntry<K, V>[8];
-    _capacity  = 8;
+    _entries = nullptr;
+    _capacity  = 0;
     _length    = 0;
+}
+
+template <typename K, typename V>
+Map<K, V>* Map<K, V>::new_instance(int n) {
+    Handle<Map<K, V>*> result = new Map<K, V>();
+    result->_capacity = n;
+
+    void* temp = Universe::heap->allocate(sizeof(MapEntry<K, V>) * n);
+    result->_entries = new (temp) MapEntry<K, V>[n];
+
+    return result;
 }
 
 template <typename K, typename V>
@@ -99,11 +114,6 @@ void Map<K, V>::oops_do(OopClosure* closure) {
         closure->do_oop(&(_entries[i]._k));
         closure->do_oop(&(_entries[i]._v));
     }
-}
-
-template <typename K, typename V>
-void* MapEntry<K, V>::operator new[](size_t size) {
-    return Universe::heap->allocate(size);
 }
 
 template <typename K, typename V>

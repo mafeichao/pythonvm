@@ -33,28 +33,28 @@ Interpreter* Interpreter::get_instance() {
 }
 
 Interpreter::Interpreter() {
-    _builtins = new HiDict();
+    _builtins = HiDict::new_instance();
 
-    _builtins->put(new HiString("True"),     Universe::HiTrue);
-    _builtins->put(new HiString("False"),    Universe::HiFalse);
-    _builtins->put(new HiString("None"),     Universe::HiNone);
+    _builtins->put(HiString::new_instance("True"),     Universe::HiTrue);
+    _builtins->put(HiString::new_instance("False"),    Universe::HiFalse);
+    _builtins->put(HiString::new_instance("None"),     Universe::HiNone);
 
-    _builtins->put(new HiString("type"),     TypeKlass::get_instance()->type_object());
-    _builtins->put(new HiString("object"),   ObjectKlass::get_instance()->type_object());
-    _builtins->put(new HiString("int"),      IntegerKlass::get_instance()->type_object());
-    _builtins->put(new HiString("str"),      StringKlass::get_instance()->type_object());
-    _builtins->put(new HiString("list"),     ListKlass::get_instance()->type_object());
-    _builtins->put(new HiString("dict"),     DictKlass::get_instance()->type_object());
+    _builtins->put(HiString::new_instance("type"),     TypeKlass::get_instance()->type_object());
+    _builtins->put(HiString::new_instance("object"),   ObjectKlass::get_instance()->type_object());
+    _builtins->put(HiString::new_instance("int"),      IntegerKlass::get_instance()->type_object());
+    _builtins->put(HiString::new_instance("str"),      StringKlass::get_instance()->type_object());
+    _builtins->put(HiString::new_instance("list"),     ListKlass::get_instance()->type_object());
+    _builtins->put(HiString::new_instance("dict"),     DictKlass::get_instance()->type_object());
 
-    Handle<HiString*> name = new HiString("print");
+    Handle<HiString*> name = HiString::new_instance("print");
     _builtins->put(name,         new FunctionObject(object_print, name));
-    name = new HiString("len");
+    name = HiString::new_instance("len");
     _builtins->put(name,         new FunctionObject(object_len, name));
-    name = new HiString("repr");
+    name = HiString::new_instance("repr");
     _builtins->put(name,         new FunctionObject(object_repr, name));
-    name = new HiString("isinstance");
+    name = HiString::new_instance("isinstance");
     _builtins->put(name,         new FunctionObject(isinstance, name));
-    name = new HiString("sysgc");
+    name = HiString::new_instance("sysgc");
     _builtins->put(name,         new FunctionObject(sysgc, name));
 
     _builtins->put(ST(build_class), new FunctionObject(build_type_object, ST(build_class)));
@@ -76,15 +76,16 @@ void Interpreter::build_frame(Handle<HiObject*> callable,
         // return value is ignored here, because they are handled
         // by other pathes.
         if (!args) {
-            args = new HiList();
+            args = HiList::new_instance();
         }
         args->insert(0, method->owner());
         build_frame(method->func(), args, kwargs);
     }
     else if (callable->klass() == FunctionKlass::get_instance()) {
-        FrameObject* frame = new FrameObject(callable->as<FunctionObject>(), args, kwargs);
+        FrameObject* frame = new FrameObject();
         frame->set_sender(_frame);
         _frame = frame;
+        _frame->initialize(callable->as<FunctionObject>(), args, kwargs);
     }
     else {
         Handle<HiObject*> result = callable->call(args, nullptr);
@@ -102,7 +103,7 @@ HiObject* Interpreter::call_virtual(Handle<HiObject*> func, Handle<HiList*> args
         // return value is ignored here, because they are handled
         // by other pathes.
         if (!args) {
-            args = new HiList();
+            args = HiList::new_instance();
         }
         args->insert(0, method->owner());
         return call_virtual(method->func(), args);
@@ -110,9 +111,9 @@ HiObject* Interpreter::call_virtual(Handle<HiObject*> func, Handle<HiList*> args
     else if (MethodObject::is_function(func)) {
         int size = args ? args->length() : 0;
 
-        FrameObject* frame = new FrameObject(func->as<FunctionObject>(), args, nullptr);
-
+        FrameObject* frame = new FrameObject();
         enter_frame(frame);
+        _frame->initialize(func->as<FunctionObject>(), args, nullptr);
         _frame->set_entry_frame(true);
         eval_frame();
         destroy_frame();
@@ -141,8 +142,9 @@ void Interpreter::enter_frame(FrameObject* frame) {
 }
 
 void Interpreter::run(CodeObject* codes) {
-    _frame = new FrameObject(codes);
-    _frame->locals()->put(ST(name), new HiString("__main__"));
+    _frame = new FrameObject();
+    _frame->initialize(codes);
+    _frame->locals()->put(ST(name), HiString::new_instance("__main__"));
     eval_frame();
 
     destroy_frame();
@@ -306,7 +308,7 @@ void Interpreter::eval_frame() {
 
                 if (op_arg == 1) {
                     HiList* t = POP()->as<HiList>();
-                    args = new HiList();
+                    args = HiList::new_instance();
                     for (int i = 0; i < t->length(); i++) {
                         args->append(t->get(i));
                     }
@@ -359,7 +361,7 @@ void Interpreter::eval_frame() {
             case ByteCode::CALL_METHOD:
             case ByteCode::CALL_FUNCTION:
                 if (op_arg > 0) {
-                    args = new HiList();
+                    args = HiList::new_instance();
                     while (op_arg--) {
                         args->set(op_arg, POP());
                     }
@@ -378,7 +380,7 @@ void Interpreter::eval_frame() {
                 assert(op_arg > 0);
                 arg_cnt = op_arg;
                 kwargs = POP()->as<HiList>();
-                args = new HiList();
+                args = HiList::new_instance();
                 while (arg_cnt--) {
                     args->set(arg_cnt, POP());
                 }
@@ -480,7 +482,7 @@ void Interpreter::eval_frame() {
 
             case ByteCode::BUILD_LIST:
             case ByteCode::BUILD_TUPLE:
-                lst = new HiList();
+                lst = HiList::new_instance();
                 while (op_arg--) {
                     lst->set(op_arg, POP());
                 }
@@ -510,7 +512,7 @@ void Interpreter::eval_frame() {
                 break;
 
             case ByteCode::BUILD_MAP:
-                v = new HiDict();
+                v = HiDict::new_instance();
                 for (int i = 0; i < op_arg; i++) {
                     v->as<HiDict>()->put(POP(), POP());
                 }
@@ -520,7 +522,7 @@ void Interpreter::eval_frame() {
             case ByteCode::BUILD_CONST_KEY_MAP:
                 lst = POP()->as<HiList>();
 
-                v = new HiDict();
+                v = HiDict::new_instance();
                 for (int i = 0; i < op_arg; i++) {
                     v->as<HiDict>()->put(lst->get(op_arg - i - 1), POP());
                 }
@@ -530,7 +532,7 @@ void Interpreter::eval_frame() {
 
             case ByteCode::BUILD_TUPLE_UNPACK_WITH_CALL:
                 v = POP();
-                args = new HiList();
+                args = HiList::new_instance();
                 op_arg--;
 
                 while (op_arg--) {

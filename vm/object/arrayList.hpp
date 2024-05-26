@@ -12,10 +12,11 @@ private:
     T*  _array;
     int _length;
 
+    ArrayList(int n = 8);
     void expand();
 
 public:
-    ArrayList(int n = 8);
+    static ArrayList<T>* new_instance(int n);
 
     void add(T t);
     void insert(int index, T t);
@@ -27,6 +28,7 @@ public:
     T    pop();
     void clear();
     void delete_index(int index);
+    void set_array(T* t) { _array = t; }
 
     void* operator new(size_t size);
 

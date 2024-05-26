@@ -91,8 +91,8 @@ void Handle<ArrayList<HiObject*>*>::oops_do(OopClosure* f) {
 }
 
 template<>
-void Handle<FrameObject*>::oops_do(OopClosure* f) {
-    _value->oops_do(f);
+void Handle<Map<HiObject*, HiObject*>*>::oops_do(OopClosure* f) {
+    f->do_map(&_value);
 }
 
 class HiObject;
@@ -122,8 +122,9 @@ template class Handle<MethodObject*>;
 class HiTypeObject;
 template class Handle<HiTypeObject*>;
 
-class FrameObject;
-template class Handle<FrameObject*>;
-
 template class Handle<ArrayList<HiObject*>*>;
+template class Handle<ArrayList<Klass*>*>;
+template class Handle<ArrayList<HiString*>*>;
+template class Handle<ArrayList<char>*>;
 
+template class Handle<Map<HiObject*, HiObject*>*>;

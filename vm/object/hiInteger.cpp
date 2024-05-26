@@ -15,8 +15,8 @@ IntegerKlass::IntegerKlass() {
 }
 
 void IntegerKlass::initialize() {
-    set_klass_dict(new HiDict());
-    set_name(new HiString("int"));
+    set_klass_dict(HiDict::new_instance());
+    set_name(HiString::new_instance("int"));
     (new HiTypeObject())->set_own_klass(this);
 
     add_super(ObjectKlass::get_instance());

@@ -20,6 +20,7 @@ public:
     virtual HiObject* equal    (HiObject* x, HiObject* y);
     virtual HiObject* subscr (HiObject* x, HiObject* y);
     virtual HiObject* less   (HiObject* x, HiObject* y);
+    virtual HiObject* add    (HiObject* x, HiObject* y);
 
     virtual void print(HiObject* obj);
     virtual HiObject* len(HiObject* obj);
@@ -31,14 +32,16 @@ public:
 };
 
 class HiString : public HiObject {
+friend class StringKlass;
 private:
     char* _value;
     int   _length;
+    HiString();
 
 public:
-    HiString(const char * x);
-    HiString(const char * x, const int length);
-
+    static HiString* new_instance(int n);
+    static HiString* new_instance(const char* x);
+    static HiString* new_instance(const char* x, const int length);
     const char* value()     { return _value; }
     char** value_address()  { return &_value; }
     int length()            { return _length; }

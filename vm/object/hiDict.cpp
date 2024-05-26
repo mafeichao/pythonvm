@@ -7,6 +7,7 @@
 #include "runtime/functionObject.hpp"
 #include "runtime/stringTable.hpp"
 #include "memory/oopClosure.hpp"
+#include "util/handles.hpp"
 #include <assert.h>
 
 DictKlass* DictKlass::instance = NULL;
@@ -23,24 +24,24 @@ DictKlass::DictKlass() {
 }
 
 void DictKlass::initialize() {
-    HiDict* klass_dict = new HiDict();
+    HiDict* klass_dict = HiDict::new_instance();
 
-    HiString* name = new HiString("setdefault");
+    HiString* name = HiString::new_instance("setdefault");
     klass_dict->put(name, new FunctionObject(dict_set_default, name));
-    name = new HiString("pop");
+    name = HiString::new_instance("pop");
     klass_dict->put(name, new FunctionObject(dict_pop, name));
-    name = new HiString("get");
+    name = HiString::new_instance("get");
     klass_dict->put(name, new FunctionObject(dict_get, name));
-    name = new HiString("keys");
+    name = HiString::new_instance("keys");
     klass_dict->put(name, new FunctionObject(dict_keys, name));
-    name = new HiString("values");
+    name = HiString::new_instance("values");
     klass_dict->put(name, new FunctionObject(dict_values, name));
-    name = new HiString("items");
+    name = HiString::new_instance("items");
     klass_dict->put(name, new FunctionObject(dict_items, name));
 
     set_klass_dict(klass_dict);
     (new HiTypeObject())->set_own_klass(this);
-    set_name(new HiString("dict"));
+    set_name(HiString::new_instance("dict"));
 
     add_super(ObjectKlass::get_instance());
     order_supers();
@@ -103,7 +104,7 @@ HiObject* DictKlass::contains(HiObject* x, HiObject* y) {
 
 HiObject* DictKlass::allocate_instance(HiList* args) {
     if (!args || args->length() == 0)
-        return new HiDict();
+        return HiDict::new_instance();
     else
         return nullptr;
 }
@@ -113,8 +114,15 @@ HiObject* DictKlass::iter(HiObject* x) {
 }
 
 HiDict::HiDict() {
-    _map = new Map<HiObject*, HiObject*>();
+    _map = nullptr;
     set_klass(DictKlass::get_instance());
+}
+
+HiDict* HiDict::new_instance() {
+    Handle<HiDict*> result = new HiDict();
+    Map<HiObject*, HiObject*>* map = Map<HiObject*, HiObject*>::new_instance(DEFAULT_SIZE);
+    result->_map = map;
+    return result;
 }
 
 HiDict::HiDict(Map<HiObject*, HiObject*>* x) {
@@ -142,7 +150,7 @@ DictIteratorKlass* DictIteratorKlass::get_instance() {
 }
 
 DictIteratorKlass::DictIteratorKlass() {
-    HiDict* klass_dict = new HiDict();
+    HiDict* klass_dict = HiDict::new_instance();
     klass_dict->put(ST(next),
             new FunctionObject(dictiterator_next, ST(next)));
     set_klass_dict(klass_dict);
@@ -235,11 +243,11 @@ DictViewKlass<iter_type>::DictViewKlass() {
         "dict_values",
         "dict_items",
     };
-    HiDict* klass_dict = new HiDict();
+    HiDict* klass_dict = HiDict::new_instance();
     klass_dict->put(ST(next),
             new FunctionObject(dict_view_next<iter_type>, ST(next)));
     set_klass_dict(klass_dict);
-    set_name(new HiString(klass_names[iter_type]));
+    set_name(HiString::new_instance(klass_names[iter_type]));
 }
 
 DictView::DictView(HiDict* dict) {
@@ -261,7 +269,7 @@ HiObject* dict_view_next(HiList* args, HiDict* kwargs) {
             obj = adict->map()->get_value(iter_cnt);
         }
         else if (iter_type == ITER_ITEM) {
-            HiList* lobj = new HiList();
+            HiList* lobj = HiList::new_instance();
             lobj->append(adict->map()->get_key(iter_cnt));
             lobj->append(adict->map()->get_value(iter_cnt));
             obj = lobj;

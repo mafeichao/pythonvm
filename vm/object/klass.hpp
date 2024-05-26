@@ -2,7 +2,6 @@
 #define _KLASS_HPP
 
 #include <stdio.h>
-#include "object/arrayList.hpp"
 
 class HiObject;
 class HiString;

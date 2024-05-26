@@ -77,7 +77,7 @@ void FunctionObject::set_default(HiList* defaults) {
         return;
     }
 
-    _defaults = new HiList();
+    _defaults = HiList::new_instance();
 
     for (int i = 0; i < defaults->length(); i++) {
         _defaults->set(i, defaults->get(i));
@@ -132,7 +132,7 @@ MethodKlass* MethodKlass::get_instance() {
 }
 
 MethodKlass::MethodKlass() {
-    set_klass_dict(new HiDict());
+    set_klass_dict(HiDict::new_instance());
 }
 
 void MethodKlass::print(HiObject* x) {
@@ -216,13 +216,13 @@ HiObject* build_type_object(HiList* args, HiDict* kwargs) {
     assert(length >= 2);
     FunctionObject* cls_def = args->get(0)->as<FunctionObject>();
     HiString* name = args->get(1)->as<HiString>();
-    HiList* super_list = new HiList();
+    HiList* super_list = HiList::new_instance();
 
     for (int i = 2; i < length; i++) {
         super_list->append(args->get(i));
     }
 
-    HiDict* locals = new HiDict();
+    HiDict* locals = HiDict::new_instance();
     internal_exec(cls_def, nullptr, locals);
     return Klass::create_klass(locals, super_list, name);
 }

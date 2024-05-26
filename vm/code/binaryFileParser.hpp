@@ -12,8 +12,8 @@ class BinaryFileParser {
 private:
     BufferedInputStream* file_stream;
     int cur;
-    ArrayList<HiString*> _string_table;
-    ArrayList<HiObject*> _cache;
+    ArrayList<HiString*>* _string_table;
+    ArrayList<HiObject*>* _cache;
 
     int _debug_level;
 

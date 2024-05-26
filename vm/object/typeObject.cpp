@@ -22,9 +22,9 @@ TypeKlass* TypeKlass::get_instance() {
 
 void TypeKlass::initialize() {
     HiTypeObject* tp_obj = new HiTypeObject();
-    set_name(new HiString("type"));
+    set_name(HiString::new_instance("type"));
     tp_obj->set_own_klass(this);
-    set_klass_dict(new HiDict());
+    set_klass_dict(HiDict::new_instance());
 
     add_super(ObjectKlass::get_instance());
     order_supers();

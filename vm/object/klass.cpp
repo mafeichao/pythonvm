@@ -23,13 +23,13 @@ Klass::Klass() {
 
 void Klass::add_super(Klass* klass) {
     if (_super == nullptr)
-        _super = new HiList();
+        _super = HiList::new_instance();
 
     _super->append(klass->type_object());
 }
 
 HiList* Klass::linear(HiTypeObject* obj) {
-    HiList* result = new HiList();
+    HiList* result = HiList::new_instance();
     HiList* mro = obj->mro();
     for (int i = 0; i < mro->length(); i++) {
         result->append(mro->get(i));
@@ -40,7 +40,7 @@ HiList* Klass::linear(HiTypeObject* obj) {
 
 HiList* Klass::merge(HiList* supers) {
     if (supers->empty()) {
-        return new HiList();
+        return HiList::new_instance();
     }
 
     for (int i = 0; i < supers->length(); i++) {
@@ -60,7 +60,7 @@ HiList* Klass::merge(HiList* supers) {
             continue;
         }
 
-        HiList* next = new HiList();
+        HiList* next = HiList::new_instance();
         for (int j = 0; j < supers->length(); j++) {
             HiList* item = supers->get(j)->as<HiList>();
             item->remove(head);
@@ -81,12 +81,12 @@ HiList* Klass::merge(HiList* supers) {
 
 void Klass::order_supers() {
     if (_super == nullptr) {
-        _mro = new HiList();
+        _mro = HiList::new_instance();
         _mro->append(_type_object);
         return;
     }
 
-    HiList* all = new HiList();
+    HiList* all = HiList::new_instance();
     for (int i = 0; i < _super->length(); i++) {
         all->append(linear(_super->get(i)->as<HiTypeObject>()));
     }
@@ -152,7 +152,7 @@ HiObject* Klass::getattr(HiObject* x, HiObject* y) {
     // 如果类里定义了__getattr__方法，就先调用这个方法
     if (func != Universe::HiNone) {
         func = new MethodObject(func->as<FunctionObject>(), x);
-        HiList* args = new HiList();
+        HiList* args = HiList::new_instance();
         args->append(y);
         return Interpreter::get_instance()->call_virtual(func, args);
     }
@@ -184,27 +184,27 @@ HiObject* Klass::setattr(HiObject* obj, HiObject* x, HiObject* y) {
     }
 
     func = new MethodObject(func->as<FunctionObject>(), obj);
-    HiList* args = new HiList();
+    HiList* args = HiList::new_instance();
     args->append(x);
     args->append(y);
     return Interpreter::get_instance()->call_virtual(func, args);
 }
 
 HiObject* Klass::subscr(HiObject* x, HiObject* y) {
-    HiList* args = new HiList();
+    HiList* args = HiList::new_instance();
     args->append(y);
     return find_and_call(x, args, ST(getitem));
 }
 
 void Klass::store_subscr(HiObject* x, HiObject* y, HiObject* z) {
-    HiList* args = new HiList();
+    HiList* args = HiList::new_instance();
     args->append(y);
     args->append(z);
     find_and_call(x, args, ST(setitem));
 }
 
 void Klass::del_subscr(HiObject* x, HiObject* y) {
-    HiList* args = new HiList();
+    HiList* args = HiList::new_instance();
     args->append(y);
     find_and_call(x, args, ST(delitem));
 }
@@ -241,7 +241,7 @@ HiObject* Klass::allocate_instance(HiList* args) {
 }
 
 HiObject* Klass::add(HiObject* lhs, HiObject* rhs) {
-    HiList* args = new HiList();
+    HiList* args = HiList::new_instance();
     args->append(rhs);
     return find_and_call(lhs, args, ST(add));
 }

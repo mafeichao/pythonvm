@@ -6,6 +6,8 @@
 
 class HiList;
 
+const int DEFAULT_SIZE = 8;
+
 class DictKlass : public Klass {
 private:
     DictKlass();
@@ -35,9 +37,10 @@ class HiDict : public HiObject {
 friend class DictKlass;
 private:
     Map<HiObject*, HiObject*>* _map;
+    HiDict();
 
 public:
-    HiDict();
+    static HiDict* new_instance();
     HiDict(Map<HiObject*, HiObject*>* map);
     Map<HiObject*, HiObject*>* map()   { return _map; }
     void put(HiObject* k, HiObject* v) { _map->put(k, v); }

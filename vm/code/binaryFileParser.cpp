@@ -10,6 +10,9 @@
 #include "util/handles.hpp"
 
 BinaryFileParser::BinaryFileParser(BufferedInputStream* buf_file_stream) {
+    _string_table = ArrayList<HiString*>::new_instance(8);
+    _cache        = ArrayList<HiObject*>::new_instance(8);
+
     file_stream = buf_file_stream;
     _debug_level = 0;
 }
@@ -37,14 +40,14 @@ CodeObject* BinaryFileParser::parse() {
         // 这里需要先占位
         int index = 0;
         if (ref_flag) {
-            index = _cache.length();
-            _cache.add(nullptr);
+            index = _cache->length();
+            _cache->add(nullptr);
         }
 
         Handle<CodeObject*> result = get_code_object();
 
         if (ref_flag) {
-            _cache.set(index, result);
+            _cache->set(index, result);
         }
 
         printf("parse OK!\n");
@@ -96,7 +99,7 @@ HiString* BinaryFileParser::get_string(bool long_string) {
         str_value[i] = file_stream->read();
     }
 
-    HiString* s = new HiString(str_value, length);
+    HiString* s = HiString::new_instance(str_value, length);
     delete[] str_value;
 
     return s;
@@ -122,15 +125,15 @@ HiString* BinaryFileParser::get_name() {
         s = get_string(false);
     }
     else if (ch == 'R') {
-        s = _string_table.get(file_stream->read_int());
+        s = _string_table->get(file_stream->read_int());
     }
     else if (ch == 'r') {
-        s = _cache.get(file_stream->read_int())->as<HiString>();
+        s = _cache->get(file_stream->read_int())->as<HiString>();
     }
      
     if (ref_flag) {
-        _cache.add(s);
-        log(_cache.length() - 1, s);
+        _cache->add(s);
+        log(_cache->length() - 1, s);
     }
 
     return s;
@@ -148,8 +151,8 @@ HiString* BinaryFileParser::get_byte_codes() {
     HiString* s = get_string(true);
 
     if (ref_flag) {
-        _cache.add(s);
-        log(_cache.length() - 1, s);
+        _cache->add(s);
+        log(_cache->length() - 1, s);
     }
 
     return s;
@@ -165,7 +168,7 @@ HiString* BinaryFileParser::get_no_table() {
         s =  get_string(true);
     }
     else if (ch == 'r') {
-        s = _cache.get(file_stream->read_int())->as<HiString>();
+        s = _cache->get(file_stream->read_int())->as<HiString>();
     }
     else {
         file_stream->unread();
@@ -173,8 +176,8 @@ HiString* BinaryFileParser::get_no_table() {
     }
 
     if (ref_flag) {
-        _cache.add(s);
-        log(_cache.length() - 1, s);
+        _cache->add(s);
+        log(_cache->length() - 1, s);
     }
     
     return s;
@@ -187,21 +190,21 @@ HiList* BinaryFileParser::try_to_get_tuple() {
 
     Handle<HiList*> result = NULL;
     if (obj_type == ')') {
-        int index = _cache.length();
+        int index = _cache->length();
         if (ref_flag) {
-            _cache.add(nullptr);
+            _cache->add(nullptr);
         }
 
         result = get_tuple();
         
         if (ref_flag) {
-            _cache.set(index, result);
+            _cache->set(index, result);
             log(index, result);
         }
     }
     else if (obj_type == 'r') {
         int index = file_stream->read_int();
-        result = _cache.get(index)->as<HiList>();
+        result = _cache->get(index)->as<HiList>();
     }
     else {
         file_stream->unread();
@@ -233,7 +236,7 @@ HiList* BinaryFileParser::get_cell_vars() {
 
 HiList* BinaryFileParser::get_tuple() {
     unsigned char length = (unsigned char)file_stream->read();
-    Handle<HiList*> list = new HiList();
+    Handle<HiList*> list = HiList::new_instance();
     int index = 0;
 
     for (int i = 0; i < length; i++) {
@@ -245,8 +248,8 @@ HiList* BinaryFileParser::get_tuple() {
 
         // 需要先占位，最后再设置，避免递归结构出问题
         if (ref_flag) {
-            index = _cache.length();
-            _cache.add(nullptr);
+            index = _cache->length();
+            _cache->add(nullptr);
         }
 
         switch (obj_type) {
@@ -277,10 +280,10 @@ HiList* BinaryFileParser::get_tuple() {
             obj = get_string(true);
             break;
         case 'R':
-            obj = _string_table.get(file_stream->read_int());
+            obj = _string_table->get(file_stream->read_int());
             break;
         case 'r':
-            obj = _cache.get(file_stream->read_int());
+            obj = _cache->get(file_stream->read_int());
             break;
         case ')':
             obj = get_tuple();
@@ -291,7 +294,7 @@ HiList* BinaryFileParser::get_tuple() {
 
         list->append(obj);
         if (ref_flag) {
-            _cache.set(index, obj);
+            _cache->set(index, obj);
             log(index, obj);
         }
     }

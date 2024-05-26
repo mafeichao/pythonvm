@@ -16,7 +16,7 @@ CodeKlass* CodeKlass::get_instance() {
 }
 
 CodeKlass::CodeKlass() {
-    set_name(new HiString("code"));
+    set_name(HiString::new_instance("code"));
     add_super(ObjectKlass::get_instance());
     HiTypeObject* dict_type_obj = new HiTypeObject();
     set_type_object(dict_type_obj);

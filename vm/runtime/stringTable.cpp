@@ -17,22 +17,22 @@ void StringTable::destroy() {
 }
 
 StringTable::StringTable() {
-    add_str  = new HiString("__add__");
-    build_class_str = new HiString("__build_class__");
-    call_str = new HiString("__call__");
-    delitem_str = new HiString("__delitem__");
-    getitem_str = new HiString("__getitem__");
-    getattr_str = new HiString("__getattr__");
-    init_str = new HiString("__init__");
-    len_str  = new HiString("__len__");
-    mro_str  = new HiString("__mro__");
-    name_str = new HiString("__name__");
-    _new_str = new HiString("__new__");
-    next_str = new HiString("__next__");
-    repr_str = new HiString("__repr__");
-    setattr_str = new HiString("__setattr__");
-    setitem_str = new HiString("__setitem__");
-    str_str  = new HiString("__str__");
+    add_str  = HiString::new_instance("__add__");
+    build_class_str = HiString::new_instance("__build_class__");
+    call_str = HiString::new_instance("__call__");
+    delitem_str = HiString::new_instance("__delitem__");
+    getitem_str = HiString::new_instance("__getitem__");
+    getattr_str = HiString::new_instance("__getattr__");
+    init_str = HiString::new_instance("__init__");
+    len_str  = HiString::new_instance("__len__");
+    mro_str  = HiString::new_instance("__mro__");
+    name_str = HiString::new_instance("__name__");
+    _new_str = HiString::new_instance("__new__");
+    next_str = HiString::new_instance("__next__");
+    repr_str = HiString::new_instance("__repr__");
+    setattr_str = HiString::new_instance("__setattr__");
+    setitem_str = HiString::new_instance("__setitem__");
+    str_str  = HiString::new_instance("__str__");
 }
 
 void StringTable::oops_do(OopClosure* f) {

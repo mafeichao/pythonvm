@@ -6,6 +6,7 @@
 #include "util/stack.hpp"
 #include "util/map.hpp"
 #include "util/handles.hpp"
+#include "object/arrayList.hpp"
 #include "object/hiObject.hpp"
 
 ScavengeOopClosure::ScavengeOopClosure(Space* from, Space* to, Space* meta) {

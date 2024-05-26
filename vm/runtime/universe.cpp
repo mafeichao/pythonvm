@@ -21,11 +21,11 @@ ArrayList<Klass*>* Universe::klasses = nullptr;
 
 void Universe::genesis() {
     heap = Heap::get_instance();
-    klasses = new ArrayList<Klass*>();
+    klasses = ArrayList<Klass*>::new_instance(8);
 
-    HiTrue       = new HiString("True");
-    HiFalse      = new HiString("False");
-    HiNone       = new HiString("None");
+    HiTrue       = HiString::new_instance("True");
+    HiFalse      = HiString::new_instance("False");
+    HiNone       = HiString::new_instance("None");
 
     ObjectKlass::get_instance()->initialize();
     TypeKlass::get_instance()->initialize();

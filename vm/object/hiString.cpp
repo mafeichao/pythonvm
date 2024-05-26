@@ -7,6 +7,7 @@
 #include "runtime/functionObject.hpp"
 #include "memory/heap.hpp"
 #include "memory/oopClosure.hpp"
+#include "util/handles.hpp"
 #include <new>
 #include <cstring>
 
@@ -25,13 +26,13 @@ StringKlass* StringKlass::get_instance() {
 }
 
 void StringKlass::initialize() {
-    HiDict* klass_dict = new HiDict();
-    HiString* name = new HiString("upper");
+    HiDict* klass_dict = HiDict::new_instance();
+    HiString* name = HiString::new_instance("upper");
     klass_dict->put(name, new FunctionObject(string_upper, name));
 
     set_klass_dict(klass_dict);
     (new HiTypeObject())->set_own_klass(this);
-    set_name(new HiString("str"));
+    set_name(HiString::new_instance("str"));
 
     add_super(ObjectKlass::get_instance());
     order_supers();
@@ -73,28 +74,53 @@ HiObject* StringKlass::len(HiObject* obj) {
     return new HiInteger(obj->as<HiString>()->length());
 }
 
-HiString::HiString(const char* x) {
-    _length = strlen(x);
-    void* temp = Universe::heap->allocate(sizeof(char) * (_length));
-    _value = new (temp)char[_length];
+HiObject* StringKlass::add(HiObject* x, HiObject* y) {
+    Handle<HiString*> sx = x->as<HiString>();
+    Handle<HiString*> sy = y->as<HiString>();
 
-    for (int i = 0; i < _length; i++) {
-        _value[i] = x[i];
+    HiString* z = HiString::new_instance(sx->length() + sy->length());
+
+    for (int i = 0; i < sx->length(); i++) {
+        z->_value[i] = sx->_value[i];
     }
 
-    set_klass(StringKlass::get_instance());
+    for (int i = 0; i < sy->length(); i++) {
+        z->_value[sx->length() + i] = sy->_value[i];
+    }
+
+    return z;
 }
 
-HiString::HiString(const char * x, const int length) {
-    _length = length;
-    _value = new (Universe::heap->allocate(sizeof(char) * _length)) char[length];
+HiString::HiString() {
+    set_klass(StringKlass::get_instance());
+    _value = nullptr;
+}
+
+HiString* HiString::new_instance(int length) {
+    Handle<HiString*> s = new HiString();
+    s->_length = length;
+    void* temp = Universe::heap->allocate(sizeof(char) * length);
+    s->_value = new (temp) char[length];
+
+    return s;
+}
+
+HiString* HiString::new_instance(const char* x) {
+    return HiString::new_instance(x, strlen(x));
+}
+
+HiString* HiString::new_instance(const char * x, const int length) {
+    Handle<HiString*> s = new HiString();
+    s->_length = length;
+    void* temp = Universe::heap->allocate(sizeof(char) * length);
+    s->_value = new (temp) char[length];
 
     // do not use strcpy here, since '\0' is allowed.
     for (int i = 0; i < length; i++) {
-        _value[i] = x[i];
+        s->_value[i] = x[i];
     }
 
-    set_klass(StringKlass::get_instance());
+    return s;
 }
 
 HiObject* StringKlass::subscr(HiObject* x, HiObject* y) {
@@ -104,7 +130,7 @@ HiObject* StringKlass::subscr(HiObject* x, HiObject* y) {
     HiString * sx = (HiString*)x;
     HiInteger* iy = (HiInteger*)y;
 
-    return new HiString(&(sx->value()[iy->value()]), 1);
+    return HiString::new_instance(&(sx->value()[iy->value()]), 1);
 }
 
 HiObject* StringKlass::less(HiObject* x, HiObject* y) {
@@ -151,14 +177,14 @@ HiObject* string_upper(HiList* args, HiDict* kwargs) {
             v[i] = c;
     }
 
-    str_obj = new HiString(v, length);
+    str_obj = HiString::new_instance(v, length);
     delete[] v;
     return str_obj;
 }
 
 HiObject* StringKlass::allocate_instance(HiList* args) {
     if (!args || args->length() == 0) {
-        return new HiString("");
+        return HiString::new_instance("");
     }
     else
         return args->get(0)->as<HiString>();

@@ -12,9 +12,11 @@ class OopClosure;
 
 class FrameObject {
 public:
-    FrameObject(Handle<CodeObject*> codes);
-    FrameObject(Handle<FunctionObject*> func,
+    FrameObject();
+    void initialize(Handle<CodeObject*> codes);
+    void initialize(Handle<FunctionObject*> func,
         Handle<HiList*> args, Handle<HiList*> kwargs);
+
     ~FrameObject() {};
 
     HiList* _stack;

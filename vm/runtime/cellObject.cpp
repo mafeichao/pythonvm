@@ -14,8 +14,8 @@ CellKlass* CellKlass::get_instance() {
 }
 
 CellKlass::CellKlass() {
-    set_klass_dict(new HiDict());
-    set_name(new HiString("cell"));
+    set_klass_dict(HiDict::new_instance());
+    set_name(HiString::new_instance("cell"));
 }
 
 CellObject::CellObject(HiList* t, int i) : 

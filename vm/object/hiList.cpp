@@ -8,7 +8,11 @@
 #include "runtime/functionObject.hpp"
 #include "runtime/interpreter.hpp"
 #include "memory/oopClosure.hpp"
-#include <assert.h>
+#include "memory/heap.hpp"
+#include <new>
+#include <cassert>
+
+using namespace std;
 
 ListKlass* ListKlass::instance = nullptr;
 
@@ -20,25 +24,25 @@ ListKlass* ListKlass::get_instance() {
 }
 
 void ListKlass::initialize() {
-    HiDict * klass_dict = new HiDict();
-    HiString* name = new HiString("append");
+    HiDict * klass_dict = HiDict::new_instance();
+    HiString* name = HiString::new_instance("append");
     klass_dict->put(name, new FunctionObject(list_append, name));
-    name = new HiString("index");
+    name = HiString::new_instance("index");
     klass_dict->put(name, new FunctionObject(list_index, name));
-    name = new HiString("pop");
+    name = HiString::new_instance("pop");
     klass_dict->put(name, new FunctionObject(list_pop, name));
-    name = new HiString("remove");
+    name = HiString::new_instance("remove");
     klass_dict->put(name, new FunctionObject(list_remove, name));
-    name = new HiString("reverse");
+    name = HiString::new_instance("reverse");
     klass_dict->put(name, new FunctionObject(list_reverse, name));
-    name = new HiString("sort");
+    name = HiString::new_instance("sort");
     klass_dict->put(name, new FunctionObject(list_sort, name));
-    name = new HiString("extend");
+    name = HiString::new_instance("extend");
     klass_dict->put(name, new FunctionObject(list_extend, name));
 
     set_klass_dict(klass_dict);
     (new HiTypeObject())->set_own_klass(this);
-    set_name(new HiString("list"));
+    set_name(HiString::new_instance("list"));
 
     add_super(ObjectKlass::get_instance());
     order_supers();
@@ -175,7 +179,14 @@ size_t ListKlass::size() {
 
 HiList::HiList() {
     set_klass(ListKlass::get_instance());
-    _inner_list = new ArrayList<HiObject*>();
+    _inner_list = nullptr;
+}
+
+HiList* HiList::new_instance() {
+    Handle<HiList*> result = new HiList();
+    ArrayList<HiObject*>* inner = ArrayList<HiObject*>::new_instance(8);
+    result->set_inner_list(inner);;
+    return result;
 }
 
 HiList::HiList(ObjList ol) {
@@ -273,7 +284,7 @@ ListIteratorKlass* ListIteratorKlass::get_instance() {
 }
 
 ListIteratorKlass::ListIteratorKlass() {
-    HiDict* klass_dict = new HiDict();
+    HiDict* klass_dict = HiDict::new_instance();
     klass_dict->put(ST(next), new FunctionObject(listiterator_next, ST(next)));
     set_klass_dict(klass_dict);
 }

@@ -5,17 +5,18 @@
 #include "object/hiList.hpp"
 #include "object/typeObject.hpp"
 #include "memory/heap.hpp"
+#include "memory/oopClosure.hpp"
 #include "runtime/cellObject.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
-#include "memory/oopClosure.hpp"
+#include "util/handles.hpp"
 #include <cstdint>
 
 using namespace std;
 
 HiDict* HiObject::obj_dict() {
     if (!_obj_dict) {
-        _obj_dict = new HiDict();
+        _obj_dict = HiDict::new_instance();
     }
 
     return _obj_dict;
@@ -213,10 +214,10 @@ ObjectKlass::ObjectKlass() {
 }
 
 void ObjectKlass::initialize() {
-    set_name(new HiString("object"));
+    set_name(HiString::new_instance("object"));
     (new HiTypeObject())->set_own_klass(this);
     set_super_list(nullptr);
-    set_klass_dict(new HiDict());
+    set_klass_dict(HiDict::new_instance());
 
     order_supers();
 }
