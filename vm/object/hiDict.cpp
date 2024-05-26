@@ -6,6 +6,7 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/stringTable.hpp"
+#include "memory/oopClosure.hpp"
 #include <assert.h>
 
 DictKlass* DictKlass::instance = NULL;
@@ -24,18 +25,18 @@ DictKlass::DictKlass() {
 void DictKlass::initialize() {
     HiDict* klass_dict = new HiDict();
 
-    klass_dict->put(new HiString("setdefault"),
-        new FunctionObject(dict_set_default));
-    klass_dict->put(new HiString("pop"),
-        new FunctionObject(dict_pop));
-    klass_dict->put(new HiString("get"),
-        new FunctionObject(dict_get));
-    klass_dict->put(new HiString("keys"),
-            new FunctionObject(dict_keys));
-    klass_dict->put(new HiString("values"),
-            new FunctionObject(dict_values));
-    klass_dict->put(new HiString("items"),
-            new FunctionObject(dict_items));
+    HiString* name = new HiString("setdefault");
+    klass_dict->put(name, new FunctionObject(dict_set_default, name));
+    name = new HiString("pop");
+    klass_dict->put(name, new FunctionObject(dict_pop, name));
+    name = new HiString("get");
+    klass_dict->put(name, new FunctionObject(dict_get, name));
+    name = new HiString("keys");
+    klass_dict->put(name, new FunctionObject(dict_keys, name));
+    name = new HiString("values");
+    klass_dict->put(name, new FunctionObject(dict_values, name));
+    name = new HiString("items");
+    klass_dict->put(name, new FunctionObject(dict_items, name));
 
     set_klass_dict(klass_dict);
     (new HiTypeObject())->set_own_klass(this);
@@ -142,8 +143,8 @@ DictIteratorKlass* DictIteratorKlass::get_instance() {
 
 DictIteratorKlass::DictIteratorKlass() {
     HiDict* klass_dict = new HiDict();
-    klass_dict->put(StringTable::get_instance()->next_str,
-            new FunctionObject(dictiterator_next));
+    klass_dict->put(ST(next),
+            new FunctionObject(dictiterator_next, ST(next)));
     set_klass_dict(klass_dict);
 }
 
@@ -235,8 +236,8 @@ DictViewKlass<iter_type>::DictViewKlass() {
         "dict_items",
     };
     HiDict* klass_dict = new HiDict();
-    klass_dict->put(StringTable::get_instance()->next_str,
-            new FunctionObject(dict_view_next<iter_type>));
+    klass_dict->put(ST(next),
+            new FunctionObject(dict_view_next<iter_type>, ST(next)));
     set_klass_dict(klass_dict);
     set_name(new HiString(klass_names[iter_type]));
 }
@@ -294,3 +295,6 @@ HiObject* DictViewKlass<iter_type>::contains(HiObject* x, HiObject* y) {
     }
 }
 
+void DictKlass::oops_do(OopClosure* f, HiObject* obj) {
+    f->do_map(&obj->as<HiDict>()->_map);
+}

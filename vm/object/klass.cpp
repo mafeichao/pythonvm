@@ -10,6 +10,7 @@
 #include "object/hiString.hpp"
 #include "object/typeObject.hpp"
 #include "memory/heap.hpp"
+#include "memory/oopClosure.hpp"
 
 Klass::Klass() {
     Universe::klasses->add(this);
@@ -264,6 +265,25 @@ HiObject* Klass::find_and_call(HiObject* lhs, HiList* args, HiObject* func_name)
     printf(" Error : unsupport operation for class ");
     assert(false);
     return Universe::HiNone;
+}
+
+// this function will visit all children
+void Klass::oops_do(OopClosure* closure, HiObject* obj) {
+    printf("warning: klass oops_do for ");
+    _name->print();
+    printf("\n");
+}
+
+void Klass::oops_do(OopClosure* f) {
+    f->do_oop((HiObject**)&_super);
+    f->do_oop((HiObject**)&_mro);
+    f->do_oop((HiObject**)&_name);
+    f->do_oop((HiObject**)&_klass_dict);
+    f->do_oop((HiObject**)&_type_object);
+}
+
+size_t Klass::size() {
+    return sizeof(HiObject);
 }
 
 void* Klass::operator new(size_t size) {

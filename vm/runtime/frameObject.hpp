@@ -3,15 +3,18 @@
 
 #include "code/codeObject.hpp"
 #include "object/arrayList.hpp"
+#include "util/handles.hpp"
 
 class FunctionObject;
 class HiDict;
 class HiList;
+class OopClosure;
 
 class FrameObject {
 public:
-    FrameObject(CodeObject* codes);
-    FrameObject(FunctionObject* func, HiList* args, HiList* kwargs);
+    FrameObject(Handle<CodeObject*> codes);
+    FrameObject(Handle<FunctionObject*> func,
+        Handle<HiList*> args, Handle<HiList*> kwargs);
     ~FrameObject() {};
 
     HiList* _stack;
@@ -53,6 +56,8 @@ public:
     unsigned char get_op_code();
     int  get_op_arg();
     void report_error(const char* msg, HiObject* func_name, HiObject* arg_name);
+
+    void oops_do(OopClosure* f);
 };
 
 #endif

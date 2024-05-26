@@ -31,6 +31,9 @@ public:
     virtual HiObject* contains (HiObject* x, HiObject* y);
 
     virtual HiObject* allocate_instance(HiList* args);
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 class HiList : public HiObject {
@@ -72,9 +75,13 @@ private:
 
 public:
     static ListIteratorKlass* get_instance();
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 class ListIterator : public HiObject {
+friend ListIteratorKlass;
 private:
     HiList*   _owner;
     int       _iter_cnt;

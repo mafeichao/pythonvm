@@ -10,11 +10,12 @@
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
 #include "object/typeObject.hpp"
+#include "memory/oopClosure.hpp"
 #include "util/map.hpp"
+#include "util/handles.hpp"
 
 #include <string.h>
 
-#define PUSH(x)       _frame->stack()->append((x))
 #define POP()         _frame->stack()->pop()
 #define TOP()         _frame->stack()->top()
 
@@ -45,12 +46,22 @@ Interpreter::Interpreter() {
     _builtins->put(new HiString("list"),     ListKlass::get_instance()->type_object());
     _builtins->put(new HiString("dict"),     DictKlass::get_instance()->type_object());
 
-    _builtins->put(new HiString("print"),       new FunctionObject(object_print));
-    _builtins->put(new HiString("len"),         new FunctionObject(object_len));
-    _builtins->put(new HiString("repr"),        new FunctionObject(object_repr));
-    _builtins->put(new HiString("isinstance"),  new FunctionObject(isinstance));
+    Handle<HiString*> name = new HiString("print");
+    _builtins->put(name,         new FunctionObject(object_print, name));
+    name = new HiString("len");
+    _builtins->put(name,         new FunctionObject(object_len, name));
+    name = new HiString("repr");
+    _builtins->put(name,         new FunctionObject(object_repr, name));
+    name = new HiString("isinstance");
+    _builtins->put(name,         new FunctionObject(isinstance, name));
+    name = new HiString("sysgc");
+    _builtins->put(name,         new FunctionObject(sysgc, name));
 
-    _builtins->put(ST(build_class),             new FunctionObject(build_type_object));
+    _builtins->put(ST(build_class), new FunctionObject(build_type_object, ST(build_class)));
+}
+
+void Interpreter::PUSH(Handle<HiObject*> x) {
+    _frame->_stack->append(x);
 }
 
 void Interpreter::destroy() {
@@ -58,9 +69,10 @@ void Interpreter::destroy() {
     _instance = nullptr;
 }
 
-void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) {
+void Interpreter::build_frame(Handle<HiObject*> callable, 
+    Handle<HiList*> args, Handle<HiList*> kwargs) {
     if (MethodObject::is_method(callable)) {
-        MethodObject* method = (MethodObject*) callable;
+        Handle<MethodObject*> method = callable->as<MethodObject>();
         // return value is ignored here, because they are handled
         // by other pathes.
         if (!args) {
@@ -70,22 +82,23 @@ void Interpreter::build_frame(HiObject* callable, HiList* args, HiList* kwargs) 
         build_frame(method->func(), args, kwargs);
     }
     else if (callable->klass() == FunctionKlass::get_instance()) {
-        FrameObject* frame = new FrameObject((FunctionObject*) callable, args, kwargs);
+        FrameObject* frame = new FrameObject(callable->as<FunctionObject>(), args, kwargs);
         frame->set_sender(_frame);
         _frame = frame;
     }
     else {
-        PUSH(callable->call(args, nullptr));
+        Handle<HiObject*> result = callable->call(args, nullptr);
+        PUSH(result);
     }
 }
 
-HiObject* Interpreter::call_virtual(HiObject* func, HiList* args) {
+HiObject* Interpreter::call_virtual(Handle<HiObject*> func, Handle<HiList*> args) {
     if (MethodObject::is_native(func)) {
         // we do not create a virtual frame, but native frame.
         return func->call(args, nullptr);
     }
     else if (MethodObject::is_method(func)) {
-        MethodObject* method = (MethodObject*) func;
+        MethodObject* method = func->as<MethodObject>();
         // return value is ignored here, because they are handled
         // by other pathes.
         if (!args) {
@@ -97,7 +110,7 @@ HiObject* Interpreter::call_virtual(HiObject* func, HiList* args) {
     else if (MethodObject::is_function(func)) {
         int size = args ? args->length() : 0;
 
-        FrameObject* frame = new FrameObject((FunctionObject*) func, args, nullptr);
+        FrameObject* frame = new FrameObject(func->as<FunctionObject>(), args, nullptr);
 
         enter_frame(frame);
         _frame->set_entry_frame(true);
@@ -136,12 +149,16 @@ void Interpreter::run(CodeObject* codes) {
 }
 
 void Interpreter::eval_frame() {
-    FunctionObject* fo;
-    HiList* args = nullptr;
-    HiList* kwargs = nullptr;
-    HiList* lst;
-    HiInteger* lhs, * rhs;
-    HiObject* v, * w, * u, * attr;
+    Handle<FunctionObject*> fo = nullptr;
+    Handle<HiList*> args = nullptr;
+    Handle<HiList*> kwargs = nullptr;
+    Handle<HiList*> lst = nullptr;
+    Handle<HiInteger*> lhs = nullptr;
+    Handle<HiInteger*> rhs = nullptr;
+    Handle<HiObject*> v = nullptr;
+    Handle<HiObject*> w = nullptr;
+    Handle<HiObject*> u = nullptr;
+    Handle<HiObject*> attr = nullptr;
     int arg_cnt = 0;
 
     while (_frame->has_more_codes()) {
@@ -167,7 +184,7 @@ void Interpreter::eval_frame() {
                     break;
                 }
 
-                w = _builtins->get(v);
+                w = Interpreter::get_instance()->_builtins->get(v);
                 if (w != Universe::HiNone) {
                     PUSH(w);
                     break;
@@ -244,6 +261,13 @@ void Interpreter::eval_frame() {
                 PUSH(w->add(v));
                 break;
 
+            case ByteCode::INPLACE_SUBSTRACT:
+            case ByteCode::BINARY_SUBSTRACT:
+                v = POP();
+                w = POP();
+                PUSH(w->sub(v));
+                break;
+
             case ByteCode::BINARY_MULTIPLY:
                 v = POP();
                 w = POP();
@@ -288,7 +312,7 @@ void Interpreter::eval_frame() {
                     }
                 }
                 fo->set_default(args);
-                PUSH(fo);
+                PUSH(fo());
 
                 break;
 
@@ -341,8 +365,8 @@ void Interpreter::eval_frame() {
                     }
                 }
 
-                fo = static_cast<FunctionObject*>(POP());
-                build_frame(fo, args);
+                fo = (FunctionObject*)POP();
+                build_frame(fo(), args);
 
                 if (args) {
                     args->clear();
@@ -360,7 +384,7 @@ void Interpreter::eval_frame() {
                 }
 
                 fo = static_cast<FunctionObject*>(POP());
-                build_frame(fo, args, kwargs);
+                build_frame(fo(), args, kwargs);
 
                 if (args) {
                     args->clear();
@@ -371,8 +395,8 @@ void Interpreter::eval_frame() {
             case ByteCode::CALL_FUNCTION_EX:
                 assert(op_arg == 0);
                 args = POP()->as<HiList>();
-                fo = static_cast<FunctionObject*>(POP());
-                build_frame(fo, args, kwargs);
+                fo = POP()->as<FunctionObject>();
+                build_frame(fo(), args, kwargs);
 
                 if (args) {
                     args->clear();
@@ -460,7 +484,7 @@ void Interpreter::eval_frame() {
                 while (op_arg--) {
                     lst->set(op_arg, POP());
                 }
-                PUSH(lst);
+                PUSH(lst());
                 break;
 
             case ByteCode::DELETE_SUBSCR:
@@ -488,7 +512,7 @@ void Interpreter::eval_frame() {
             case ByteCode::BUILD_MAP:
                 v = new HiDict();
                 for (int i = 0; i < op_arg; i++) {
-                    ((HiDict*)v)->put(POP(), POP());
+                    v->as<HiDict>()->put(POP(), POP());
                 }
                 PUSH(v);
                 break;
@@ -498,7 +522,7 @@ void Interpreter::eval_frame() {
 
                 v = new HiDict();
                 for (int i = 0; i < op_arg; i++) {
-                    ((HiDict*)v)->put(lst->get(op_arg - i - 1), POP());
+                    v->as<HiDict>()->put(lst->get(op_arg - i - 1), POP());
                 }
 
                 PUSH(v);
@@ -526,3 +550,12 @@ void Interpreter::eval_frame() {
         }
     }
 }
+
+void Interpreter::oops_do(OopClosure* f) {
+    f->do_oop((HiObject**)&_builtins);
+    f->do_oop((HiObject**)&_ret_value);
+
+    if (_frame)
+        _frame->oops_do(f);
+}
+

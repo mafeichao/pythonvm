@@ -45,7 +45,7 @@ public:
 
     ~Heap();
 
-    void* allocate(size_t size);
+    void* allocate(size_t size, bool force_gc = false);
     void* allocate_meta(size_t size);
     void copy_live_objects();
     double rate() { return eden->rate(); }

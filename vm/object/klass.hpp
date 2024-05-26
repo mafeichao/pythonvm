@@ -9,6 +9,7 @@ class HiString;
 class HiDict;
 class HiList;
 class HiTypeObject;
+class OopClosure;
 
 class Klass {
 private:
@@ -72,6 +73,12 @@ public:
     virtual HiObject* allocate_instance(HiList* args);
     HiObject* find_and_call(HiObject* lhs, HiList* args, HiObject* func_name);
 
+    // gc interfaces
+    // this is for objects of this type.
+    virtual void oops_do(OopClosure* closure, HiObject* obj);
+    // for klass itself only.
+    virtual void oops_do(OopClosure* closure);
+    virtual size_t size();
     void* operator new(size_t size);
 };
 

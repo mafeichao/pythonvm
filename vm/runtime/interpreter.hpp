@@ -3,9 +3,11 @@
 
 #include "code/bytecode.hpp"
 #include "code/codeObject.hpp"
+#include "util/handles.hpp"
 
 class FrameObject;
 class HiDict;
+class OopClosure;
 
 class Interpreter {
 private:
@@ -23,12 +25,18 @@ public:
     static Interpreter* get_instance();
 
     void run(CodeObject* codes);
-    void build_frame(HiObject* callable, HiList* args, HiList* kwargs = nullptr);
+    void build_frame(Handle<HiObject*> callable, 
+        Handle<HiList*> args, Handle<HiList*> kwargs = nullptr);
+
     void enter_frame     (FrameObject* frame);
     void eval_frame      ();
     void leave_frame     ();
 
-    HiObject* call_virtual    (HiObject* func, HiList* args);
+    void PUSH(Handle<HiObject*> x);
+
+    HiObject* call_virtual    (Handle<HiObject*> func, Handle<HiList*> args);
+
+    void      oops_do         (OopClosure* f);
 };
 
 #endif

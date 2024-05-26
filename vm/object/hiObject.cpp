@@ -8,6 +8,10 @@
 #include "runtime/cellObject.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
+#include "memory/oopClosure.hpp"
+#include <cstdint>
+
+using namespace std;
 
 HiDict* HiObject::obj_dict() {
     if (!_obj_dict) {
@@ -109,6 +113,33 @@ HiObject* HiObject::iter() {
     return klass()->iter(this);
 }
 
+/*
+ * Interfaces for GC.
+ */
+void HiObject::oops_do(OopClosure* closure) {
+    // object does not know who to visit, klass knows
+    closure->do_oop((HiObject**)&_obj_dict);
+    klass()->oops_do(closure, this);
+}
+
+char* HiObject::new_address() {
+    if ((_mark_word & 0x1) == 0x1)
+        return (char*)(_mark_word & ((uintptr_t)-8));
+
+    return NULL;
+}
+
+void HiObject::set_new_address(char* addr) {
+    if (!addr)
+        return;
+
+    _mark_word = ((uintptr_t)addr) | 0x1;
+}
+
+size_t HiObject::size() {
+    return klass()->size();
+}
+
 void* HiObject::operator new(size_t size) {
     return Universe::heap->allocate(size);
 }
@@ -122,6 +153,12 @@ template<>
 HiList* HiObject::as<HiList>() {
     assert(this->klass() == ListKlass::get_instance());
     return (HiList*)this;
+}
+
+template<>
+ListIterator* HiObject::as<ListIterator>() {
+    assert(klass() == ListIteratorKlass::get_instance());
+    return (ListIterator*)this;
 }
 
 template<>
@@ -157,9 +194,14 @@ HiTypeObject* HiObject::as<HiTypeObject>() {
 template<>
 FunctionObject* HiObject::as<FunctionObject>() {
     assert(this->klass() == FunctionKlass::get_instance() ||
-        this->klass() == NativeFunctionKlass::get_instance() ||
-        this->klass() == MethodKlass::get_instance());
+        klass() == NativeFunctionKlass::get_instance());
     return (FunctionObject*)this;
+}
+
+template<>
+MethodObject* HiObject::as<MethodObject>() {
+    assert(klass() == MethodKlass::get_instance());
+    return (MethodObject*)this;
 }
 
 /*

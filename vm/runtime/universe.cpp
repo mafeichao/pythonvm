@@ -7,6 +7,7 @@
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
 #include "object/typeObject.hpp"
+#include "memory/oopClosure.hpp"
 #include "memory/heap.hpp"
 #include "util/map.hpp"
 
@@ -14,6 +15,8 @@ HiString* Universe::HiTrue   = nullptr;
 HiString* Universe::HiFalse  = nullptr;
 HiString* Universe::HiNone   = nullptr;
 Heap*     Universe::heap     = nullptr;
+
+CodeObject* Universe::main_code      = nullptr;
 ArrayList<Klass*>* Universe::klasses = nullptr;
 
 void Universe::genesis() {
@@ -30,9 +33,21 @@ void Universe::genesis() {
     DictKlass::get_instance()->initialize();
     StringKlass::get_instance()->initialize();
     ListKlass::get_instance()->initialize();
+
+    FunctionKlass::get_instance();
+    MethodKlass::get_instance();
 }
 
 void Universe::destroy() {
     delete heap;
+}
+
+void Universe::oops_do(OopClosure* closure) {
+    closure->do_oop((HiObject**)&HiTrue);
+    closure->do_oop((HiObject**)&HiFalse);
+    closure->do_oop((HiObject**)&HiNone);
+
+    closure->do_oop((HiObject**)&main_code);
+    closure->do_array_list(&klasses);
 }
 

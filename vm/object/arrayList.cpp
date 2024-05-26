@@ -4,6 +4,7 @@
 #include "object/klass.hpp"
 #include "runtime/universe.hpp"
 #include "memory/heap.hpp"
+#include "memory/oopClosure.hpp"
 #include <new>
 #include <cstdio>
 
@@ -27,7 +28,7 @@ void ArrayList<T>::add(T t) {
 
 template <typename T>
 void ArrayList<T>::insert(int index, T t) {
-    add(NULL);
+    add((T)0);
 
     for (int i = _length - 1; i > index; i--) {
         _array[i] = _array[i - 1];
@@ -38,7 +39,7 @@ void ArrayList<T>::insert(int index, T t) {
 
 template <typename T>
 void ArrayList<T>::expand() {
-    void* temp = Universe::heap->allocate(sizeof(T) * (_length << 1));
+    void* temp = Universe::heap->allocate(sizeof(T) * (_length << 1), false);
     T* new_array = new (temp)T[_length << 1];
     for (int i = 0; i < _length; i++) {
         new_array[i] = _array[i];
@@ -124,6 +125,45 @@ int ArrayList<Klass*>::index(Klass* t) {
     return -1;
 }
 
+template <>
+int ArrayList<char>::index(char t) {
+    for (int i = 0; i < _length; i++) {
+        if (_array[i] == t) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+template <typename T>
+void ArrayList<T>::oops_do(OopClosure* closure) {
+    closure->do_raw_mem((char**)(&_array),
+            _capacity * sizeof(T));
+}
+
+template <>
+void ArrayList<Klass*>::oops_do(OopClosure* closure) {
+    closure->do_raw_mem((char**)(&_array),
+            _capacity * sizeof(Klass*));
+
+    for (int i = 0; i < _length; i++) {
+        closure->do_klass((Klass**)&_array[i]);
+    }
+    return;
+}
+
+template <>
+void ArrayList<HiObject*>::oops_do(OopClosure* closure) {
+    closure->do_raw_mem((char**)(&_array),
+            _capacity * sizeof(HiObject*));
+
+    for (int i = 0; i < _length; i++) {
+        closure->do_oop((HiObject**)&_array[i]);
+    }
+}
+
 class Klass;
 template class ArrayList<Klass*>;
 
+template class ArrayList<char>;

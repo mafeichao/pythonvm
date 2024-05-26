@@ -5,6 +5,7 @@
 #include "object/hiDict.hpp"
 #include "object/typeObject.hpp"
 #include "runtime/universe.hpp"
+#include "memory/oopClosure.hpp"
 
 #include <stdio.h>
 
@@ -135,13 +136,8 @@ HiObject* IntegerKlass::add(HiObject* x, HiObject* y) {
 }
 
 HiObject* IntegerKlass::sub(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
-
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    return new HiInteger(ix->value() - iy->value());
+    return new HiInteger(x->as<HiInteger>()->value() 
+        - y->as<HiInteger>()->value());
 }
 
 HiObject* IntegerKlass::mul(HiObject* x, HiObject* y) {
@@ -181,5 +177,14 @@ HiObject* IntegerKlass::allocate_instance(HiList* args) {
         return new HiInteger(0);
     else
         return nullptr;
+}
+
+size_t IntegerKlass::size() {
+    return sizeof(HiInteger);
+}
+
+void IntegerKlass::oops_do(OopClosure* f, HiObject* obj) {
+    // do nothing
+    // only overwrite warning message in Klass
 }
 

@@ -1,5 +1,6 @@
 #include "runtime/stringTable.hpp"
 #include "object/hiString.hpp"
+#include "memory/oopClosure.hpp"
 
 StringTable* StringTable::instance = NULL;
 
@@ -34,3 +35,21 @@ StringTable::StringTable() {
     str_str  = new HiString("__str__");
 }
 
+void StringTable::oops_do(OopClosure* f) {
+    f->do_oop((HiObject**)&add_str);
+    f->do_oop((HiObject**)&build_class_str);
+    f->do_oop((HiObject**)&call_str);
+    f->do_oop((HiObject**)&delitem_str);
+    f->do_oop((HiObject**)&getitem_str);
+    f->do_oop((HiObject**)&getattr_str);
+    f->do_oop((HiObject**)&init_str);
+    f->do_oop((HiObject**)&len_str);
+    f->do_oop((HiObject**)&mro_str);
+    f->do_oop((HiObject**)&_new_str);
+    f->do_oop((HiObject**)&name_str);
+    f->do_oop((HiObject**)&next_str);
+    f->do_oop((HiObject**)&repr_str);
+    f->do_oop((HiObject**)&setitem_str);
+    f->do_oop((HiObject**)&setattr_str);
+    f->do_oop((HiObject**)&str_str);
+}

@@ -3,6 +3,7 @@
 #include "object/hiObject.hpp"
 #include "object/hiString.hpp"
 #include "memory/heap.hpp"
+#include "memory/oopClosure.hpp"
 
 template <typename K, typename V>
 Map<K, V>::Map() {
@@ -88,6 +89,16 @@ K Map<K, V>::get_key(int index) {
 template <typename K, typename V>
 V Map<K, V>::get_value(int index) {
     return _entries[index]._v;
+}
+
+template <typename K, typename V>
+void Map<K, V>::oops_do(OopClosure* closure) {
+    closure->do_raw_mem((char**)(&_entries),
+            _capacity * sizeof(MapEntry<K, V>));
+    for (int i = 0; i < _length; i++) {
+        closure->do_oop(&(_entries[i]._k));
+        closure->do_oop(&(_entries[i]._v));
+    }
 }
 
 template <typename K, typename V>

@@ -14,9 +14,9 @@ int main(int argc, char** argv) {
 
     BufferedInputStream stream(argv[1]);
     BinaryFileParser parser(&stream);
-    CodeObject* main_code = parser.parse();
+    Universe::main_code = parser.parse();
 
-    Interpreter::get_instance()->run(main_code);
+    Interpreter::get_instance()->run(Universe::main_code);
 
     StringTable::destroy();
     Interpreter::destroy();

@@ -7,6 +7,7 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/interpreter.hpp"
+#include "memory/oopClosure.hpp"
 #include <assert.h>
 
 ListKlass* ListKlass::instance = nullptr;
@@ -20,20 +21,20 @@ ListKlass* ListKlass::get_instance() {
 
 void ListKlass::initialize() {
     HiDict * klass_dict = new HiDict();
-    klass_dict->put(new HiString("append"), 
-        new FunctionObject(list_append));
-    klass_dict->put(new HiString("index"), 
-        new FunctionObject(list_index));
-    klass_dict->put(new HiString("pop"),
-        new FunctionObject(list_pop));
-    klass_dict->put(new HiString("remove"),
-        new FunctionObject(list_remove));
-    klass_dict->put(new HiString("reverse"),
-        new FunctionObject(list_reverse));
-    klass_dict->put(new HiString("sort"),
-        new FunctionObject(list_sort));
-    klass_dict->put(new HiString("extend"),
-        new FunctionObject(list_extend));
+    HiString* name = new HiString("append");
+    klass_dict->put(name, new FunctionObject(list_append, name));
+    name = new HiString("index");
+    klass_dict->put(name, new FunctionObject(list_index, name));
+    name = new HiString("pop");
+    klass_dict->put(name, new FunctionObject(list_pop, name));
+    name = new HiString("remove");
+    klass_dict->put(name, new FunctionObject(list_remove, name));
+    name = new HiString("reverse");
+    klass_dict->put(name, new FunctionObject(list_reverse, name));
+    name = new HiString("sort");
+    klass_dict->put(name, new FunctionObject(list_sort, name));
+    name = new HiString("extend");
+    klass_dict->put(name, new FunctionObject(list_extend, name));
 
     set_klass_dict(klass_dict);
     (new HiTypeObject())->set_own_klass(this);
@@ -164,6 +165,14 @@ HiObject* ListKlass::iter(HiObject* x) {
     return new ListIterator(x->as<HiList>());
 }
 
+void ListKlass::oops_do(OopClosure* f, HiObject* obj) {
+    f->do_array_list(&obj->as<HiList>()->_inner_list);
+}
+
+size_t ListKlass::size() {
+    return sizeof(HiList);
+}
+
 HiList::HiList() {
     set_klass(ListKlass::get_instance());
     _inner_list = new ArrayList<HiObject*>();
@@ -265,9 +274,16 @@ ListIteratorKlass* ListIteratorKlass::get_instance() {
 
 ListIteratorKlass::ListIteratorKlass() {
     HiDict* klass_dict = new HiDict();
-    klass_dict->put(StringTable::get_instance()->next_str,
-            new FunctionObject(listiterator_next));
+    klass_dict->put(ST(next), new FunctionObject(listiterator_next, ST(next)));
     set_klass_dict(klass_dict);
+}
+
+void ListIteratorKlass::oops_do(OopClosure* f, HiObject* obj) {
+    f->do_oop((HiObject**)&obj->as<ListIterator>()->_owner);
+}
+
+size_t ListIteratorKlass::size() {
+    return sizeof(ListIterator);
 }
 
 ListIterator::ListIterator(HiList* list) {

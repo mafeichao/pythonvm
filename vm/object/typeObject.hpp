@@ -5,6 +5,8 @@
 #include "object/hiObject.hpp"
 #include <assert.h>
 
+class OopClosure;
+
 /*
  * meta-klass for the object system.
  */
@@ -23,6 +25,9 @@ public:
     virtual void print(HiObject* obj);
 
     virtual HiObject* call(HiObject* x, HiList* args, HiDict* kwargs);
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 class HiTypeObject : public HiObject {

@@ -1,7 +1,11 @@
 #ifndef UTIL_MAP_HPP
 #define UTIL_MAP_HPP
 
-#include <stdio.h>
+#include <cstdio>
+
+using namespace std;
+
+class OopClosure;
 
 template <typename K, typename V>
 class MapEntry {
@@ -38,6 +42,7 @@ public:
     MapEntry<K, V>* entries() { return _entries; }
 
     void* operator new(size_t size);
+    void oops_do(OopClosure* closure);
 };
 
 #endif

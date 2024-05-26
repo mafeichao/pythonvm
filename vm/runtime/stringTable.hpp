@@ -31,6 +31,8 @@ public:
     HiString* setitem_str;
     HiString* setattr_str;
     HiString* str_str;
+
+    void oops_do(OopClosure* f);
 };
 
 #endif

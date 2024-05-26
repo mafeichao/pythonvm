@@ -17,8 +17,8 @@ public:
     static const unsigned char BINARY_SUBSTRACT = 24;
     static const unsigned char BINARY_TRUE_DIVIDE = 27;
 
-    static const unsigned char INPLACE_ADD = 55;
     static const unsigned char STORE_MAP = 54;
+    static const unsigned char INPLACE_ADD = 55;
     static const unsigned char INPLACE_SUBSTRACT = 56;
     static const unsigned char INPLACE_MULTIPLY = 57;
     static const unsigned char INPLACE_DIVIDE = 58;

@@ -6,6 +6,7 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/stringTable.hpp"
+#include "memory/oopClosure.hpp"
 
 /*
  * TypeObject is a special object
@@ -88,6 +89,14 @@ HiObject* TypeKlass::call(HiObject* x, HiList* args, HiDict* kwargs) {
     return nullptr;
 }
 
+void TypeKlass::oops_do(OopClosure* f, HiObject* obj) {
+}
+
+size_t TypeKlass::size() {
+    return sizeof(HiTypeObject);
+}
+
+// Methods of HiTypeObject.
 HiTypeObject::HiTypeObject() {
     set_klass(TypeKlass::get_instance());
 }

@@ -29,6 +29,9 @@ public:
     virtual HiObject* mod(HiObject* x, HiObject* y);
 
     virtual HiObject* allocate_instance(HiList* args);
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 class HiInteger : public HiObject {

@@ -7,6 +7,8 @@
 #include "runtime/interpreter.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
+#include "memory/heap.hpp"
+#include "memory/oopClosure.hpp"
 
 FunctionKlass* FunctionKlass::instance = nullptr;
 
@@ -29,6 +31,21 @@ void FunctionKlass::print(HiObject* obj) {
     printf(">");
 }
 
+size_t FunctionKlass::size() {
+    return sizeof(FunctionObject);
+}
+
+void FunctionKlass::oops_do(OopClosure* f, HiObject* obj) {
+    FunctionObject* fo = obj->as<FunctionObject>();
+
+    f->do_oop((HiObject**)&fo->_func_code);
+    f->do_oop((HiObject**)&fo->_func_name);
+    f->do_oop((HiObject**)&fo->_globals);
+    f->do_oop((HiObject**)&fo->_locals);
+    f->do_oop((HiObject**)&fo->_defaults);
+    f->do_oop((HiObject**)&fo->_closure);
+}
+
 FunctionObject::FunctionObject(HiObject* code_object) {
     CodeObject* co = (CodeObject*) code_object;
 
@@ -42,9 +59,9 @@ FunctionObject::FunctionObject(HiObject* code_object) {
     set_klass(FunctionKlass::get_instance());
 }
 
-FunctionObject::FunctionObject(NativeFuncPointer nfp) {
+FunctionObject::FunctionObject(NativeFuncPointer nfp, HiString* name) {
     _func_code = nullptr;
-    _func_name = nullptr;
+    _func_name = name;
     _flags     = 0;
     _locals    = nullptr;
     _globals   = nullptr;
@@ -86,6 +103,21 @@ HiObject* NativeFunctionKlass::call(HiObject* x, HiList* args, HiDict* kwargs) {
     return (*(x->as<FunctionObject>()->nfp()))(args, kwargs);
 }
 
+size_t NativeFunctionKlass::size() {
+    return sizeof(FunctionObject);
+}
+
+void NativeFunctionKlass::oops_do(OopClosure* f, HiObject* obj) {
+    FunctionObject* fo = obj->as<FunctionObject>();
+
+    f->do_oop((HiObject**)&fo->_func_code);
+    f->do_oop((HiObject**)&fo->_func_name);
+    f->do_oop((HiObject**)&fo->_globals);
+    f->do_oop((HiObject**)&fo->_locals);
+    f->do_oop((HiObject**)&fo->_defaults);
+    f->do_oop((HiObject**)&fo->_closure);
+}
+
 /*
  *  Operations for methods
  *  Method is a wrapper for function.
@@ -101,6 +133,24 @@ MethodKlass* MethodKlass::get_instance() {
 
 MethodKlass::MethodKlass() {
     set_klass_dict(new HiDict());
+}
+
+void MethodKlass::print(HiObject* x) {
+    printf("<method : ");
+    x->as<MethodObject>()->func()->func_name()->print();
+    printf(">");
+}
+
+size_t MethodKlass::size() {
+    return sizeof(MethodObject);
+}
+
+void MethodKlass::oops_do(OopClosure* f, HiObject* obj) {
+    MethodObject* mo = (MethodObject*)obj;
+    assert(mo->klass() == (Klass*)this);
+
+    f->do_oop((HiObject**)&mo->_owner);
+    f->do_oop((HiObject**)&mo->_func);
 }
 
 /*
@@ -187,5 +237,10 @@ HiObject* internal_exec(FunctionObject* callable, HiDict* globals, HiDict* local
     }
 
     return Interpreter::get_instance()->call_virtual(callable, nullptr);
+}
+
+HiObject* sysgc(HiList* args, HiDict* kwargs) {
+    Universe::heap->gc();
+    return Universe::HiNone;
 }
 

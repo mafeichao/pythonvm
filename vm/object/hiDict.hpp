@@ -27,6 +27,7 @@ public:
 
     virtual HiObject* allocate_instance(HiList* args);
 
+    virtual void oops_do(OopClosure* f, HiObject* obj);
     virtual size_t size();
 };
 

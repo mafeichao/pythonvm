@@ -7,6 +7,7 @@
 #include "object/hiString.hpp"
 #include "object/hiList.hpp"
 #include "object/hiInteger.hpp"
+#include "util/handles.hpp"
 
 BinaryFileParser::BinaryFileParser(BufferedInputStream* buf_file_stream) {
     file_stream = buf_file_stream;
@@ -40,7 +41,7 @@ CodeObject* BinaryFileParser::parse() {
             _cache.add(nullptr);
         }
 
-        CodeObject* result = get_code_object();
+        Handle<CodeObject*> result = get_code_object();
 
         if (ref_flag) {
             _cache.set(index, result);
@@ -60,19 +61,19 @@ CodeObject* BinaryFileParser::get_code_object() {
     int nlocals   = file_stream->read_int();
     int stacksize = file_stream->read_int();
     int flags     = file_stream->read_int();
-    printf("flags is 0x%x\n", flags);
+    //printf("flags is 0x%x\n", flags);
 
-    HiString* byte_codes = get_byte_codes();
-    HiList* consts     = get_consts();
-    HiList* names      = get_names();
-    HiList* var_names  = get_var_names();
-    HiList* free_vars  = get_free_vars();
-    HiList* cell_vars  = get_cell_vars();
+    Handle<HiString*> byte_codes = get_byte_codes();
+    Handle<HiList*> consts     = get_consts();
+    Handle<HiList*> names      = get_names();
+    Handle<HiList*> var_names  = get_var_names();
+    Handle<HiList*> free_vars  = get_free_vars();
+    Handle<HiList*> cell_vars  = get_cell_vars();
 
-    HiString* file_name   = get_file_name();
-    HiString* module_name = get_name();
+    Handle<HiString*> file_name   = get_file_name();
+    Handle<HiString*> module_name = get_name();
     int begin_line_no     = file_stream->read_int();
-    HiString* lnotab      = get_no_table();
+    Handle<HiString*> lnotab      = get_no_table();
 
     return new CodeObject(argcount, nlocals, posonly_argcount, kwonly_argcount, stacksize, flags, 
         byte_codes, consts, names, var_names, free_vars, cell_vars, file_name, module_name,
@@ -184,7 +185,7 @@ HiList* BinaryFileParser::try_to_get_tuple() {
     bool ref_flag = (obj_type & 0x80) != 0;
     obj_type &= 0x7f;
 
-    HiList* result = NULL;
+    Handle<HiList*> result = NULL;
     if (obj_type == ')') {
         int index = _cache.length();
         if (ref_flag) {
@@ -232,7 +233,7 @@ HiList* BinaryFileParser::get_cell_vars() {
 
 HiList* BinaryFileParser::get_tuple() {
     unsigned char length = (unsigned char)file_stream->read();
-    HiList* list = new HiList();
+    Handle<HiList*> list = new HiList();
     int index = 0;
 
     for (int i = 0; i < length; i++) {
@@ -240,7 +241,7 @@ HiList* BinaryFileParser::get_tuple() {
         bool ref_flag = (obj_type & 0x80) != 0;
         obj_type &= 0x7f;
 
-        HiObject* obj = nullptr;
+        Handle<HiObject*> obj = nullptr;
 
         // 需要先占位，最后再设置，避免递归结构出问题
         if (ref_flag) {
@@ -250,7 +251,7 @@ HiList* BinaryFileParser::get_tuple() {
 
         switch (obj_type) {
         case 'c':
-            printf("got a code object\n");
+            //printf("got a code object\n");
             obj = get_code_object();
             break;
         case 'i':

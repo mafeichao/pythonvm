@@ -22,7 +22,10 @@ add_executable(pvm main.cpp
     runtime/functionObject.cpp
     runtime/cellObject.cpp
     memory/heap.cpp
+    memory/oopClosure.cpp
     util/map.cpp
+    util/stack.cpp
+    util/handles.cpp
     )
 
 include_directories(./)

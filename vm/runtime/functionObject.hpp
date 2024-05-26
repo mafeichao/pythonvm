@@ -15,6 +15,9 @@ public:
     static FunctionKlass* get_instance();
 
     virtual void print(HiObject* obj);
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 HiObject* object_repr(HiList* args, HiDict* kwargs);
@@ -24,11 +27,13 @@ HiObject* isinstance(HiList* args, HiDict* kwargs);
 HiObject* type_of(HiList* args, HiDict* kwargs);
 HiObject* build_type_object(HiList* args, HiDict* kwargs);
 HiObject* internal_exec(FunctionObject* callable, HiDict* globals, HiDict* locals);
+HiObject* sysgc(HiList* args, HiDict* kwargs);
 
 typedef HiObject* (*NativeFuncPointer)(HiList* args, HiDict* kwargs);
 
 class FunctionObject : public HiObject {
 friend class FunctionKlass;
+friend class NativeFunctionKlass;
 friend class FrameObject;
 
 private:
@@ -52,7 +57,7 @@ public:
 
     FunctionObject(HiObject* code_object);
 
-    FunctionObject(NativeFuncPointer nfp);
+    FunctionObject(NativeFuncPointer nfp, HiString* name);
 
     FunctionObject(Klass* klass) {
         _func_code = nullptr;
@@ -67,6 +72,7 @@ public:
     }
     
     HiString*  func_name()   { return _func_name; }
+    void set_func_name(HiString* n) { _func_name = n; }
     int  flags()             { return _flags; }
 
     HiDict*    globals()        { return _globals; }
@@ -90,6 +96,11 @@ private:
 
 public:
     static MethodKlass* get_instance();
+
+    virtual void print(HiObject* x);
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 class MethodObject : public HiObject {
@@ -126,6 +137,9 @@ public:
     static NativeFunctionKlass* get_instance();
 
     virtual HiObject* call(HiObject* x, HiList* args, HiDict* kwargs);
+
+    virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 #endif

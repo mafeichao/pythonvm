@@ -9,6 +9,19 @@ class HiList;
 template <typename T>
 class ArrayList;
 
+class CodeKlass : public Klass {
+private:
+    CodeKlass();
+    static CodeKlass* instance;
+
+public:
+    static CodeKlass* get_instance();
+
+    virtual void oops_do(OopClosure* closure, HiObject* obj);
+    virtual size_t size();
+};
+
+
 class CodeObject : public HiObject {
 public:
     int _argcount;

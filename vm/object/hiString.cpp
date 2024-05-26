@@ -6,6 +6,7 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "memory/heap.hpp"
+#include "memory/oopClosure.hpp"
 #include <new>
 #include <cstring>
 
@@ -25,7 +26,8 @@ StringKlass* StringKlass::get_instance() {
 
 void StringKlass::initialize() {
     HiDict* klass_dict = new HiDict();
-    klass_dict->put(new HiString("upper"), new FunctionObject(string_upper));
+    HiString* name = new HiString("upper");
+    klass_dict->put(name, new FunctionObject(string_upper, name));
 
     set_klass_dict(klass_dict);
     (new HiTypeObject())->set_own_klass(this);
@@ -73,9 +75,12 @@ HiObject* StringKlass::len(HiObject* obj) {
 
 HiString::HiString(const char* x) {
     _length = strlen(x);
-    void* temp = Universe::heap->allocate(sizeof(char) * (_length + 1));
-    _value = new (temp)char[_length + 1];
-    strcpy(_value, x);
+    void* temp = Universe::heap->allocate(sizeof(char) * (_length));
+    _value = new (temp)char[_length];
+
+    for (int i = 0; i < _length; i++) {
+        _value[i] = x[i];
+    }
 
     set_klass(StringKlass::get_instance());
 }
@@ -157,5 +162,14 @@ HiObject* StringKlass::allocate_instance(HiList* args) {
     }
     else
         return args->get(0)->as<HiString>();
+}
+
+void StringKlass::oops_do(OopClosure* closure, HiObject* obj) {
+    HiString* str_obj = obj->as<HiString>();
+    closure->do_raw_mem(str_obj->value_address(), str_obj->length());
+}
+
+size_t StringKlass::size() {
+    return sizeof(HiString);
 }
 

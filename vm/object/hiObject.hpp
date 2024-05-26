@@ -6,6 +6,7 @@
 
 class HiObject {
 private:
+    long    _mark_word;
     Klass*  _klass;
     HiDict* _obj_dict;
 
@@ -47,6 +48,11 @@ public:
     template<typename T>
     T* as();
 
+    // interfaces for GC.
+    void oops_do(OopClosure* closure);
+    size_t size();
+    char* new_address();
+    void set_new_address(char* addr);
     void* operator new(size_t size);
 };
 

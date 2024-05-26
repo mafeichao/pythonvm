@@ -1,5 +1,6 @@
 #include "runtime/universe.hpp"
 #include "memory/heap.hpp"
+#include "memory/oopClosure.hpp"
 #include <cstdlib>
 #include <cstdint>
 #include <cstring>
@@ -7,7 +8,7 @@
 using namespace std;
 
 Heap*  Heap::instance = nullptr;
-size_t Heap::MAX_CAP = 2 * 1024 * 1024;
+size_t Heap::MAX_CAP =  512 * 1024;
 
 Heap* Heap::get_instance() {
     if (instance == nullptr)
@@ -49,8 +50,8 @@ Heap::~Heap() {
     survivor = nullptr;
 }
 
-void* Heap::allocate(size_t size) {
-    if (!eden->can_alloc(size)) {
+void* Heap::allocate(size_t size, bool force_gc) {
+    if (!eden->can_alloc(size) || force_gc) {
         gc();
     }
 
@@ -66,9 +67,24 @@ void* Heap::allocate_meta(size_t size) {
 }
 
 void Heap::copy_live_objects() {
+    ScavengeOopClosure(eden, survivor, metaspace).scavenge();
 }
 
 void Heap::gc() {
+    printf("gc starting...\n");
+    printf("  befroe gc : \n");
+    printf("  eden's capacity is %lu\n", eden->_capacity);
+    copy_live_objects();
+
+    Space* t = eden;
+    eden = survivor;
+    survivor = t;
+
+    printf("  after gc : \n");
+    printf("  eden's capacity is %lu\n", eden->_capacity);
+    printf("gc end\n");
+
+    survivor->clear();
 }
 
 Space::Space(size_t size) {
@@ -92,6 +108,9 @@ Space::~Space() {
 }
 
 void Space::clear() {
+    memset(_base, 0, _size);
+    _top  = (char*)(((uintptr_t)(_base + 15)) & -16);
+    _capacity = _end - _top;
 }
 
 void* Space::allocate(size_t size) {
