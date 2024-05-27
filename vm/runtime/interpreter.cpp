@@ -4,6 +4,7 @@
 #include "runtime/frameObject.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/cellObject.hpp"
+#include "runtime/module.hpp"
 #include "object/arrayList.hpp"
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
@@ -148,6 +149,19 @@ void Interpreter::run(CodeObject* codes) {
     eval_frame();
 
     destroy_frame();
+}
+
+HiDict* Interpreter::run_mod(Handle<CodeObject*> codes, Handle<HiString*> mod_name) {
+    FrameObject* frame = new FrameObject();
+    enter_frame(frame);
+    frame->initialize(codes);
+    frame->set_entry_frame(true);
+    frame->locals()->put(ST(name), mod_name);
+
+    eval_frame();
+    HiDict* result = frame->locals();
+    destroy_frame();
+    return result;
 }
 
 void Interpreter::eval_frame() {
@@ -545,6 +559,11 @@ void Interpreter::eval_frame() {
                 }
                 PUSH(w);
 
+                break;
+
+            case ByteCode::IMPORT_NAME:
+                v = _frame->names()->get(op_arg);
+                PUSH(ModuleObject::import_module(v));
                 break;
 
             default:

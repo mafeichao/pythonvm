@@ -6,6 +6,7 @@
 using namespace std;
 
 class OopClosure;
+template<typename T> class Handle;
 
 template <typename K, typename V>
 class MapEntry {
@@ -31,7 +32,7 @@ private:
 public:
     static Map<K, V>* new_instance(int n);
     int  length() { return _length; }
-    void put(K k, V v);
+    void put(Handle<K> k, Handle<V> v);
     V    get(K k);
     K    get_key(int index);
     V    get_value(int index);

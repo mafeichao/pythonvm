@@ -25,6 +25,8 @@ public:
     static Interpreter* get_instance();
 
     void run(CodeObject* codes);
+    HiDict* run_mod(Handle<CodeObject*> codes, Handle<HiString*> mod_name);
+
     void build_frame(Handle<HiObject*> callable, 
         Handle<HiList*> args, Handle<HiList*> kwargs = nullptr);
 

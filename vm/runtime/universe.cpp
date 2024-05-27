@@ -1,4 +1,5 @@
 #include "runtime/universe.hpp"
+#include "runtime/module.hpp"
 #include "runtime/functionObject.hpp"
 #include "object/klass.hpp"
 #include "object/hiInteger.hpp"
@@ -33,6 +34,7 @@ void Universe::genesis() {
     DictKlass::get_instance()->initialize();
     StringKlass::get_instance()->initialize();
     ListKlass::get_instance()->initialize();
+    ModuleKlass::get_instance()->initialize();
 
     FunctionKlass::get_instance();
     MethodKlass::get_instance();

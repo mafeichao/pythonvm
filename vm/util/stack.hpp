@@ -2,59 +2,60 @@
 #define _STACK_HPP
 
 class OopClosure;
+class HiObject;
 
 template<typename V>
 class Stack {
 private:
     V* vector;
-    int _len;
-    int _size;
+    int _capacity;
+    int _length;
 
 public:
     Stack(int n = 16) {
-        _len = n;
+        _capacity = n;
         vector = new V[n];
-        _size = 0;
+        _length = 0;
     }
 
     ~Stack() {
         delete[] vector;
-        _len = 0;
-        _size = 0;
+        _capacity = 0;
+        _length = 0;
     }
 
-    void push(V v) {
-        vector[_size++] = v;
-    }
+    void push(V v);
 
     V pop() {
-        return vector[--_size];
+        return vector[--_length];
     }
 
     V top() {
-        return vector[_size - 1];
+        return vector[_length - 1];
     }
 
     V peek(int index) {
-        return vector[_size - index - 1];
+        return vector[_length - index - 1];
     }
 
-    int len() {
-        return _len;
+    int capacity() {
+        return _capacity;
     }
 
-    int size() {
-        return _size;
+    int length() {
+        return _length;
     }
 
     bool empty() {
-        return _size == 0;
+        return _length == 0;
     }
 
     void copy(const Stack<V>* stack);
 
     void oops_do(OopClosure* f);
 };
+
+template class Stack<HiObject*>;
 
 #endif
 

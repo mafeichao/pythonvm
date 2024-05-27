@@ -21,6 +21,7 @@ add_executable(pvm main.cpp
     runtime/frameObject.cpp
     runtime/functionObject.cpp
     runtime/cellObject.cpp
+    runtime/module.cpp
     memory/heap.cpp
     memory/oopClosure.cpp
     util/map.cpp

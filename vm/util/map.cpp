@@ -7,6 +7,7 @@
 #include "memory/oopClosure.hpp"
 #include <new>
 #include <cstdio>
+
 using namespace std;
 
 template <typename K, typename V>
@@ -34,7 +35,7 @@ MapEntry<K, V>::MapEntry(const MapEntry<K, V>& entry) {
 }
 
 template <typename K, typename V>
-void Map<K, V>::put(K k, V v) {
+void Map<K, V>::put(Handle<K> k, Handle<V> v) {
     for (int i = 0; i < _length; i++) {
         if (_entries[i]._k->equal(k) == (HiObject*)Universe::HiTrue) {
             _entries[i]._v = v;

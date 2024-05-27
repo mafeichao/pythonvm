@@ -36,140 +36,105 @@ IntegerKlass* IntegerKlass::get_instance() {
 }
 
 void IntegerKlass::print(HiObject* obj) {
-    HiInteger* int_obj = (HiInteger*) obj;
-
-    assert(int_obj && ((char *)int_obj->klass()) == ((char *)this));
-
-    printf("%d", int_obj->value());
+    printf("%d", obj->as<HiInteger>()->value());
 }
 
 
 HiObject* IntegerKlass::greater(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    if (ix->value() > iy->value())
+    if (ix > iy)
         return Universe::HiTrue;
     else
         return Universe::HiFalse;
 }
 
 HiObject* IntegerKlass::less(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    if (ix->value() < iy->value())
+    if (ix < iy)
         return Universe::HiTrue;
     else
         return Universe::HiFalse;
 }
 
 HiObject* IntegerKlass::equal(HiObject* x, HiObject* y) {
-    if (x->klass() != y->klass())
-        return Universe::HiFalse;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
 
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
-
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    if (ix->value() == iy->value())
+    if (ix == iy)
         return Universe::HiTrue;
     else
         return Universe::HiFalse;
 }
 
 HiObject* IntegerKlass::not_equal(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    if (ix->value() != iy->value())
+    if (ix != iy)
         return Universe::HiTrue;
     else
         return Universe::HiFalse;
 }
 
 HiObject* IntegerKlass::ge(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    if (ix->value() >= iy->value())
+    if (ix >= iy)
         return Universe::HiTrue;
     else
         return Universe::HiFalse;
 }
 
 HiObject* IntegerKlass::le(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    if (ix->value() <= iy->value())
+    if (ix <= iy)
         return Universe::HiTrue;
     else
         return Universe::HiFalse;
 }
 
 HiObject* IntegerKlass::add(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    return new HiInteger(ix->value() + iy->value());
+    return new HiInteger(ix + iy);
 }
 
 HiObject* IntegerKlass::sub(HiObject* x, HiObject* y) {
-    return new HiInteger(x->as<HiInteger>()->value() 
-        - y->as<HiInteger>()->value());
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
+
+    return new HiInteger(ix - iy);
 }
 
 HiObject* IntegerKlass::mul(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-
-    return new HiInteger(ix->value() * iy->value());
+    return new HiInteger(ix * iy);
 }
 
 HiObject* IntegerKlass::div(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
+    assert(iy != 0);
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-    assert(iy->value() != 0);
-
-    return new HiInteger(ix->value() / iy->value());
+    return new HiInteger(ix / iy);
 }
 
 HiObject* IntegerKlass::mod(HiObject* x, HiObject* y) {
-    HiInteger* ix = (HiInteger*) x;
-    HiInteger* iy = (HiInteger*) y;
+    int ix = x->as<HiInteger>()->value();
+    int iy = y->as<HiInteger>()->value();
+    assert(iy != 0);
 
-    assert(ix && (ix->klass() == (Klass *)this));
-    assert(iy && (iy->klass() == (Klass *)this));
-    assert(iy->value() != 0);
-
-    return new HiInteger(ix->value() % iy->value());
+    return new HiInteger(ix % iy);
 }
 
 HiObject* IntegerKlass::allocate_instance(HiList* args) {
