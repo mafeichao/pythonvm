@@ -130,6 +130,10 @@ HiDict::HiDict(Map<HiObject*, HiObject*>* x) {
     set_klass(DictKlass::get_instance());
 }
 
+void HiDict::put(HiObject* k, HiObject* v) {
+    _map->put(k, v);
+}
+
 /*
  * Iterations for dict object
  */

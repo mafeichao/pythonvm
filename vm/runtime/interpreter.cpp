@@ -34,7 +34,11 @@ Interpreter* Interpreter::get_instance() {
 }
 
 Interpreter::Interpreter() {
-    _builtins = HiDict::new_instance();
+}
+
+void Interpreter::initialize() {
+    _builtins = ModuleObject::import_module(HiString::new_instance("lib/builtins"));
+    _modules  = HiDict::new_instance();
 
     _builtins->put(HiString::new_instance("True"),     Universe::HiTrue);
     _builtins->put(HiString::new_instance("False"),    Universe::HiFalse);
@@ -57,8 +61,9 @@ Interpreter::Interpreter() {
     _builtins->put(name,         new FunctionObject(isinstance, name));
     name = HiString::new_instance("sysgc");
     _builtins->put(name,         new FunctionObject(sysgc, name));
-
     _builtins->put(ST(build_class), new FunctionObject(build_type_object, ST(build_class)));
+
+    _modules->put(HiString::new_instance("__builtins__"), _builtins);
 }
 
 void Interpreter::PUSH(Handle<HiObject*> x) {
@@ -516,7 +521,7 @@ void Interpreter::eval_frame() {
 
             case ByteCode::FOR_ITER:
                 v = TOP();
-                w = v->getattr(StringTable::get_instance()->next_str);
+                w = v->getattr(ST(next));
                 build_frame(w, NULL);
 
                 if (TOP() == NULL) {
@@ -563,7 +568,21 @@ void Interpreter::eval_frame() {
 
             case ByteCode::IMPORT_NAME:
                 v = _frame->names()->get(op_arg);
-                PUSH(ModuleObject::import_module(v));
+                w = _modules->get(v);
+                if (w != Universe::HiNone) {
+                    PUSH(w);
+                    break;
+                }
+                w = ModuleObject::import_module(v);
+                _modules->put(v, w);
+                PUSH(w);
+                break;
+
+            case ByteCode::IMPORT_FROM:
+                v = _frame->names()->get(op_arg);
+                w = TOP();
+                u = w->getattr(v);
+                PUSH(u);
                 break;
 
             default:
@@ -573,6 +592,7 @@ void Interpreter::eval_frame() {
 }
 
 void Interpreter::oops_do(OopClosure* f) {
+    f->do_oop((HiObject**)&_modules);
     f->do_oop((HiObject**)&_builtins);
     f->do_oop((HiObject**)&_ret_value);
 

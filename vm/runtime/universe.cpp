@@ -1,5 +1,6 @@
 #include "runtime/universe.hpp"
 #include "runtime/module.hpp"
+#include "runtime/interpreter.hpp"
 #include "runtime/functionObject.hpp"
 #include "object/klass.hpp"
 #include "object/hiInteger.hpp"
@@ -38,6 +39,8 @@ void Universe::genesis() {
 
     FunctionKlass::get_instance();
     MethodKlass::get_instance();
+
+    Interpreter::get_instance()->initialize();
 }
 
 void Universe::destroy() {

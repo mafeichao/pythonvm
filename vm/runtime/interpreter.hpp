@@ -8,21 +8,25 @@
 class FrameObject;
 class HiDict;
 class OopClosure;
+class ModuleObject;
 
 class Interpreter {
 private:
-    HiDict*         _builtins;
+    ModuleObject*   _builtins;
+    HiDict*         _modules;
     FrameObject*    _frame;
     HiObject*       _ret_value;
 
-    static Interpreter*   _instance;
+    static Interpreter* _instance;
+
     Interpreter();
 
-     void      destroy_frame   ();
+    void destroy_frame();
 
 public:
     static void destroy();
     static Interpreter* get_instance();
+    void initialize();
 
     void run(CodeObject* codes);
     HiDict* run_mod(Handle<CodeObject*> codes, Handle<HiString*> mod_name);

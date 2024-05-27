@@ -287,6 +287,11 @@ ListIteratorKlass::ListIteratorKlass() {
     HiDict* klass_dict = HiDict::new_instance();
     klass_dict->put(ST(next), new FunctionObject(listiterator_next, ST(next)));
     set_klass_dict(klass_dict);
+    (new HiTypeObject())->set_own_klass(this);
+    set_name(HiString::new_instance("listiterator"));
+
+    add_super(ObjectKlass::get_instance());
+    order_supers();
 }
 
 void ListIteratorKlass::oops_do(OopClosure* f, HiObject* obj) {

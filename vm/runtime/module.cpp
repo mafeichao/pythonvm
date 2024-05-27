@@ -35,9 +35,8 @@ ModuleObject::ModuleObject(HiDict* dict) {
 
 ModuleObject* ModuleObject::import_module(HiObject* x) {
     Handle<HiString*> mod_name = x->as<HiString>();
-    Handle<HiString*> file_name = HiString::new_instance("__pycache__/")
-        ->add(mod_name)
-        ->add(HiString::new_instance(".cpython-38.pyc"))
+    Handle<HiString*> file_name = mod_name
+        ->add(HiString::new_instance(".pyc"))
         ->as<HiString>();
 
     BufferedInputStream stream(file_name->value());
