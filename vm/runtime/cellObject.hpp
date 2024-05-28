@@ -3,6 +3,7 @@
 
 #include "object/klass.hpp"
 #include "object/hiObject.hpp"
+#include "memory/oopClosure.hpp"
 
 class HiList;
 
@@ -15,6 +16,7 @@ public:
     static CellKlass* get_instance();
 
     virtual size_t size();
+    virtual void oops_do(OopClosure* f, HiObject* obj);
 };
 
 class CellObject : public HiObject {

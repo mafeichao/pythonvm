@@ -23,3 +23,9 @@ add_custom_target(PyLibs ALL
     DEPENDS ${LIBFILES}
 )
 
+INCLUDE_DIRECTORIES(./ ../vm/)
+
+# libmath
+ADD_LIBRARY(math SHARED math.cpp)
+TARGET_LINK_LIBRARIES(math hivm)
+

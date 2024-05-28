@@ -37,7 +37,10 @@ Interpreter::Interpreter() {
 }
 
 void Interpreter::initialize() {
-    _builtins = ModuleObject::import_module(HiString::new_instance("lib/builtins"));
+    _search_path = HiList::new_instance();
+    _search_path->append(ST(lib));
+
+    _builtins = ModuleObject::import_module(HiString::new_instance("builtins"));
     _modules  = HiDict::new_instance();
 
     _builtins->put(HiString::new_instance("True"),     Universe::HiTrue);
@@ -64,6 +67,15 @@ void Interpreter::initialize() {
     _builtins->put(ST(build_class), new FunctionObject(build_type_object, ST(build_class)));
 
     _modules->put(HiString::new_instance("__builtins__"), _builtins);
+}
+
+void Interpreter::add_search_path(const char* x) {
+    Handle<HiList*> args = HiList::new_instance();
+    args->append(HiString::new_instance(x));
+    args->append(HiString::new_instance("/"));
+
+    Handle<HiList*> t = string_rpartition(args, nullptr)->as<HiList>();
+    _search_path->append(t->get(0)->add(t->get(1)));
 }
 
 void Interpreter::PUSH(Handle<HiObject*> x) {
@@ -592,6 +604,7 @@ void Interpreter::eval_frame() {
 }
 
 void Interpreter::oops_do(OopClosure* f) {
+    f->do_oop((HiObject**)&_search_path);
     f->do_oop((HiObject**)&_modules);
     f->do_oop((HiObject**)&_builtins);
     f->do_oop((HiObject**)&_ret_value);

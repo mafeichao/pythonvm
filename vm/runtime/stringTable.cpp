@@ -33,6 +33,9 @@ StringTable::StringTable() {
     setattr_str = HiString::new_instance("__setattr__");
     setitem_str = HiString::new_instance("__setitem__");
     str_str  = HiString::new_instance("__str__");
+    lib_str  = HiString::new_instance("lib/");
+    pyc_str  = HiString::new_instance(".pyc");
+    so_str  = HiString::new_instance(".so");
 }
 
 void StringTable::oops_do(OopClosure* f) {
@@ -52,4 +55,7 @@ void StringTable::oops_do(OopClosure* f) {
     f->do_oop((HiObject**)&setitem_str);
     f->do_oop((HiObject**)&setattr_str);
     f->do_oop((HiObject**)&str_str);
+    f->do_oop((HiObject**)&lib_str);
+    f->do_oop((HiObject**)&pyc_str);
+    f->do_oop((HiObject**)&so_str);
 }

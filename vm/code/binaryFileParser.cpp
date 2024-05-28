@@ -9,10 +9,8 @@
 #include "object/hiInteger.hpp"
 #include "util/handles.hpp"
 
-BinaryFileParser::BinaryFileParser(BufferedInputStream* buf_file_stream) {
-    _string_table = ArrayList<HiString*>::new_instance(8);
-    _cache        = ArrayList<HiObject*>::new_instance(8);
-
+BinaryFileParser::BinaryFileParser(BufferedInputStream* buf_file_stream) :
+    _string_table(HiList::new_instance()), _cache(HiList::new_instance()) {
     file_stream = buf_file_stream;
     _debug_level = 0;
 }
@@ -41,7 +39,7 @@ CodeObject* BinaryFileParser::parse() {
         int index = 0;
         if (ref_flag) {
             index = _cache->length();
-            _cache->add(nullptr);
+            _cache->append(nullptr);
         }
 
         Handle<CodeObject*> result = get_code_object();
@@ -125,14 +123,14 @@ HiString* BinaryFileParser::get_name() {
         s = get_string(false);
     }
     else if (ch == 'R') {
-        s = _string_table->get(file_stream->read_int());
+        s = _string_table->get(file_stream->read_int())->as<HiString>();
     }
     else if (ch == 'r') {
         s = _cache->get(file_stream->read_int())->as<HiString>();
     }
      
     if (ref_flag) {
-        _cache->add(s);
+        _cache->append(s);
         log(_cache->length() - 1, s);
     }
 
@@ -151,7 +149,7 @@ HiString* BinaryFileParser::get_byte_codes() {
     HiString* s = get_string(true);
 
     if (ref_flag) {
-        _cache->add(s);
+        _cache->append(s);
         log(_cache->length() - 1, s);
     }
 
@@ -162,7 +160,7 @@ HiString* BinaryFileParser::get_no_table() {
     char object_type = file_stream->read();
     bool ref_flag = (object_type & 0x80) != 0;
     char ch = object_type & 0x7f;
-    HiString* s = nullptr;
+    Handle<HiString*> s = nullptr;
 
     if (ch == 's' || ch == 't') {
         s =  get_string(true);
@@ -176,7 +174,7 @@ HiString* BinaryFileParser::get_no_table() {
     }
 
     if (ref_flag) {
-        _cache->add(s);
+        _cache->append(s);
         log(_cache->length() - 1, s);
     }
     
@@ -192,7 +190,7 @@ HiList* BinaryFileParser::try_to_get_tuple() {
     if (obj_type == ')') {
         int index = _cache->length();
         if (ref_flag) {
-            _cache->add(nullptr);
+            _cache->append(nullptr);
         }
 
         result = get_tuple();
@@ -249,7 +247,7 @@ HiList* BinaryFileParser::get_tuple() {
         // 需要先占位，最后再设置，避免递归结构出问题
         if (ref_flag) {
             index = _cache->length();
-            _cache->add(nullptr);
+            _cache->append(nullptr);
         }
 
         switch (obj_type) {

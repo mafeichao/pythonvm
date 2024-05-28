@@ -29,6 +29,7 @@ Heap::Heap(size_t size) {
 
     eden = mem_1;
     survivor = mem_2;
+    _during_gc = false;
 }
 
 Heap::~Heap() {
@@ -49,11 +50,14 @@ Heap::~Heap() {
 
     eden = nullptr;
     survivor = nullptr;
+    _during_gc = false;
 }
 
 void* Heap::allocate(size_t size, bool force_gc) {
     if (!eden->can_alloc(size) || force_gc) {
-        gc();
+        if (!_during_gc) {
+            gc();
+        }
     }
 
     if (!eden->can_alloc(size)) {
@@ -80,6 +84,7 @@ void Heap::gc() {
     printf("gc starting...\n");
     printf("  befroe gc : \n");
     printf("  eden's capacity is %lu\n", eden->_capacity);
+    _during_gc = true;
     copy_live_objects();
 
     Space* t = eden;
@@ -91,6 +96,7 @@ void Heap::gc() {
     printf("gc end\n");
 
     survivor->clear();
+    _during_gc = false;
 }
 
 Space::Space(size_t size) {

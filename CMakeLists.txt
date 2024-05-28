@@ -7,4 +7,5 @@ project(pythonvm)
 add_subdirectory(parser)
 add_subdirectory(vm)
 add_subdirectory(lib)
+add_subdirectory(test)
 

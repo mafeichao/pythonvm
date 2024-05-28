@@ -4,7 +4,9 @@ project(pvm)
 set(CMAKE_C_COMPILER g++)
 set(CMAKE_CXX_COMPILER g++)
 
-add_executable(pvm main.cpp
+ADD_EXECUTABLE(pvm main.cpp)
+
+set(SOURCE_FILE
     code/binaryFileParser.cpp
     code/codeObject.cpp
     object/hiObject.cpp
@@ -29,5 +31,14 @@ add_executable(pvm main.cpp
     util/handles.cpp
     )
 
-include_directories(./)
+INCLUDE_DIRECTORIES(./)
 
+# libhivm
+ADD_LIBRARY(hivm SHARED ${SOURCE_FILE})
+TARGET_LINK_LIBRARIES(hivm ${CMAKE_DL_LIBS})
+
+# libmath
+#ADD_LIBRARY(math SHARED lib/math.cpp)
+#TARGET_LINK_LIBRARIES(math hivm)
+
+TARGET_LINK_LIBRARIES(pvm hivm)

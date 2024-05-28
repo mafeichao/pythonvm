@@ -55,7 +55,7 @@ HiObject* ListKlass::add(HiObject* x, HiObject* y) {
     HiList* lx = x->as<HiList>();
     HiList* ly = y->as<HiList>();
 
-    HiList* z = new HiList();
+    HiList* z = HiList::new_instance();
     for (int i = 0; i < lx->length(); i++) {
         z->inner_list()->set(i, lx->inner_list()->get(i));
     }
@@ -72,7 +72,7 @@ HiObject* ListKlass::mul(HiObject* x, HiObject* y) {
     HiList* lx = x->as<HiList>();
     HiInteger* iy = y->as<HiInteger>();
 
-    HiList* z = new HiList();
+    HiList* z = HiList::new_instance();
     for (int i = 0; i < iy->value(); i++) {
         for (int j = 0; j < lx->length(); j++) {
             z->inner_list()->set(i * lx->length() + j,
@@ -160,7 +160,7 @@ HiObject* ListKlass::contains(HiObject* x, HiObject* y) {
 
 HiObject* ListKlass::allocate_instance(HiList* args) {
     if (!args || args->length() == 0)
-        return new HiList();
+        return HiList::new_instance();
     else
         return nullptr;
 }

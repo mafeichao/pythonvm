@@ -2,6 +2,7 @@
 #define BINARY_FILE_PARSER_HPP
 
 #include "util/bufferedInputStream.hpp"
+#include "util/handles.hpp"
 #include "code/codeObject.hpp"
 #include "object/arrayList.hpp"
 
@@ -12,8 +13,8 @@ class BinaryFileParser {
 private:
     BufferedInputStream* file_stream;
     int cur;
-    ArrayList<HiString*>* _string_table;
-    ArrayList<HiObject*>* _cache;
+    Handle<HiList*> _string_table;
+    Handle<HiList*> _cache;
 
     int _debug_level;
 

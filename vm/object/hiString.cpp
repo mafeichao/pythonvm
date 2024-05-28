@@ -26,9 +26,11 @@ StringKlass* StringKlass::get_instance() {
 }
 
 void StringKlass::initialize() {
-    HiDict* klass_dict = HiDict::new_instance();
+    Handle<HiDict*> klass_dict = HiDict::new_instance();
     HiString* name = HiString::new_instance("upper");
     klass_dict->put(name, new FunctionObject(string_upper, name));
+    name = HiString::new_instance("rpartition");
+    klass_dict->put(name, new FunctionObject(string_rpartition, name));
 
     set_klass_dict(klass_dict);
     (new HiTypeObject())->set_own_klass(this);
@@ -158,10 +160,7 @@ HiObject* StringKlass::less(HiObject* x, HiObject* y) {
 }
 
 HiObject* string_upper(HiList* args, HiDict* kwargs) {
-    HiObject* arg0 = args->get(0);
-    assert(arg0->klass() == StringKlass::get_instance());
-
-    HiString* str_obj = (HiString*)arg0;
+    HiString* str_obj = args->get(0)->as<HiString>();
 
     int length = str_obj->length();
     if (length <= 0)
@@ -180,6 +179,26 @@ HiObject* string_upper(HiList* args, HiDict* kwargs) {
     str_obj = HiString::new_instance(v, length);
     delete[] v;
     return str_obj;
+}
+
+HiObject* string_rpartition(HiList* args, HiDict* kwargs) {
+    Handle<HiString*> x = args->get(0)->as<HiString>();
+    Handle<HiString*> y = args->get(1)->as<HiString>();
+
+    for (int i = x->length() - y->length(); i >= 0; i--) {
+        if (strncmp(x->value() + i, y->value(), y->length()) == 0) {
+            Handle<HiString*> a = HiString::new_instance(x->value(), i);
+            Handle<HiString*> b = HiString::new_instance(y->value(), y->length());
+            Handle<HiString*> c = HiString::new_instance(x->value() + i + y->length());
+            HiList* t = HiList::new_instance();
+            t->append(a);
+            t->append(b);
+            t->append(c);
+            return t;
+        }
+    }
+
+    return x;
 }
 
 HiObject* StringKlass::allocate_instance(HiList* args) {

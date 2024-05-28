@@ -35,6 +35,7 @@ private:
     Space* survivor;
 
     Space* metaspace;
+    bool   _during_gc;
 
     Heap(size_t size);
 

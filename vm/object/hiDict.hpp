@@ -65,6 +65,9 @@ private:
 
 public:
     static DictIteratorKlass* get_instance();
+
+    virtual void oops_do(OopClosure* f, HiObject* obj);
+    virtual size_t size();
 };
 
 class DictIterator : public HiObject {
@@ -77,6 +80,7 @@ public:
     HiDict* owner()        { return _owner; }
     int iter_cnt()         { return _iter_cnt; }
     void inc_cnt()         { _iter_cnt++; }
+    HiObject** owner_address() {return (HiObject**)(&_owner); }
 };
 
 HiObject* dictiterator_next(HiList* args, HiDict* kwargs);
@@ -98,6 +102,9 @@ public:
     static DictViewKlass* get_instance();
     virtual HiObject* iter(HiObject* x)  { return x; }
     virtual HiObject* contains(HiObject* x, HiObject* y);
+
+    virtual void oops_do(OopClosure* f, HiObject* obj);
+    virtual size_t size();
 };
 
 class DictView : public HiObject {
@@ -110,6 +117,7 @@ public:
     HiDict* owner()        { return _owner; }
     int iter_cnt()         { return _iter_cnt; }
     void inc_cnt()         { _iter_cnt++; }
+    HiObject** owner_address() { return (HiObject**)&_owner; }
 };
 
 template<ITER_TYPE iter_type>

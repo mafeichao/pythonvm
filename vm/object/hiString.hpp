@@ -7,6 +7,7 @@
 class HiList;
 
 HiObject* string_upper(HiList* args, HiDict* kwargs);
+HiObject* string_rpartition(HiList* args, HiDict* kwargs);
 
 class StringKlass : public Klass {
 private:

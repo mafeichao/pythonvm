@@ -9,6 +9,7 @@
 #include "runtime/cellObject.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
+#include "runtime/module.hpp"
 #include "util/handles.hpp"
 #include <cstdint>
 
@@ -154,6 +155,12 @@ template<>
 HiList* HiObject::as<HiList>() {
     assert(this->klass() == ListKlass::get_instance());
     return (HiList*)this;
+}
+
+template<>
+ModuleObject* HiObject::as<ModuleObject>() {
+    assert(this->klass() == ModuleKlass::get_instance());
+    return (ModuleObject*)this;
 }
 
 template<>

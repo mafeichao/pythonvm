@@ -29,8 +29,8 @@ void Klass::add_super(Klass* klass) {
 }
 
 HiList* Klass::linear(HiTypeObject* obj) {
-    HiList* result = HiList::new_instance();
-    HiList* mro = obj->mro();
+    Handle<HiList*> mro = obj->mro();
+    Handle<HiList*> result = HiList::new_instance();
     for (int i = 0; i < mro->length(); i++) {
         result->append(mro->get(i));
     }
@@ -146,13 +146,16 @@ HiObject* Klass::find_in_mro(HiObject* obj, HiString* name) {
 // getattr for normal object.
 // a = A()
 // a.b = 1
-HiObject* Klass::getattr(HiObject* x, HiObject* y) {
-    HiObject* func = find_in_mro(x, ST(getattr));
+HiObject* Klass::getattr(HiObject* rawx, HiObject* rawy) {
+    Handle<HiObject*> x(rawx);
+    Handle<HiObject*> y(rawy);
+
+    Handle<HiObject*> func = find_in_mro(x, ST(getattr));
 
     // 如果类里定义了__getattr__方法，就先调用这个方法
     if (func != Universe::HiNone) {
         func = new MethodObject(func->as<FunctionObject>(), x);
-        HiList* args = HiList::new_instance();
+        Handle<HiList*> args = HiList::new_instance();
         args->append(y);
         return Interpreter::get_instance()->call_virtual(func, args);
     }
@@ -163,7 +166,7 @@ HiObject* Klass::getattr(HiObject* x, HiObject* y) {
     }
 
     // 如果对象字典里也没有，就去类里找
-    HiObject* result = find_in_mro(x, y->as<HiString>());
+    Handle<HiObject*> result = find_in_mro(x, y->as<HiString>());
     // Only klass attribute needs bind.
     if (MethodObject::is_function(result) ||
         MethodObject::is_native(result)) {
@@ -228,10 +231,11 @@ HiObject* Klass::create_klass(HiDict* klass_dict, HiList* supers_list, HiString*
     return type_obj;
 }
 
-HiObject* Klass::allocate_instance(HiList* args) {
-    HiObject* inst = new HiObject();
+HiObject* Klass::allocate_instance(HiList* raw_args) {
+    Handle<HiList*> args(raw_args);
+    Handle<HiObject*> inst = new HiObject();
     inst->set_klass(this);
-    HiObject* init_func = inst->getattr(ST(init));
+    Handle<HiObject*> init_func = inst->getattr(ST(init));
 
     if (init_func != Universe::HiNone) {
         Interpreter::get_instance()->call_virtual(init_func, args);
@@ -240,9 +244,12 @@ HiObject* Klass::allocate_instance(HiList* args) {
     return inst;
 }
 
-HiObject* Klass::add(HiObject* lhs, HiObject* rhs) {
-    HiList* args = HiList::new_instance();
+HiObject* Klass::add(HiObject* raw_lhs, HiObject* raw_rhs) {
+    Handle<HiObject*> lhs(raw_lhs);
+    Handle<HiObject*> rhs(raw_rhs);
+    Handle<HiList*> args = HiList::new_instance();
     args->append(rhs);
+
     return find_and_call(lhs, args, ST(add));
 }
 

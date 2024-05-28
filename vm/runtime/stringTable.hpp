@@ -31,6 +31,9 @@ public:
     HiString* setitem_str;
     HiString* setattr_str;
     HiString* str_str;
+    HiString* lib_str;
+    HiString* pyc_str;
+    HiString* so_str;
 
     void oops_do(OopClosure* f);
 };

@@ -35,3 +35,7 @@ size_t CellKlass::size() {
     return sizeof(CellKlass);
 }
 
+void CellKlass::oops_do(OopClosure* f, HiObject* obj) {
+    f->do_oop((HiObject**)&(obj->as<CellObject>()->_table));
+}
+

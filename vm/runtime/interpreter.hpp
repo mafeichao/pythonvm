@@ -16,6 +16,7 @@ private:
     HiDict*         _modules;
     FrameObject*    _frame;
     HiObject*       _ret_value;
+    HiList*         _search_path;
 
     static Interpreter* _instance;
 
@@ -30,19 +31,19 @@ public:
 
     void run(CodeObject* codes);
     HiDict* run_mod(Handle<CodeObject*> codes, Handle<HiString*> mod_name);
+    HiList* search_path()   { return _search_path; }
 
+    HiObject* call_virtual    (Handle<HiObject*> func, Handle<HiList*> args);
     void build_frame(Handle<HiObject*> callable, 
         Handle<HiList*> args, Handle<HiList*> kwargs = nullptr);
-
     void enter_frame     (FrameObject* frame);
     void eval_frame      ();
     void leave_frame     ();
 
     void PUSH(Handle<HiObject*> x);
 
-    HiObject* call_virtual    (Handle<HiObject*> func, Handle<HiList*> args);
-
     void      oops_do         (OopClosure* f);
+    void add_search_path(const char* path);
 };
 
 #endif

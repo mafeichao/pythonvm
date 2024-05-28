@@ -34,6 +34,16 @@ void ArrayList<T>::add(T t) {
     _array[_length++] = t;
 }
 
+template <>
+void ArrayList<HiObject*>::add(HiObject* rt) {
+    Handle<HiObject*> t(rt);
+
+    if (_length >= _capacity)
+        expand();
+
+    _array[_length++] = t;
+}
+
 template <typename T>
 void ArrayList<T>::insert(int index, T t) {
     add((T)0);

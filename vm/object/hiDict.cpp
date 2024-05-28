@@ -158,6 +158,18 @@ DictIteratorKlass::DictIteratorKlass() {
     klass_dict->put(ST(next),
             new FunctionObject(dictiterator_next, ST(next)));
     set_klass_dict(klass_dict);
+    (new HiTypeObject())->set_own_klass(this);
+    set_name(HiString::new_instance("dictiterator"));
+    add_super(ObjectKlass::get_instance());
+    order_supers();
+}
+
+void DictIteratorKlass::oops_do(OopClosure* f, HiObject* obj) {
+    f->do_oop((HiObject**)((DictIterator*)obj)->owner_address());
+}
+
+size_t DictIteratorKlass::size() {
+    return sizeof(DictIterator);
 }
 
 HiObject* dict_set_default(HiList* args, HiDict* kwargs) {
@@ -251,7 +263,20 @@ DictViewKlass<iter_type>::DictViewKlass() {
     klass_dict->put(ST(next),
             new FunctionObject(dict_view_next<iter_type>, ST(next)));
     set_klass_dict(klass_dict);
+    (new HiTypeObject())->set_own_klass(this);
     set_name(HiString::new_instance(klass_names[iter_type]));
+    add_super(ObjectKlass::get_instance());
+    order_supers();
+}
+
+template<ITER_TYPE iter_type>
+void DictViewKlass<iter_type>::oops_do(OopClosure* f, HiObject* obj) {
+    f->do_oop(((DictView*)obj)->owner_address());
+}
+
+template<ITER_TYPE iter_type>
+size_t DictViewKlass<iter_type>::size() {
+    return sizeof(DictView);
 }
 
 DictView::DictView(HiDict* dict) {

@@ -16,6 +16,7 @@ int main(int argc, char** argv) {
     BinaryFileParser parser(&stream);
     Universe::main_code = parser.parse();
 
+    Interpreter::get_instance()->add_search_path(argv[1]);
     Interpreter::get_instance()->run(Universe::main_code);
 
     StringTable::destroy();
