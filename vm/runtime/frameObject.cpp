@@ -18,6 +18,31 @@ FrameObject::FrameObject() {
     _closure = nullptr;
     _fast_locals = nullptr;
 
+    _blocks  = nullptr;
+
+    _codes   = nullptr;
+    _sender  = nullptr;
+
+    _pc      = 0;
+    _entry_frame = false;
+}
+
+FrameObject::~FrameObject() {
+    _stack   = nullptr;
+    _consts  = nullptr;
+    _names   = nullptr;
+
+    _locals  = nullptr;
+    _globals = nullptr;
+
+    _closure = nullptr;
+    _fast_locals = nullptr;
+
+    if (_blocks) {
+        delete _blocks;
+        _blocks = nullptr;
+    }
+
     _codes   = nullptr;
     _sender  = nullptr;
 
@@ -154,6 +179,23 @@ void FrameObject::report_error(const char* msg, HiObject* func_name, HiObject* a
     arg_name->print();
     printf("'\n");
     assert(false);
+}
+
+BlockList* FrameObject::blocks() {
+    if (!_blocks) {
+        _blocks = new BlockList();
+    }
+
+    return _blocks;
+}
+
+void FrameObject::setup_block(unsigned char btype, unsigned int target, int level) {
+    blocks()->add(Block(btype, target, level));
+}
+
+Block FrameObject::pop_block() {
+    assert(_blocks && _blocks->length() > 0);
+    return _blocks->pop();
 }
 
 int FrameObject::get_op_arg() {

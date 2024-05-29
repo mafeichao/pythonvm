@@ -25,3 +25,4 @@ import timpt
 import tsum
 import type_test
 import vec
+import norm

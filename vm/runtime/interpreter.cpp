@@ -19,6 +19,9 @@
 
 #define POP()         _frame->stack()->pop()
 #define TOP()         _frame->stack()->top()
+#define STACK_LEVEL() _frame->stack()->size()
+#define PEEK(x)       _frame->stack()->get((x))
+#define EMPTY()       (_frame->stack()->size() == 0)
 
 #define HI_TRUE       Universe::HiTrue
 #define HI_FALSE      Universe::HiFalse
@@ -287,6 +290,10 @@ void Interpreter::eval_frame() {
                 POP();
                 break;
 
+            case ByteCode::POP_BLOCK:
+                _frame->pop_block();
+                break;
+
             case ByteCode::INPLACE_ADD:
             case ByteCode::BINARY_ADD:
                 v = POP();
@@ -437,12 +444,30 @@ void Interpreter::eval_frame() {
 
                 break;
 
+            case ByteCode::CALL_FINALLY:
+                PUSH((HiObject*)((long long)(_frame->get_pc() << 1) | 0x1));
+                _frame->set_pc(_frame->get_pc() + op_arg);
+                break;
+
             case ByteCode::RETURN_VALUE:
                 _ret_value = POP();
                 if (_frame->is_first_frame() ||
                         _frame->is_entry_frame())
                     return;
                 leave_frame();
+                break;
+
+            case ByteCode::END_FINALLY:
+                v = POP();
+                if (v == nullptr) {
+                    // do nothing.
+                }
+                else if (((long long)v()) & 0x1) {
+                    _frame->set_pc(((long long)v()) >> 1);
+                }
+                else {
+                    // do nothing
+                }
                 break;
 
             case ByteCode::COMPARE_OP:
@@ -595,6 +620,25 @@ void Interpreter::eval_frame() {
                 w = TOP();
                 u = w->getattr(v);
                 PUSH(u);
+                break;
+
+            case ByteCode::SETUP_FINALLY:
+                _frame->setup_block(ByteCode::SETUP_FINALLY, 
+                    _frame->get_pc() + op_arg, STACK_LEVEL());
+                break;
+
+            case ByteCode::POP_FINALLY:
+                v = POP();
+                if (op_arg)
+                    w = POP();
+                if (v == nullptr || ((long long)v()) & 0x1) {
+                    // do nothing.
+                }
+                else {
+                    // do nothing
+                }
+                if (op_arg)
+                    PUSH(w);
                 break;
 
             default:

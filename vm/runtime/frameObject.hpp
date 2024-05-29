@@ -4,11 +4,45 @@
 #include "code/codeObject.hpp"
 #include "object/arrayList.hpp"
 #include "util/handles.hpp"
+#include "util/vector.hpp"
 
 class FunctionObject;
 class HiDict;
 class HiList;
 class OopClosure;
+
+class Block {
+public:
+    unsigned char _type;
+    unsigned int  _target;
+    int  _level;
+
+    Block() {
+        _type = 0;
+        _target = 0;
+        _level = 0;
+    }
+
+    ~Block() {
+        _type = 0;
+        _target = 0;
+        _level = 0;
+    }
+
+    Block(unsigned char b_type,
+            unsigned int b_target,
+            int b_level):
+        _type(b_type),
+        _target(b_target),
+        _level(b_level) {
+        }
+
+    Block(const Block& b) {
+        _type = b._type;
+        _target = b._target;
+        _level  = b._level;
+    }
+};
 
 class FrameObject {
 public:
@@ -17,7 +51,7 @@ public:
     void initialize(Handle<FunctionObject*> func,
         Handle<HiList*> args, Handle<HiList*> kwargs);
 
-    ~FrameObject() {};
+    ~FrameObject();
 
     HiList* _stack;
 
@@ -26,8 +60,10 @@ public:
 
     HiDict* _locals;
     HiDict* _globals;
-    HiList*               _closure;
-    HiList*               _fast_locals;
+    HiList* _closure;
+    HiList* _fast_locals;
+
+    BlockList* _blocks;
 
     CodeObject*           _codes;
     FrameObject*          _sender;
@@ -53,6 +89,10 @@ public:
 
     HiList* closure()               { return _closure; }
     HiObject* get_cell_from_parameter(int i );
+
+    BlockList* blocks();
+    void setup_block(unsigned char btype, unsigned int target, int level);
+    Block pop_block();
 
     bool has_more_codes();
     unsigned char get_op_code();

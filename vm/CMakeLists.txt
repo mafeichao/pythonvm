@@ -29,6 +29,7 @@ set(SOURCE_FILE
     util/map.cpp
     util/stack.cpp
     util/handles.cpp
+    util/vector.cpp
     )
 
 INCLUDE_DIRECTORIES(./)

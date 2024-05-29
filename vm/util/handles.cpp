@@ -1,4 +1,5 @@
 #include "util/handles.hpp"
+#include "object/arrayList.hpp"
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
 #include "runtime/frameObject.hpp"
@@ -91,6 +92,16 @@ void Handle<ArrayList<HiObject*>*>::oops_do(OopClosure* f) {
 }
 
 template<>
+void Handle<ArrayList<HiString*>*>::oops_do(OopClosure* f) {
+    f->do_array_list(&_value);
+}
+
+template<>
+void Handle<ArrayList<Klass*>*>::oops_do(OopClosure* f) {
+    f->do_array_list(&_value);
+}
+
+template<>
 void Handle<Map<HiObject*, HiObject*>*>::oops_do(OopClosure* f) {
     f->do_map(&_value);
 }
@@ -128,6 +139,5 @@ template class Handle<ModuleObject*>;
 template class Handle<ArrayList<HiObject*>*>;
 template class Handle<ArrayList<Klass*>*>;
 template class Handle<ArrayList<HiString*>*>;
-template class Handle<ArrayList<char>*>;
 
 template class Handle<Map<HiObject*, HiObject*>*>;

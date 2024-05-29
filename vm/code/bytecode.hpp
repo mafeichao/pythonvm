@@ -17,6 +17,7 @@ public:
     static const unsigned char BINARY_SUBSTRACT = 24;
     static const unsigned char BINARY_TRUE_DIVIDE = 27;
 
+    static const unsigned char BEGIN_FINALLY = 53;
     static const unsigned char STORE_MAP = 54;
     static const unsigned char INPLACE_ADD = 55;
     static const unsigned char INPLACE_SUBSTRACT = 56;
@@ -35,6 +36,7 @@ public:
     static const unsigned char LOAD_LOCALS = 82;
     static const unsigned char RETURN_VALUE = 83;
     static const unsigned char POP_BLOCK = 87;
+    static const unsigned char END_FINALLY = 88;
     static const unsigned char BUILD_CLASS = 89;
 
     // TODO: This is a separator
@@ -63,7 +65,7 @@ public:
     static const unsigned char POP_JUMP_IF_FALSE = 114;
     static const unsigned char POP_JUMP_IF_TRUE = 115;
     static const unsigned char LOAD_GLOBAL = 116; /* Index in name list */
-    static const unsigned char SETUP_LOOP = 120; /* Target address (relative) */
+    static const unsigned char SETUP_FINALLY = 122;
     static const unsigned char LOAD_FAST  = 124; /* Local variable number */
     static const unsigned char STORE_FAST = 125; /* Local variable number */
 
@@ -82,6 +84,8 @@ public:
 
     static const unsigned char LOAD_METHOD = 160;
     static const unsigned char CALL_METHOD = 161;
+    static const unsigned char CALL_FINALLY = 162;
+    static const unsigned char POP_FINALLY = 163;
 
     enum COMPARE {
         LESS = 0,

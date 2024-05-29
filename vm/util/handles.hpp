@@ -32,6 +32,7 @@ public:
     ~Handle();
 
     virtual void oops_do(OopClosure* f);
+
     T operator ->();
     T operator ()() { return _value; }
     operator T()    { return _value; }

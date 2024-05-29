@@ -2,7 +2,6 @@
 #include "code/binaryFileParser.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/interpreter.hpp"
-#include "runtime/stringTable.hpp"
 
 int main(int argc, char** argv) {
     if (argc <= 1) {
@@ -19,8 +18,6 @@ int main(int argc, char** argv) {
     Interpreter::get_instance()->add_search_path(argv[1]);
     Interpreter::get_instance()->run(Universe::main_code);
 
-    StringTable::destroy();
-    Interpreter::destroy();
     Universe::destroy();
 
     return 0;

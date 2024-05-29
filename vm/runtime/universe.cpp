@@ -2,6 +2,7 @@
 #include "runtime/module.hpp"
 #include "runtime/interpreter.hpp"
 #include "runtime/functionObject.hpp"
+#include "runtime/stringTable.hpp"
 #include "object/klass.hpp"
 #include "object/hiInteger.hpp"
 #include "object/hiString.hpp"
@@ -45,6 +46,10 @@ void Universe::genesis() {
 
 void Universe::destroy() {
     delete heap;
+    delete HandleMark::get_instance();
+
+    StringTable::destroy();
+    Interpreter::destroy();
 }
 
 void Universe::oops_do(OopClosure* closure) {

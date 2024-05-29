@@ -144,17 +144,6 @@ int ArrayList<Klass*>::index(Klass* t) {
     return -1;
 }
 
-template <>
-int ArrayList<char>::index(char t) {
-    for (int i = 0; i < _length; i++) {
-        if (_array[i] == t) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 template <typename T>
 void ArrayList<T>::oops_do(OopClosure* closure) {
     closure->do_raw_mem((char**)(&_array),
@@ -182,7 +171,16 @@ void ArrayList<HiObject*>::oops_do(OopClosure* closure) {
     }
 }
 
+template <>
+void ArrayList<HiString*>::oops_do(OopClosure* closure) {
+    closure->do_raw_mem((char**)(&_array),
+            _capacity * sizeof(HiObject*));
+
+    for (int i = 0; i < _length; i++) {
+        closure->do_oop((HiObject**)&_array[i]);
+    }
+}
+
 class Klass;
 template class ArrayList<Klass*>;
 
-template class ArrayList<char>;

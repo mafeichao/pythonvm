@@ -6,6 +6,7 @@ class Heap;
 
 class HiObject;
 class Klass;
+class HiString;
 
 template <typename T>
 class ArrayList;
@@ -22,7 +23,7 @@ public:
 
     virtual void do_array_list(ArrayList<Klass*>** alist) = 0;
     virtual void do_array_list(ArrayList<HiObject*>** alist) = 0;
-    virtual void do_array_list(ArrayList<char>** alist) = 0;
+    virtual void do_array_list(ArrayList<HiString*>** alist) = 0;
 
     virtual void do_map(Map<HiObject*, HiObject*>** amap) = 0;
     virtual void do_raw_mem(char** mem, int length) = 0;
@@ -47,7 +48,7 @@ public:
 
     virtual void do_array_list(ArrayList<Klass*>** alist);
     virtual void do_array_list(ArrayList<HiObject*>** alist);
-    virtual void do_array_list(ArrayList<char>** alist);
+    virtual void do_array_list(ArrayList<HiString*>** alist);
 
     template <typename T>
     void do_array_list_nv(ArrayList<T>** alist);

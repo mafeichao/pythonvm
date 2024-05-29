@@ -45,8 +45,8 @@ void ScavengeOopClosure::do_array_list(ArrayList<HiObject*>** alist) {
     do_array_list_nv<HiObject*>(alist);
 }
 
-void ScavengeOopClosure::do_array_list(ArrayList<char>** alist) {
-    do_array_list_nv<char>(alist);
+void ScavengeOopClosure::do_array_list(ArrayList<HiString*>** alist) {
+    do_array_list_nv<HiString*>(alist);
 }
 
 template <typename T>

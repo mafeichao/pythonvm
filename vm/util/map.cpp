@@ -76,11 +76,12 @@ bool Map<K, V>::has_key(K k) {
 template <typename K, typename V>
 void Map<K, V>::expand() {
     if (_length >= _capacity) {
-        MapEntry<K, V>* new_entries = new MapEntry<K, V>[_capacity << 1];
+        _capacity <<= 1;
+        void* temp = Universe::heap->allocate(sizeof(MapEntry<K, V>) * _capacity);
+        MapEntry<K, V>* new_entries = new (temp)MapEntry<K, V>[_capacity];
         for (int i = 0; i < _length; i++) {
             new_entries[i] = _entries[i];
         }
-        _capacity <<= 1;
         _entries = new_entries;
     }
 }
