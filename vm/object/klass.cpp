@@ -97,7 +97,9 @@ void Klass::order_supers() {
     _klass_dict->put(ST(mro), _mro);
 }
 
-void Klass::print(HiObject* x) {
+void Klass::print(HiObject* raw_x) {
+    Handle<HiObject*> x(raw_x);
+
     HiObject* func = x->getattr(ST(str));
     if (func != Universe::HiNone) {
         HiObject* s = Interpreter::get_instance()->call_virtual(func, nullptr);
@@ -112,7 +114,7 @@ void Klass::print(HiObject* x) {
         return;
     }
 
-    printf("<object at %p>", x);
+    printf("<object at %p>", x());
 }
 
 HiObject* Klass::call(HiObject* x, HiList* args, HiDict* kwargs) {
@@ -127,7 +129,10 @@ HiObject* Klass::call(HiObject* x, HiList* args, HiDict* kwargs) {
     return Interpreter::get_instance()->call_virtual(callable, args);
 }
 
-HiObject* Klass::find_in_mro(HiObject* obj, HiString* name) {
+/*
+ * 单纯的查找动作，不会引发GC
+ */
+HiObject* Klass::find_in_mro(HiObject* obj, HiString* name) const {
     HiObject* x = obj->klass()->klass_dict()->get(name);
 
     if (x != Universe::HiNone) {
@@ -178,8 +183,12 @@ HiObject* Klass::getattr(HiObject* rawx, HiObject* rawy) {
 }
 
 // setattr for normal object.
-HiObject* Klass::setattr(HiObject* obj, HiObject* x, HiObject* y) {
-    HiObject* func = obj->klass()->klass_dict()->get(ST(setattr));
+HiObject* Klass::setattr(HiObject* raw_obj, HiObject* raw_x, HiObject* raw_y) {
+    Handle<HiObject*> obj(raw_obj);
+    Handle<HiObject*> x(raw_x);
+    Handle<HiObject*> y(raw_y);
+
+    Handle<HiObject*> func = obj->klass()->klass_dict()->get(ST(setattr));
 
     // 如果未定义__setattr__方法，就直接放到对象的obj_dict中
     if (func == Universe::HiNone) {
@@ -188,33 +197,45 @@ HiObject* Klass::setattr(HiObject* obj, HiObject* x, HiObject* y) {
     }
 
     func = new MethodObject(func->as<FunctionObject>(), obj);
-    HiList* args = HiList::new_instance();
+    Handle<HiList*> args = HiList::new_instance();
     args->append(x);
     args->append(y);
     return Interpreter::get_instance()->call_virtual(func, args);
 }
 
-HiObject* Klass::subscr(HiObject* x, HiObject* y) {
-    HiList* args = HiList::new_instance();
+HiObject* Klass::subscr(HiObject* raw_x, HiObject* raw_y) {
+    Handle<HiObject*> x(raw_x);
+    Handle<HiObject*> y(raw_y);
+    Handle<HiList*> args = HiList::new_instance();
+
     args->append(y);
     return find_and_call(x, args, ST(getitem));
 }
 
-void Klass::store_subscr(HiObject* x, HiObject* y, HiObject* z) {
-    HiList* args = HiList::new_instance();
+void Klass::store_subscr(HiObject* raw_x, HiObject* raw_y, HiObject* raw_z) {
+    Handle<HiObject*> x(raw_x);
+    Handle<HiObject*> y(raw_y);
+    Handle<HiObject*> z(raw_z);
+    Handle<HiList*> args = HiList::new_instance();
+
     args->append(y);
     args->append(z);
     find_and_call(x, args, ST(setitem));
 }
 
-void Klass::del_subscr(HiObject* x, HiObject* y) {
-    HiList* args = HiList::new_instance();
+void Klass::del_subscr(HiObject* raw_x, HiObject* raw_y) {
+    Handle<HiObject*> x(raw_x);
+    Handle<HiObject*> y(raw_y);
+    Handle<HiList*> args = HiList::new_instance();
     args->append(y);
     find_and_call(x, args, ST(delitem));
 }
 
-HiObject* Klass::create_klass(HiDict* klass_dict, HiList* supers_list, HiString* name) {
-    Klass* new_klass   = new Klass();
+HiObject* Klass::create_klass(HiDict* kls_d, HiList* r_supers_list, HiString* raw_name) {
+    Handle<HiDict*> klass_dict(kls_d);
+    Handle<Klass*> new_klass   = new Klass();
+    Handle<HiString*> name(raw_name);
+    Handle<HiList*> supers_list(r_supers_list);
 
     new_klass->set_klass_dict(klass_dict);
     new_klass->set_name(name);
@@ -224,7 +245,7 @@ HiObject* Klass::create_klass(HiDict* klass_dict, HiList* supers_list, HiString*
     }
     new_klass->set_super_list(supers_list);
 
-    HiTypeObject* type_obj = new HiTypeObject();
+    Handle<HiTypeObject*> type_obj = new HiTypeObject();
     type_obj->set_own_klass(new_klass);
 
     new_klass->order_supers();

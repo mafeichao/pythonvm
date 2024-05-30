@@ -673,6 +673,12 @@ void Interpreter::eval_frame() {
                 PUSH(u);
                 break;
 
+            case ByteCode::RAISE_VARARGS: {
+                if (op_arg == 2) {
+                }
+                break;
+            }
+
             case ByteCode::BEGIN_FINALLY: {
                 PUSH(nullptr);
                 break;

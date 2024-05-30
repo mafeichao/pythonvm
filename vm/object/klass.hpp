@@ -21,7 +21,7 @@ private:
 
     HiList* linear(HiTypeObject* obj);
     HiList* merge(Handle<HiList*> supers);
-    HiObject* find_in_mro(HiObject* obj, HiString* name);
+    HiObject* find_in_mro(HiObject* obj, HiString* name) const;
 
 public:
     Klass();

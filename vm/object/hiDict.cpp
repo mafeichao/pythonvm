@@ -134,7 +134,8 @@ void HiDict::put(HiObject* k, HiObject* v) {
     _map->put(k, v);
 }
 
-void HiDict::update(HiDict* dict) {
+void HiDict::update(HiDict* raw_dict) {
+    Handle<HiDict*> dict(raw_dict);
     for (int i = 0; i < dict->length(); i++) {
         put(dict->map()->get_key(i),
                 dict->map()->get_value(i));

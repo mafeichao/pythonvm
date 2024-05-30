@@ -22,7 +22,7 @@ Map<K, V>* Map<K, V>::new_instance(int n) {
     Handle<Map<K, V>*> result = new Map<K, V>();
     result->_capacity = n;
 
-    void* temp = Universe::heap->allocate(sizeof(MapEntry<K, V>) * n);
+    void* temp = Universe::heap->allocate(sizeof(MapEntry<K, V>) * n, false);
     result->_entries = new (temp) MapEntry<K, V>[n];
 
     return result;
@@ -77,7 +77,7 @@ template <typename K, typename V>
 void Map<K, V>::expand() {
     if (_length >= _capacity) {
         _capacity <<= 1;
-        void* temp = Universe::heap->allocate(sizeof(MapEntry<K, V>) * _capacity);
+        void* temp = Universe::heap->allocate(sizeof(MapEntry<K, V>) * _capacity, false);
         MapEntry<K, V>* new_entries = new (temp)MapEntry<K, V>[_capacity];
         for (int i = 0; i < _length; i++) {
             new_entries[i] = _entries[i];

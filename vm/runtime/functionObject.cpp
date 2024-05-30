@@ -214,15 +214,15 @@ HiObject* type_of(HiList* args, HiDict* kwargs) {
 HiObject* build_type_object(HiList* args, HiDict* kwargs) {
     int length = args->length();
     assert(length >= 2);
-    FunctionObject* cls_def = args->get(0)->as<FunctionObject>();
-    HiString* name = args->get(1)->as<HiString>();
-    HiList* super_list = HiList::new_instance();
+    Handle<FunctionObject*> cls_def = args->get(0)->as<FunctionObject>();
+    Handle<HiString*> name = args->get(1)->as<HiString>();
+    Handle<HiList*> super_list = HiList::new_instance();
 
     for (int i = 2; i < length; i++) {
         super_list->append(args->get(i));
     }
 
-    HiDict* locals = HiDict::new_instance();
+    Handle<HiDict*> locals = HiDict::new_instance();
     internal_exec(cls_def, nullptr, locals);
     return Klass::create_klass(locals, super_list, name);
 }

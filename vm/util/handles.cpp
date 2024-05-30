@@ -87,6 +87,11 @@ void Handle<T>::oops_do(OopClosure* f) {
 }
 
 template<>
+void Handle<Klass*>::oops_do(OopClosure* f) {
+    f->do_klass(&_value);
+}
+
+template<>
 void Handle<ArrayList<HiObject*>*>::oops_do(OopClosure* f) {
     f->do_array_list(&_value);
 }
@@ -138,6 +143,9 @@ template class Handle<ModuleObject*>;
 
 class Traceback;
 template class Handle<Traceback*>;
+
+class Klass;
+template class Handle<Klass*>;
 
 template class Handle<ArrayList<HiObject*>*>;
 template class Handle<ArrayList<Klass*>*>;

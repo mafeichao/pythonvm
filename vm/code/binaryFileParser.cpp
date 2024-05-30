@@ -52,7 +52,7 @@ CodeObject* BinaryFileParser::parse() {
         return result;
     }
 
-    return NULL;
+    return nullptr;
 }
 
 CodeObject* BinaryFileParser::get_code_object() {
@@ -108,7 +108,7 @@ HiString* BinaryFileParser::get_name() {
     bool ref_flag = (ch & 0x80) != 0;
     ch &= 0x7f;
 
-    HiString* s = NULL;
+    Handle<HiString*> s = nullptr;
 
     if (ch == 's') {
         s = get_string(true);
@@ -146,7 +146,7 @@ HiString* BinaryFileParser::get_byte_codes() {
     bool ref_flag = (object_type & 0x80) != 0;
     assert((object_type & 0x7f) == 's');
 
-    HiString* s = get_string(true);
+    Handle<HiString*> s = get_string(true);
 
     if (ref_flag) {
         _cache->append(s);
@@ -186,7 +186,7 @@ HiList* BinaryFileParser::try_to_get_tuple() {
     bool ref_flag = (obj_type & 0x80) != 0;
     obj_type &= 0x7f;
 
-    Handle<HiList*> result = NULL;
+    Handle<HiList*> result = nullptr;
     if (obj_type == ')') {
         int index = _cache->length();
         if (ref_flag) {

@@ -21,23 +21,14 @@ ArrayList<T>::ArrayList(int n) {
 template <typename T>
 ArrayList<T>* ArrayList<T>::new_instance(int n) {
     Handle<ArrayList<T>*> inst = new ArrayList<T>(n);
-    void* temp = Universe::heap->allocate(sizeof(T) * n);
+    void* temp = Universe::heap->allocate(sizeof(T) * n, false);
     inst->_array = new (temp) T[n];
     return inst;
 }
 
 template <typename T>
-void ArrayList<T>::add(T t) {
-    if (_length >= _capacity)
-        expand();
-
-    _array[_length++] = t;
-}
-
-template <>
-void ArrayList<HiObject*>::add(HiObject* rt) {
-    Handle<HiObject*> t(rt);
-
+void ArrayList<T>::add(T rt) {
+    Handle<T> t(rt);
     if (_length >= _capacity)
         expand();
 
@@ -45,7 +36,8 @@ void ArrayList<HiObject*>::add(HiObject* rt) {
 }
 
 template <typename T>
-void ArrayList<T>::insert(int index, T t) {
+void ArrayList<T>::insert(int index, T rt) {
+    Handle<T> t(rt);
     add((T)0);
 
     for (int i = _length - 1; i > index; i--) {
@@ -83,7 +75,8 @@ T ArrayList<T>::get(int index) {
 }
 
 template <typename T>
-void ArrayList<T>::set(int index, T t) {
+void ArrayList<T>::set(int index, T rt) {
+    Handle<T> t(rt);
     if (_length <= index)
         _length = index + 1;
 

@@ -33,6 +33,7 @@ public:
 
     void put(HiObject* x, HiObject* y);
     HiObject* get(HiObject* x);
+    void set_mod_name(HiString* n)  { _mod_name = n; }
     void extend(ModuleObject* mo);
 };
 

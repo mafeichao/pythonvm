@@ -70,6 +70,7 @@ public:
     static const unsigned char STORE_FAST = 125; /* Local variable number */
     static const unsigned char DELETE_FAST = 126; /* Local variable number */
 
+    static const unsigned char RAISE_VARARGS = 130;
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;
 

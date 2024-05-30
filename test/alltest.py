@@ -24,5 +24,6 @@ import timpt
 import tsum
 import type_test
 import vec
+import gc
 import norm
 import rais

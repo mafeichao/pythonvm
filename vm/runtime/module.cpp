@@ -75,9 +75,11 @@ HiObject* ModuleObject::search_file(Handle<HiObject*> x) {
     return Universe::HiNone;
 }
 
-ModuleObject* ModuleObject::import_pyc(HiString* mod_name, HiString* file_name) {
+ModuleObject* ModuleObject::import_pyc(HiString* raw_mod_name, HiString* file_name) {
     BufferedInputStream stream(file_name->value());
     BinaryFileParser parser(&stream);
+
+    Handle<HiString*> mod_name(raw_mod_name);
     Handle<CodeObject*> mod_code = parser.parse();
     Handle<HiDict*> mod_dict = Interpreter::get_instance()->run_mod(mod_code, mod_name);
     return new ModuleObject(mod_dict);
@@ -120,7 +122,7 @@ ModuleObject* ModuleObject::import_so(HiString* mod_name, HiString* filename) {
 }
 
 ModuleObject* ModuleObject::import_module(HiObject* x) {
-    Handle<HiString*> mod_name = x->as<HiString>();
+    Handle<HiObject*> mod_name(x);
     HiObject* mod = search_file(x);
 
     if (mod == Universe::HiNone) {
