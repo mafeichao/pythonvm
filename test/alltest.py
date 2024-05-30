@@ -10,7 +10,6 @@ import fact
 import fib
 import for_test
 import func2
-import gc
 import libtest
 import list_test
 import loop
@@ -26,3 +25,4 @@ import tsum
 import type_test
 import vec
 import norm
+import rais

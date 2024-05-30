@@ -134,6 +134,13 @@ void HiDict::put(HiObject* k, HiObject* v) {
     _map->put(k, v);
 }
 
+void HiDict::update(HiDict* dict) {
+    for (int i = 0; i < dict->length(); i++) {
+        put(dict->map()->get_key(i),
+                dict->map()->get_value(i));
+    }
+}
+
 /*
  * Iterations for dict object
  */
@@ -335,3 +342,4 @@ HiObject* DictViewKlass<iter_type>::contains(HiObject* x, HiObject* y) {
 void DictKlass::oops_do(OopClosure* f, HiObject* obj) {
     f->do_map(&obj->as<HiDict>()->_map);
 }
+

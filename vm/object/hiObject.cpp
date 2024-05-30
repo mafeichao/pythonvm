@@ -10,6 +10,7 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/module.hpp"
+#include "runtime/traceback.hpp"
 #include "util/handles.hpp"
 #include <cstdint>
 
@@ -191,6 +192,12 @@ template<>
 HiInteger* HiObject::as<HiInteger>() {
     assert(this->klass() == IntegerKlass::get_instance());
     return (HiInteger*)this;
+}
+
+template<>
+Traceback* HiObject::as<Traceback>() {
+    assert(this->klass() == TracebackKlass::get_instance());
+    return (Traceback*)this;
 }
 
 template<>

@@ -65,11 +65,9 @@ void StringKlass::print(HiObject* obj) {
     HiString* str_obj = (HiString*) obj;
     assert(str_obj && str_obj->klass() == (Klass*)this);
 
-    printf("'");
     for (int i = 0; i < str_obj->length(); i++) {
         printf("%c", str_obj->value()[i]);
     }
-    printf("'");
 }
 
 HiObject* StringKlass::len(HiObject* obj) {

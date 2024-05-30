@@ -13,7 +13,7 @@ class OopClosure;
 
 class Block {
 public:
-    unsigned char _type;
+    unsigned int  _type;
     unsigned int  _target;
     int  _level;
 
@@ -29,7 +29,7 @@ public:
         _level = 0;
     }
 
-    Block(unsigned char b_type,
+    Block(unsigned int b_type,
             unsigned int b_target,
             int b_level):
         _type(b_type),
@@ -91,8 +91,12 @@ public:
     HiObject* get_cell_from_parameter(int i );
 
     BlockList* blocks();
-    void setup_block(unsigned char btype, unsigned int target, int level);
+    void setup_block(unsigned int btype, unsigned int target, int level);
     Block pop_block();
+
+    HiString* file_name();
+    HiString* func_name();
+    int lineno();
 
     bool has_more_codes();
     unsigned char get_op_code();

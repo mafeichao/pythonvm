@@ -37,7 +37,7 @@ public:
     static const unsigned char RETURN_VALUE = 83;
     static const unsigned char POP_BLOCK = 87;
     static const unsigned char END_FINALLY = 88;
-    static const unsigned char BUILD_CLASS = 89;
+    static const unsigned char POP_EXCEPT = 89;
 
     // TODO: This is a separator
     static const unsigned char HAVE_ARGUMENT = 90; /* Opcodes from here have an argument: */
@@ -68,6 +68,7 @@ public:
     static const unsigned char SETUP_FINALLY = 122;
     static const unsigned char LOAD_FAST  = 124; /* Local variable number */
     static const unsigned char STORE_FAST = 125; /* Local variable number */
+    static const unsigned char DELETE_FAST = 126; /* Local variable number */
 
     static const unsigned char CALL_FUNCTION = 131;
     static const unsigned char MAKE_FUNCTION = 132;
@@ -86,6 +87,8 @@ public:
     static const unsigned char CALL_METHOD = 161;
     static const unsigned char CALL_FINALLY = 162;
     static const unsigned char POP_FINALLY = 163;
+
+    static const unsigned int  EXCEPT_HANDLER = 257;
 
     enum COMPARE {
         LESS = 0,

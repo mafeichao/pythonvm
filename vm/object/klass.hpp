@@ -9,6 +9,7 @@ class HiDict;
 class HiList;
 class HiTypeObject;
 class OopClosure;
+template<typename T> class Handle;
 
 class Klass {
 private:
@@ -19,7 +20,7 @@ private:
     HiDict*       _klass_dict;
 
     HiList* linear(HiTypeObject* obj);
-    HiList* merge(HiList* supers);
+    HiList* merge(Handle<HiList*> supers);
     HiObject* find_in_mro(HiObject* obj, HiString* name);
 
 public:

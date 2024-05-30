@@ -38,7 +38,7 @@ HiList* Klass::linear(HiTypeObject* obj) {
     return result;
 }
 
-HiList* Klass::merge(HiList* supers) {
+HiList* Klass::merge(Handle<HiList*> supers) {
     if (supers->empty()) {
         return HiList::new_instance();
     }
@@ -46,7 +46,7 @@ HiList* Klass::merge(HiList* supers) {
     for (int i = 0; i < supers->length(); i++) {
         bool valid = true;
         // head = supers[i][0]
-        HiTypeObject* head = supers->get(i)->as<HiList>()->get(0)->as<HiTypeObject>();
+        Handle<HiTypeObject*> head = supers->get(i)->as<HiList>()->get(0)->as<HiTypeObject>();
         for (int j = 0; j < supers->length(); j++) {
             if (j == i) continue;
             // if head in supers[j][1:]
@@ -60,15 +60,16 @@ HiList* Klass::merge(HiList* supers) {
             continue;
         }
 
-        HiList* next = HiList::new_instance();
+        Handle<HiList*> next = HiList::new_instance();
         for (int j = 0; j < supers->length(); j++) {
+            // 在 itme 的生命周期中，不会发生GC
             HiList* item = supers->get(j)->as<HiList>();
             item->remove(head);
             if (!item->empty()) {
                 next->append(item);
             }
         }
-        HiList* result = merge(next);
+        Handle<HiList*> result = merge(next);
         result->insert(0, head);
 
         return result;
@@ -86,7 +87,7 @@ void Klass::order_supers() {
         return;
     }
 
-    HiList* all = HiList::new_instance();
+    Handle<HiList*> all = HiList::new_instance();
     for (int i = 0; i < _super->length(); i++) {
         all->append(linear(_super->get(i)->as<HiTypeObject>()));
     }

@@ -5,6 +5,7 @@
 #include "object/hiDict.hpp"
 #include "object/typeObject.hpp"
 #include "runtime/universe.hpp"
+#include "runtime/interpreter.hpp"
 #include "memory/oopClosure.hpp"
 
 #include <stdio.h>
@@ -124,7 +125,11 @@ HiObject* IntegerKlass::mul(HiObject* x, HiObject* y) {
 HiObject* IntegerKlass::div(HiObject* x, HiObject* y) {
     int ix = x->as<HiInteger>()->value();
     int iy = y->as<HiInteger>()->value();
-    assert(iy != 0);
+
+    if (iy == 0) {
+        Interpreter::get_instance()->raise_error("ZeroDivisionError");
+        return nullptr;
+    }
 
     return new HiInteger(ix / iy);
 }

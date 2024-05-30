@@ -33,6 +33,7 @@ public:
 
     void put(HiObject* x, HiObject* y);
     HiObject* get(HiObject* x);
+    void extend(ModuleObject* mo);
 };
 
 #endif

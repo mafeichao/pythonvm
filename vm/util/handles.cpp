@@ -136,6 +136,9 @@ template class Handle<HiTypeObject*>;
 class ModuleObject;
 template class Handle<ModuleObject*>;
 
+class Traceback;
+template class Handle<Traceback*>;
+
 template class Handle<ArrayList<HiObject*>*>;
 template class Handle<ArrayList<Klass*>*>;
 template class Handle<ArrayList<HiString*>*>;

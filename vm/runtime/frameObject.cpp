@@ -189,7 +189,7 @@ BlockList* FrameObject::blocks() {
     return _blocks;
 }
 
-void FrameObject::setup_block(unsigned char btype, unsigned int target, int level) {
+void FrameObject::setup_block(unsigned int btype, unsigned int target, int level) {
     blocks()->add(Block(btype, target, level));
 }
 
@@ -230,5 +230,17 @@ void FrameObject::oops_do(OopClosure* f) {
 
     if (_sender)
         _sender->oops_do(f);
+}
+
+HiString* FrameObject::file_name() {
+    return _codes->_file_name;
+}
+
+HiString* FrameObject::func_name() {
+    return _codes->_co_name;
+}
+
+int FrameObject::lineno() {
+    return _pc;
 }
 

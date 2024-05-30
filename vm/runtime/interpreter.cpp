@@ -5,6 +5,7 @@
 #include "runtime/functionObject.hpp"
 #include "runtime/cellObject.hpp"
 #include "runtime/module.hpp"
+#include "runtime/traceback.hpp"
 #include "object/arrayList.hpp"
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
@@ -19,17 +20,17 @@
 
 #define POP()         _frame->stack()->pop()
 #define TOP()         _frame->stack()->top()
-#define STACK_LEVEL() _frame->stack()->size()
+#define STACK_LEVEL() _frame->stack()->length()
 #define PEEK(x)       _frame->stack()->get((x))
-#define EMPTY()       (_frame->stack()->size() == 0)
+#define EMPTY()       _frame->stack()->empty()
 
 #define HI_TRUE       Universe::HiTrue
 #define HI_FALSE      Universe::HiFalse
 
-Interpreter* Interpreter::_instance = NULL;
+Interpreter* Interpreter::_instance = nullptr;
 
 Interpreter* Interpreter::get_instance() {
-    if (_instance == NULL) {
+    if (_instance == nullptr) {
         _instance = new Interpreter();
     }
 
@@ -43,9 +44,9 @@ void Interpreter::initialize() {
     _search_path = HiList::new_instance();
     _search_path->append(ST(lib));
 
-    _builtins = ModuleObject::import_module(HiString::new_instance("builtins"));
     _modules  = HiDict::new_instance();
 
+    _builtins = new ModuleObject(HiDict::new_instance());
     _builtins->put(HiString::new_instance("True"),     Universe::HiTrue);
     _builtins->put(HiString::new_instance("False"),    Universe::HiFalse);
     _builtins->put(HiString::new_instance("None"),     Universe::HiNone);
@@ -68,6 +69,8 @@ void Interpreter::initialize() {
     name = HiString::new_instance("sysgc");
     _builtins->put(name,         new FunctionObject(sysgc, name));
     _builtins->put(ST(build_class), new FunctionObject(build_type_object, ST(build_class)));
+
+    _builtins->extend(ModuleObject::import_module(HiString::new_instance("builtins")));
 
     _modules->put(HiString::new_instance("__builtins__"), _builtins);
 }
@@ -168,6 +171,18 @@ void Interpreter::run(CodeObject* codes) {
     _frame->locals()->put(ST(name), HiString::new_instance("__main__"));
     eval_frame();
 
+    if (_int_status == IS_EXCEPTION) {
+        _int_status = IS_OK;
+
+        _trace_back->print();
+        _pending_exception->print();
+        printf("\n");
+
+        _trace_back = nullptr;
+        _pending_exception = nullptr;
+        _exception_class = nullptr;
+    }
+
     destroy_frame();
 }
 
@@ -202,6 +217,11 @@ void Interpreter::eval_frame() {
         int op_arg = _frame->get_op_arg();
 
         switch (op_code) {
+            case ByteCode::DUP_TOP: {
+                PUSH(TOP());
+                break;
+            }
+
             case ByteCode::LOAD_CONST:
                 PUSH(_frame->consts()->get(op_arg));
                 break;
@@ -220,7 +240,7 @@ void Interpreter::eval_frame() {
                     break;
                 }
 
-                w = Interpreter::get_instance()->_builtins->get(v);
+                w = _builtins->get(v);
                 if (w != Universe::HiNone) {
                     PUSH(w);
                     break;
@@ -294,6 +314,18 @@ void Interpreter::eval_frame() {
                 _frame->pop_block();
                 break;
 
+            case ByteCode::POP_EXCEPT: {
+                Block b = _frame->pop_block();
+                assert(b._type == ByteCode::EXCEPT_HANDLER);
+                assert(STACK_LEVEL() >= b._level + 3 &&
+                    STACK_LEVEL() <= b._level + 4);
+                _exception_class = POP();
+                _pending_exception = POP();
+                _trace_back = POP();
+                _int_status = IS_EXCEPTION;
+                break;
+            }
+
             case ByteCode::INPLACE_ADD:
             case ByteCode::BINARY_ADD:
                 v = POP();
@@ -358,7 +390,7 @@ void Interpreter::eval_frame() {
 
             case ByteCode::LOAD_CLOSURE:
                 v = _frame->closure()->get(op_arg);
-                if (v == NULL) {
+                if (v == nullptr) {
                     _frame->closure()->set(op_arg, (_frame->get_cell_from_parameter(op_arg)));
                 }
 
@@ -517,6 +549,20 @@ void Interpreter::eval_frame() {
                     PUSH(w->contains(v));
                     break;
 
+                case ByteCode::EXC_MATCH: {
+                    if (!args()) {
+                        args = HiList::new_instance();
+                    }
+                    if (v->as<HiTypeObject>()->mro()->index(w) >= 0) {
+                        PUSH(HI_TRUE);
+                    }
+                    else {
+                        PUSH(HI_FALSE);
+                    }
+                    args->clear();
+                    break;
+                }
+
                 default:
                     printf("Error: Unrecognized compare op %d\n", op_arg);
                 }
@@ -551,6 +597,11 @@ void Interpreter::eval_frame() {
                 v->del_subscr(w);
                 break;
 
+            case ByteCode::DELETE_FAST: {
+                // 什么也不用做，因为我们没有用引用计数
+                break;
+            }
+
             case ByteCode::GET_ITER:
                 v = POP();
                 PUSH(v->iter());
@@ -559,9 +610,9 @@ void Interpreter::eval_frame() {
             case ByteCode::FOR_ITER:
                 v = TOP();
                 w = v->getattr(ST(next));
-                build_frame(w, NULL);
+                build_frame(w, nullptr);
 
-                if (TOP() == NULL) {
+                if (TOP() == nullptr) {
                     _frame->_pc += op_arg;
                     POP();
                 }
@@ -622,6 +673,11 @@ void Interpreter::eval_frame() {
                 PUSH(u);
                 break;
 
+            case ByteCode::BEGIN_FINALLY: {
+                PUSH(nullptr);
+                break;
+            }
+
             case ByteCode::SETUP_FINALLY:
                 _frame->setup_block(ByteCode::SETUP_FINALLY, 
                     _frame->get_pc() + op_arg, STACK_LEVEL());
@@ -644,6 +700,42 @@ void Interpreter::eval_frame() {
             default:
                 printf("Error: Unrecognized byte code %d\n", op_code);
         }
+
+error_handling:
+        while (_int_status != IS_OK && _frame->blocks()->length() > 0) {
+            Block b = _frame->blocks()->pop();
+            while (STACK_LEVEL() > b._level) {
+                POP();
+            }
+
+            if (b._type == ByteCode::SETUP_FINALLY) {
+                _frame->setup_block(ByteCode::EXCEPT_HANDLER, -1, STACK_LEVEL());
+                PUSH(_trace_back);
+                PUSH(_pending_exception);
+                PUSH(_exception_class);
+
+                PUSH(_trace_back);
+                PUSH(_pending_exception);
+                PUSH(_exception_class);
+
+                _trace_back = nullptr;
+                _pending_exception = nullptr;
+                _exception_class = nullptr;
+            }
+
+            _frame->_pc = b._target;;
+            _int_status = IS_OK;
+        }
+
+        if (_int_status == IS_EXCEPTION && _frame->blocks()->length() == 0) {
+            _trace_back->as<Traceback>()->record_frame(_frame);
+
+            if (_frame->is_first_frame() ||
+                    _frame->is_entry_frame())
+                return;
+            leave_frame();
+            goto error_handling;
+        }
     }
 }
 
@@ -652,8 +744,49 @@ void Interpreter::oops_do(OopClosure* f) {
     f->do_oop((HiObject**)&_modules);
     f->do_oop((HiObject**)&_builtins);
     f->do_oop((HiObject**)&_ret_value);
+    f->do_oop((HiObject**)&_trace_back);
+    f->do_oop((HiObject**)&_exception_class);
+    f->do_oop((HiObject**)&_pending_exception);
 
     if (_frame)
         _frame->oops_do(f);
+}
+
+Interpreter::Status Interpreter::raise_error(const char* ename) {
+    Handle<HiObject*> exc = _builtins->get(HiString::new_instance(ename));
+    HiObject* val = exc->call(HiList::new_instance(), nullptr); 
+    return do_raise(exc, val, nullptr);
+}
+
+Interpreter::Status Interpreter::do_raise(HiObject* raw_exc, HiObject* raw_val, HiObject* raw_tb) {
+    assert(raw_exc != nullptr);
+
+    _int_status = IS_EXCEPTION;
+
+    Handle<HiObject*> exc(raw_exc);
+    Handle<HiObject*> val(raw_val);
+    Handle<HiObject*> tb(raw_tb);
+
+    if (tb == nullptr) {
+        tb = Traceback::new_instance();
+    }
+
+    if (val != nullptr) {
+        _exception_class = exc;
+        _pending_exception = val;
+        _trace_back = tb;
+        return IS_EXCEPTION;
+    }
+
+    if (exc->klass() == TypeKlass::get_instance()) {
+        _pending_exception = call_virtual(_pending_exception, nullptr);
+        _exception_class = exc;
+    }
+    else {
+        _pending_exception = exc;
+        _exception_class = _pending_exception->klass()->type_object();
+    }
+    _trace_back = tb;
+    return IS_EXCEPTION;
 }
 

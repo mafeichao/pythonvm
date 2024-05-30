@@ -24,6 +24,7 @@ set(SOURCE_FILE
     runtime/functionObject.cpp
     runtime/cellObject.cpp
     runtime/module.cpp
+    runtime/traceback.cpp
     memory/heap.cpp
     memory/oopClosure.cpp
     util/map.cpp
