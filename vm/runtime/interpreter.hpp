@@ -27,6 +27,7 @@ private:
     HiObject*       _exception_class;
     HiObject*       _pending_exception;
     HiObject*       _trace_back;
+    HiObject*       _old_exception;
     Status          _int_status;
 
     static Interpreter* _instance;
@@ -52,6 +53,9 @@ public:
     void enter_frame     (FrameObject* frame);
     void eval_frame      ();
     void leave_frame     ();
+    void normalize_errors(HiObject** raw_exc, HiObject** raw_val, HiObject** raw_tb);
+    void set_error_str   (HiString* name);
+    void set_error_object(HiObject* raw_exc, HiObject* raw_val, HiObject* raw_tb);
 
     void PUSH(Handle<HiObject*> x);
 

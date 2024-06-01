@@ -38,6 +38,7 @@ Interpreter* Interpreter::get_instance() {
 }
 
 Interpreter::Interpreter() {
+    _old_exception = nullptr;
 }
 
 void Interpreter::initialize() {
@@ -489,18 +490,23 @@ void Interpreter::eval_frame() {
                 leave_frame();
                 break;
 
-            case ByteCode::END_FINALLY:
+            case ByteCode::END_FINALLY: {
                 v = POP();
-                if (v == nullptr) {
+                long long t = (long long)v();
+                if (t == 0) {
                     // do nothing.
                 }
-                else if (((long long)v()) & 0x1) {
-                    _frame->set_pc(((long long)v()) >> 1);
+                else if (t & 0x1) {
+                    _frame->set_pc(t >> 1);
                 }
                 else {
-                    // do nothing
+                    _exception_class = v;
+                    _pending_exception = POP();
+                    _trace_back = POP();
+                    _int_status = IS_EXCEPTION;
                 }
                 break;
+            }
 
             case ByteCode::COMPARE_OP:
                 w = POP();
@@ -550,16 +556,12 @@ void Interpreter::eval_frame() {
                     break;
 
                 case ByteCode::EXC_MATCH: {
-                    if (!args()) {
-                        args = HiList::new_instance();
-                    }
                     if (v->as<HiTypeObject>()->mro()->index(w) >= 0) {
                         PUSH(HI_TRUE);
                     }
                     else {
                         PUSH(HI_FALSE);
                     }
-                    args->clear();
                     break;
                 }
 
@@ -597,6 +599,8 @@ void Interpreter::eval_frame() {
                 v->del_subscr(w);
                 break;
 
+            case ByteCode::DELETE_NAME:
+            // TODO: 会有一点命名泄露的问题
             case ByteCode::DELETE_FAST: {
                 // 什么也不用做，因为我们没有用引用计数
                 break;
@@ -710,6 +714,18 @@ void Interpreter::eval_frame() {
 error_handling:
         while (_int_status != IS_OK && _frame->blocks()->length() > 0) {
             Block b = _frame->blocks()->pop();
+
+            if (b._type == ByteCode::EXCEPT_HANDLER) {
+                assert(STACK_LEVEL() >= b._level + 3);
+                while (STACK_LEVEL() > b._level + 3) POP();
+
+                _exception_class = POP();
+                _pending_exception = POP();
+                _trace_back = POP();
+
+                continue;
+            }
+
             while (STACK_LEVEL() > b._level) {
                 POP();
             }
@@ -724,13 +740,17 @@ error_handling:
                 PUSH(_pending_exception);
                 PUSH(_exception_class);
 
+                _old_exception = _pending_exception;
+
                 _trace_back = nullptr;
                 _pending_exception = nullptr;
                 _exception_class = nullptr;
+                _frame->_pc = b._target;;
+                _int_status = IS_OK;
+
+                break;
             }
 
-            _frame->_pc = b._target;;
-            _int_status = IS_OK;
         }
 
         if (_int_status == IS_EXCEPTION && _frame->blocks()->length() == 0) {
@@ -753,6 +773,7 @@ void Interpreter::oops_do(OopClosure* f) {
     f->do_oop((HiObject**)&_trace_back);
     f->do_oop((HiObject**)&_exception_class);
     f->do_oop((HiObject**)&_pending_exception);
+    f->do_oop((HiObject**)&_old_exception);
 
     if (_frame)
         _frame->oops_do(f);
@@ -794,5 +815,50 @@ Interpreter::Status Interpreter::do_raise(HiObject* raw_exc, HiObject* raw_val, 
     }
     _trace_back = tb;
     return IS_EXCEPTION;
+}
+
+void Interpreter::normalize_errors(HiObject** raw_exc, HiObject** raw_val, HiObject** raw_tb) {
+    assert(raw_exc != nullptr);
+
+    Handle<HiObject*> exc(*raw_exc);
+    Handle<HiObject*> val(*raw_val);
+    Handle<HiObject*> tb(*raw_tb);
+
+    if (tb == nullptr) {
+        tb = Traceback::new_instance();
+    }
+
+    if (exc->klass() == TypeKlass::get_instance()) {
+        val = exc->call(nullptr, nullptr);
+    }
+    else {
+        val = exc;
+        exc = val->klass()->type_object();
+    }
+
+    val->setattr(ST(tb), tb);
+
+    // 可能已经发生过GC了，所以要把地址重新刷新一下
+    *(raw_exc) = exc();
+    *(raw_val) = val();
+    *(raw_tb) = tb();
+}
+
+void Interpreter::set_error_str(HiString* name) {
+    Handle<HiObject*> exc = _builtins->get(name);
+    assert(exc != Universe::HiNone);
+    set_error_object(exc, nullptr, nullptr);
+    _int_status = IS_EXCEPTION;
+}
+
+void Interpreter::set_error_object(HiObject* raw_exc, HiObject* raw_val, HiObject* raw_tb) {
+    normalize_errors(&raw_exc, &raw_val, &raw_tb);
+
+    _pending_exception = raw_val;
+    _exception_class = raw_exc;
+    _trace_back = raw_tb;
+
+    _pending_exception->setattr(ST(context), _old_exception);
+    _int_status = IS_EXCEPTION;
 }
 

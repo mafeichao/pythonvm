@@ -55,7 +55,5 @@ public:
     void oops_do(OopClosure* f);
 };
 
-template class Stack<HiObject*>;
-
 #endif
 

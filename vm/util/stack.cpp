@@ -30,3 +30,5 @@ void Stack<T>::push(T t) {
     vector[_length++] = t;
 }
 
+template class Stack<HiObject*>;
+

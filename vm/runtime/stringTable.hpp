@@ -34,6 +34,13 @@ public:
     HiString* lib_str;
     HiString* pyc_str;
     HiString* so_str;
+    HiString* tb_str;
+
+    // Names of erros
+    HiString* div_zero_str;
+    HiString* index_err_str;
+    HiString* exc_str;
+    HiString* context_str;
 
     void oops_do(OopClosure* f);
 };

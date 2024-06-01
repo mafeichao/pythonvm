@@ -4,6 +4,7 @@
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
 #include "object/typeObject.hpp"
+#include "runtime/stringTable.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/interpreter.hpp"
 #include "memory/oopClosure.hpp"
@@ -127,7 +128,7 @@ HiObject* IntegerKlass::div(HiObject* x, HiObject* y) {
     int iy = y->as<HiInteger>()->value();
 
     if (iy == 0) {
-        Interpreter::get_instance()->raise_error("ZeroDivisionError");
+        Interpreter::get_instance()->set_error_str(ST(div_zero));
         return nullptr;
     }
 

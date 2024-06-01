@@ -33,9 +33,15 @@ StringTable::StringTable() {
     setattr_str = HiString::new_instance("__setattr__");
     setitem_str = HiString::new_instance("__setitem__");
     str_str  = HiString::new_instance("__str__");
+    tb_str  = HiString::new_instance("__traceback__");
     lib_str  = HiString::new_instance("lib/");
     pyc_str  = HiString::new_instance(".pyc");
     so_str  = HiString::new_instance(".so");
+
+    div_zero_str = HiString::new_instance("ZeroDivisionError");
+    index_err_str = HiString::new_instance("IndexError");;
+    exc_str = HiString::new_instance("Exception");
+    context_str = HiString::new_instance("__context__");
 }
 
 void StringTable::oops_do(OopClosure* f) {
@@ -58,4 +64,12 @@ void StringTable::oops_do(OopClosure* f) {
     f->do_oop((HiObject**)&lib_str);
     f->do_oop((HiObject**)&pyc_str);
     f->do_oop((HiObject**)&so_str);
+    f->do_oop((HiObject**)&tb_str);
+
+    //Exceptions;
+    f->do_oop((HiObject**)&div_zero_str);
+    f->do_oop((HiObject**)&index_err_str);
+    f->do_oop((HiObject**)&exc_str);
+    f->do_oop((HiObject**)&context_str);
 }
+
