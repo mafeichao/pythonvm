@@ -9,3 +9,18 @@ while i < 10:
     b = t 
 
     i = i + 1 
+
+def fib(n):
+    i = 0
+    a = 1
+    b = 0
+    while i < 10:
+        yield a
+        t = a
+        a += b
+        b = t
+        i += 1
+
+for i in fib(10):
+    print(i)
+

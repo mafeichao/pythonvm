@@ -36,7 +36,12 @@ StringTable::StringTable() {
     tb_str  = HiString::new_instance("__traceback__");
     lib_str  = HiString::new_instance("lib/");
     pyc_str  = HiString::new_instance(".pyc");
+
+#ifdef HIVM_APPLE
+    so_str  = HiString::new_instance(".dylib");
+#else
     so_str  = HiString::new_instance(".so");
+#endif
 
     div_zero_str = HiString::new_instance("ZeroDivisionError");
     index_err_str = HiString::new_instance("IndexError");;

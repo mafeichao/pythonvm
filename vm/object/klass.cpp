@@ -283,6 +283,10 @@ HiObject* Klass::repr(HiObject* obj) {
     return find_and_call(obj, nullptr, ST(repr));
 }
 
+HiObject* Klass::next(HiObject* x) {
+    return find_and_call(x, nullptr, ST(next));
+}
+
 HiObject* Klass::find_and_call(HiObject* lhs, HiList* args, HiObject* func_name) {
     HiObject* func = lhs->getattr(func_name);
     if (func != Universe::HiNone) {

@@ -25,6 +25,7 @@ set(SOURCE_FILE
     runtime/cellObject.cpp
     runtime/module.cpp
     runtime/traceback.cpp
+    runtime/generator.cpp
     memory/heap.cpp
     memory/oopClosure.cpp
     util/map.cpp
@@ -34,6 +35,11 @@ set(SOURCE_FILE
     )
 
 INCLUDE_DIRECTORIES(./)
+
+if (APPLE)
+    message(STATUS "cmake for apple")
+    add_definitions(-DHIVM_APPLE)
+endif()
 
 # libhivm
 ADD_LIBRARY(hivm SHARED ${SOURCE_FILE})

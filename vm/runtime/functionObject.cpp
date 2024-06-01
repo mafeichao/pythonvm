@@ -179,6 +179,14 @@ bool MethodObject::is_function(HiObject *x) {
     return false;
 }
 
+bool MethodObject::is_yield_function(HiObject *x) {
+    Klass* k = x->klass();
+    if (k != (Klass*) FunctionKlass::get_instance())
+        return false;
+
+    return ((x->as<FunctionObject>()->flags() & FunctionObject::CO_GENERATOR) != 0);
+}
+
 HiObject* object_repr(HiList* args, HiDict* kwargs) {
     return args->get(0)->repr();
 }

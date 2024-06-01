@@ -61,6 +61,7 @@ public:
     virtual HiObject* mod(HiObject* x, HiObject* y) { return nullptr; }
 
     virtual HiObject* iter(HiObject* x)                { return nullptr; }
+    virtual HiObject* next(HiObject* x);
     virtual HiObject* call     (HiObject* x, HiList* args, HiDict* kwargs);
 
     virtual HiObject* getattr(HiObject* x, HiObject* y);

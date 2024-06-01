@@ -43,6 +43,7 @@ public:
     void      store_subscr(HiObject* x, HiObject* y);
     HiObject* contains(HiObject* x);
     HiObject* iter();
+    HiObject* next();
     void      del_subscr(HiObject* x);
 
     template<typename T>

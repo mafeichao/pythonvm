@@ -126,6 +126,7 @@ public:
     static bool is_native(HiObject* x);
     static bool is_method(HiObject* x);
     static bool is_function(HiObject* x);
+    static bool is_yield_function(HiObject* x);
 };
 
 class NativeFunctionKlass : public Klass {

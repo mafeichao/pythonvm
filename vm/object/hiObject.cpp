@@ -11,6 +11,7 @@
 #include "runtime/functionObject.hpp"
 #include "runtime/module.hpp"
 #include "runtime/traceback.hpp"
+#include "runtime/generator.hpp"
 #include "util/handles.hpp"
 #include <cstdint>
 
@@ -116,6 +117,10 @@ HiObject* HiObject::iter() {
     return klass()->iter(this);
 }
 
+HiObject* HiObject::next() {
+    return klass()->next(this);
+}
+
 /*
  * Interfaces for GC.
  */
@@ -217,6 +222,13 @@ template<>
 MethodObject* HiObject::as<MethodObject>() {
     assert(klass() == MethodKlass::get_instance());
     return (MethodObject*)this;
+}
+
+
+template<>
+Generator* HiObject::as<Generator>() {
+    assert(klass() == GeneratorKlass::get_instance());
+    return (Generator*)this;
 }
 
 /*

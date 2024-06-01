@@ -10,11 +10,13 @@ class HiDict;
 class OopClosure;
 class ModuleObject;
 class Traceback;
+class Generator;
 
 class Interpreter {
     enum Status {
         IS_OK,
         IS_EXCEPTION,
+        IS_YIELD,
     };
 
 private:
@@ -48,6 +50,8 @@ public:
     Status    raise_error     (const char* ename);
     Status    do_raise        (HiObject* exc, HiObject* val, HiObject* tb);
     HiObject* call_virtual    (Handle<HiObject*> func, Handle<HiList*> args);
+    HiObject* eval_generator  (Generator* g);
+
     void build_frame(Handle<HiObject*> callable, 
         Handle<HiList*> args, Handle<HiList*> kwargs = nullptr);
     void enter_frame     (FrameObject* frame);

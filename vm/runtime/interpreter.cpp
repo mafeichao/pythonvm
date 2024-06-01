@@ -6,6 +6,7 @@
 #include "runtime/cellObject.hpp"
 #include "runtime/module.hpp"
 #include "runtime/traceback.hpp"
+#include "runtime/generator.hpp"
 #include "object/arrayList.hpp"
 #include "object/hiString.hpp"
 #include "object/hiInteger.hpp"
@@ -105,6 +106,11 @@ void Interpreter::build_frame(Handle<HiObject*> callable,
         }
         args->insert(0, method->owner());
         build_frame(method->func(), args, kwargs);
+    }
+    else if (MethodObject::is_yield_function(callable)) {
+        Generator* gtor = new Generator((FunctionObject*) callable(), args, kwargs);
+        PUSH(gtor);
+        return;
     }
     else if (callable->klass() == FunctionKlass::get_instance()) {
         FrameObject* frame = new FrameObject();
@@ -611,16 +617,19 @@ void Interpreter::eval_frame() {
                 PUSH(v->iter());
                 break;
 
-            case ByteCode::FOR_ITER:
+            case ByteCode::FOR_ITER: {
                 v = TOP();
-                w = v->getattr(ST(next));
-                build_frame(w, nullptr);
+                w = v->next();
 
-                if (TOP() == nullptr) {
+                if (w == nullptr) {
                     _frame->_pc += op_arg;
                     POP();
                 }
+                else {
+                    PUSH(w);
+                }
                 break;
+            }
 
             case ByteCode::BUILD_MAP:
                 v = HiDict::new_instance();
@@ -693,11 +702,12 @@ void Interpreter::eval_frame() {
                     _frame->get_pc() + op_arg, STACK_LEVEL());
                 break;
 
-            case ByteCode::POP_FINALLY:
+            case ByteCode::POP_FINALLY: {
                 v = POP();
+                long long t = (long long )v();
                 if (op_arg)
                     w = POP();
-                if (v == nullptr || ((long long)v()) & 0x1) {
+                if (t == 0 || t & 0x1) {
                     // do nothing.
                 }
                 else {
@@ -706,6 +716,14 @@ void Interpreter::eval_frame() {
                 if (op_arg)
                     PUSH(w);
                 break;
+            }
+
+            case ByteCode::YIELD_VALUE:
+                // we are assured that we're in the progress
+                // of evalating generator.
+                _int_status = IS_YIELD;
+                _ret_value = TOP();
+                return;
 
             default:
                 printf("Error: Unrecognized byte code %d\n", op_code);
@@ -862,3 +880,21 @@ void Interpreter::set_error_object(HiObject* raw_exc, HiObject* raw_val, HiObjec
     _int_status = IS_EXCEPTION;
 }
 
+HiObject* Interpreter::eval_generator(Generator* g) {
+    Handle<Generator*> gen(g);
+    enter_frame(g->frame());
+    g->frame()->set_entry_frame(true);
+    eval_frame();
+
+    if (_int_status != IS_YIELD) {
+        _int_status = IS_OK;
+        leave_frame();
+        gen->set_frame(nullptr);
+        return nullptr;
+    }
+
+    _int_status = IS_OK;
+    _frame = _frame->sender();
+
+    return _ret_value;
+}

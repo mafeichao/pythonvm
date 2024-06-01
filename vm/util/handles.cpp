@@ -144,6 +144,9 @@ template class Handle<ModuleObject*>;
 class Traceback;
 template class Handle<Traceback*>;
 
+class Generator;
+template class Handle<Generator*>;
+
 class Klass;
 template class Handle<Klass*>;
 
