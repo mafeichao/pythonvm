@@ -1,5 +1,6 @@
 #include "runtime/frameObject.hpp"
 #include "runtime/functionObject.hpp"
+#include "runtime/cellObject.hpp"
 #include "object/hiString.hpp"
 #include "object/hiList.hpp"
 #include "object/hiDict.hpp"
@@ -156,7 +157,12 @@ void FrameObject::initialize(Handle<FunctionObject*> func,
         _closure = HiList::new_instance();
 
         for (int i = 0; i < cells->length(); i++) {
-            _closure->append(nullptr);
+            CellObject* cell = new CellObject(nullptr);
+            int index = _codes->_var_names->index(cells->get(i));
+            if (index >= 0) {
+                cell->set_value(_fast_locals->get(index));
+            }
+            _closure->append(cell);
         }
     }
 
@@ -208,12 +214,6 @@ unsigned char FrameObject::get_op_code() {
 
 bool FrameObject::has_more_codes() {
     return _pc < _codes->_bytecodes->length();
-}
-
-HiObject* FrameObject::get_cell_from_parameter(int i) {
-    Handle<HiObject*> cell_name = _codes->_cell_vars->get(i);
-    i = _codes->_var_names->index(cell_name);
-    return _fast_locals->get(i);
 }
 
 void FrameObject::oops_do(OopClosure* f) {

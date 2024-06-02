@@ -18,24 +18,14 @@ CellKlass::CellKlass() {
     set_name(HiString::new_instance("cell"));
 }
 
-CellObject::CellObject(HiList* t, int i) : 
-        _table(t), _index(i) {
+CellObject::CellObject(HiObject* o) : _value(o) {
     set_klass(CellKlass::get_instance());
 }
 
-HiObject* CellObject::value() {
-    return _table->get(_index);
-}
-
-void CellObject::set_value(HiObject* o) {
-    return _table->set(_index, o);
-}
-
 size_t CellKlass::size() {
-    return sizeof(CellKlass);
+    return sizeof(CellObject);
 }
 
 void CellKlass::oops_do(OopClosure* f, HiObject* obj) {
-    f->do_oop((HiObject**)&(obj->as<CellObject>()->_table));
+    f->do_oop((HiObject**)&(obj->as<CellObject>()->_value));
 }
-

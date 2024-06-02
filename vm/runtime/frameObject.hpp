@@ -88,7 +88,6 @@ public:
     HiList* fast_locals()           { return _fast_locals; }
 
     HiList* closure()               { return _closure; }
-    HiObject* get_cell_from_parameter(int i );
 
     BlockList* blocks();
     void setup_block(unsigned int btype, unsigned int target, int level);

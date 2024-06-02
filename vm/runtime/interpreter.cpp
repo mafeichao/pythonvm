@@ -395,41 +395,26 @@ void Interpreter::eval_frame() {
 
                 break;
 
-            case ByteCode::LOAD_CLOSURE:
+            case ByteCode::LOAD_CLOSURE: {
                 v = _frame->closure()->get(op_arg);
-                if (v == nullptr) {
-                    _frame->closure()->set(op_arg, (_frame->get_cell_from_parameter(op_arg)));
-                }
-
-                v = _frame->closure()->get(op_arg);
-                if (v->klass() == CellKlass::get_instance()) {
-                    PUSH(v);
-                }
-                else
-                    PUSH(new CellObject(_frame->closure(), op_arg));
-
-                break;
-
-            case ByteCode::LOAD_DEREF:
-                v = _frame->closure()->get(op_arg);
-                if (v->klass() == CellKlass::get_instance()) {
-                    v = v->as<CellObject>()->value();
-                }
+                assert(v->klass() == CellKlass::get_instance());
                 PUSH(v);
                 break;
+            }
 
-            case ByteCode::STORE_DEREF:
+            case ByteCode::LOAD_DEREF: {
+                v = _frame->closure()->get(op_arg)->as<CellObject>()->value();
+                PUSH(v);
+                break;
+            }
+
+            case ByteCode::STORE_DEREF: {
                 v = _frame->closure()->get(op_arg);
                 w = POP();
-
-                if (v == nullptr || v->klass() != CellKlass::get_instance()) {
-                    _frame->closure()->set(op_arg, w);
-                }
-                else {
-                    v->as<CellObject>()->set_value(w);
-                }
+                v->as<CellObject>()->set_value(w);
 
                 break;
+            }
 
             case ByteCode::LOAD_BUILD_CLASS:
                 PUSH(_builtins->get(ST(build_class)));

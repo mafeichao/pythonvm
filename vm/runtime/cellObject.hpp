@@ -23,13 +23,12 @@ class CellObject : public HiObject {
 friend class CellKlass;
 
 private:
-    HiList* _table;
-    int _index;
+    HiObject* _value;
 
 public:
-    CellObject(HiList* l, int i);
-    HiObject* value();
-    void set_value(HiObject* o);
+    CellObject(HiObject*);
+    HiObject* value()                           { return _value; }
+    void set_value(HiObject* o)                 { _value = o; }
 };
 
 #endif
