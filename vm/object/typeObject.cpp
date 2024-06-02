@@ -6,7 +6,9 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/stringTable.hpp"
+#include "runtime/cellObject.hpp"
 #include "memory/oopClosure.hpp"
+#include "util/handles.hpp"
 
 /*
  * TypeObject is a special object
@@ -66,24 +68,9 @@ HiObject* TypeKlass::call(HiObject* x, HiList* args, HiDict* kwargs) {
         return type_of(args, nullptr);
     }
     else if (args->length() == 3) {
-        HiString* name = args->get(0)->as<HiString>();
-        HiList* supers = args->get(1)->as<HiList>();
-        HiDict* attrs  = args->get(2)->as<HiDict>();
-
-        HiTypeObject* inst = new HiTypeObject();
-        inst->set_klass(this);
-        Klass* cls_klass = new Klass();
-        inst->set_own_klass(cls_klass);
-
-        cls_klass->set_name(name);
-        cls_klass->set_klass_dict(attrs);
-        if (supers->length() == 0) {
-            supers->append(ObjectKlass::get_instance()->type_object());
-        }
-        cls_klass->set_super_list(supers);
-        cls_klass->order_supers();
-
-        return inst;
+        return Klass::create_klass(args->get(2)->as<HiDict>(),
+            args->get(1)->as<HiList>(),
+            args->get(0)->as<HiString>());
     }
 
     return nullptr;

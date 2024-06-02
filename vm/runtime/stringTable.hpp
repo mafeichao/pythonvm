@@ -26,6 +26,8 @@ public:
     HiString* mro_str;
     HiString* name_str;
     HiString* _new_str;
+    HiString* classcell_str;
+    HiString* class_str;
     HiString* next_str;
     HiString* repr_str;
     HiString* setitem_str;

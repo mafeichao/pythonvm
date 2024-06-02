@@ -28,6 +28,8 @@ StringTable::StringTable() {
     mro_str  = HiString::new_instance("__mro__");
     name_str = HiString::new_instance("__name__");
     _new_str = HiString::new_instance("__new__");
+    classcell_str = HiString::new_instance("__classcell__");
+    class_str = HiString::new_instance("__class__");
     next_str = HiString::new_instance("__next__");
     repr_str = HiString::new_instance("__repr__");
     setattr_str = HiString::new_instance("__setattr__");
@@ -60,6 +62,8 @@ void StringTable::oops_do(OopClosure* f) {
     f->do_oop((HiObject**)&len_str);
     f->do_oop((HiObject**)&mro_str);
     f->do_oop((HiObject**)&_new_str);
+    f->do_oop((HiObject**)&classcell_str);
+    f->do_oop((HiObject**)&class_str);
     f->do_oop((HiObject**)&name_str);
     f->do_oop((HiObject**)&next_str);
     f->do_oop((HiObject**)&repr_str);

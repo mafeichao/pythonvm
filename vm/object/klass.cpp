@@ -2,6 +2,7 @@
 #include "runtime/universe.hpp"
 #include "runtime/stringTable.hpp"
 #include "runtime/interpreter.hpp"
+#include "runtime/cellObject.hpp"
 #include "runtime/functionObject.hpp"
 #include "object/hiObject.hpp"
 #include "object/hiInteger.hpp"
@@ -249,6 +250,11 @@ HiObject* Klass::create_klass(HiDict* kls_d, HiList* r_supers_list, HiString* ra
     type_obj->set_own_klass(new_klass);
 
     new_klass->order_supers();
+
+    if (klass_dict->has_key(ST(classcell))) {
+        klass_dict->map()->get(ST(classcell))->as<CellObject>()->set_value(type_obj);
+        klass_dict->map()->remove(ST(classcell));
+    }
     
     return type_obj;
 }
@@ -257,6 +263,7 @@ HiObject* Klass::allocate_instance(HiList* raw_args) {
     Handle<HiList*> args(raw_args);
     Handle<HiObject*> inst = new HiObject();
     inst->set_klass(this);
+    inst->setattr(ST(class), _type_object);
     Handle<HiObject*> init_func = inst->getattr(ST(init));
 
     if (init_func != Universe::HiNone) {

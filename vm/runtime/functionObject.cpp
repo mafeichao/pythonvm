@@ -7,6 +7,7 @@
 #include "runtime/interpreter.hpp"
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
+#include "runtime/stringTable.hpp"
 #include "memory/heap.hpp"
 #include "memory/oopClosure.hpp"
 
