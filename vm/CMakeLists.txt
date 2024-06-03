@@ -37,8 +37,14 @@ set(SOURCE_FILE
 INCLUDE_DIRECTORIES(./)
 
 if (APPLE)
-    message(STATUS "cmake for apple")
+    message(STATUS "cmake for Apple")
     add_definitions(-DHIVM_APPLE)
+elseif(MINGW)
+    message(STATUS "cmake for MinGW")
+    add_definitions(-DHIVM_MINGW)
+elseif(WINDOWS)
+    message(STATUS "cmake for Windows")
+    add_definitions(-DHIVM_WINDOWS)
 endif()
 
 # libhivm

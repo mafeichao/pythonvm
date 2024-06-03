@@ -186,7 +186,6 @@ HiList* HiList::new_instance() {
     Handle<HiList*> result = new HiList();
     ArrayList<HiObject*>* inner = ArrayList<HiObject*>::new_instance(8);
     result->set_inner_list(inner);;
-    result->setattr(ST(class), TypeKlass::get_instance()->type_object());
     return result;
 }
 

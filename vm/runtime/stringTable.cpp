@@ -41,6 +41,8 @@ StringTable::StringTable() {
 
 #ifdef HIVM_APPLE
     so_str  = HiString::new_instance(".dylib");
+#elif defined(HIVM_WINDOWS) || defined(HIVM_MINGW)
+    so_str  = HiString::new_instance(".dll");
 #else
     so_str  = HiString::new_instance(".so");
 #endif
