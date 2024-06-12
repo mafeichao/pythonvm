@@ -5,6 +5,7 @@
 #include "runtime/stringTable.hpp"
 #include "object/klass.hpp"
 #include "object/hiInteger.hpp"
+#include "object/hiDouble.hpp"
 #include "object/hiString.hpp"
 #include "object/hiObject.hpp"
 #include "object/hiDict.hpp"
@@ -33,6 +34,7 @@ void Universe::genesis() {
     ObjectKlass::get_instance()->initialize();
     TypeKlass::get_instance()->initialize();
     IntegerKlass::get_instance()->initialize();
+    DoubleKlass::get_instance()->initialize();
     DictKlass::get_instance()->initialize();
     StringKlass::get_instance()->initialize();
     ListKlass::get_instance()->initialize();

@@ -4,6 +4,7 @@ project(vmtest)
 
 set(SRCFILES
     alltest.py
+    object/numbers.py
     cf/*.py
     object/*.py
     func/*.py
@@ -19,7 +20,7 @@ add_custom_command(OUTPUT ${TESTFILES}
     POST_BUILD
     #DEPENDS ${SRCFILES}
     COMMAND echo "${CMAKE_CURRENT_SOURCE_DIR}"
-    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/main.py
+    COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/main.py
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 

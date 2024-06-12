@@ -3,6 +3,7 @@
 #include "object/hiString.hpp"
 #include "object/hiDict.hpp"
 #include "object/hiList.hpp"
+#include "object/hiDouble.hpp"
 #include "object/typeObject.hpp"
 #include "memory/heap.hpp"
 #include "memory/oopClosure.hpp"
@@ -197,6 +198,13 @@ template<>
 HiInteger* HiObject::as<HiInteger>() {
     assert(this->klass() == IntegerKlass::get_instance());
     return (HiInteger*)this;
+}
+
+template<>
+HiDouble* HiObject::as<HiDouble>() {
+    assert(this->klass() == DoubleKlass::get_instance() ||
+        this->klass() == IntegerKlass::get_instance());
+    return (HiDouble*)this;
 }
 
 template<>

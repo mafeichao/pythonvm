@@ -14,6 +14,7 @@ set(SOURCE_FILE
     object/hiString.cpp
     object/hiList.cpp
     object/hiDict.cpp
+    object/hiDouble.cpp
     object/arrayList.cpp
     object/typeObject.cpp
     object/klass.cpp
