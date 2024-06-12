@@ -202,8 +202,7 @@ HiInteger* HiObject::as<HiInteger>() {
 
 template<>
 HiDouble* HiObject::as<HiDouble>() {
-    assert(this->klass() == DoubleKlass::get_instance() ||
-        this->klass() == IntegerKlass::get_instance());
+    assert(this->klass() == DoubleKlass::get_instance());
     return (HiDouble*)this;
 }
 

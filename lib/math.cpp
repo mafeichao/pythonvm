@@ -1,14 +1,24 @@
 #include "os/shared_library.hpp"
 
-HiObject* add(HiList* args, HiDict* kwargs) {
-    int a = args->get(0)->as<HiInteger>()->value();
-    int b = args->get(1)->as<HiInteger>()->value();
+#include <math.h>
 
-    return new HiInteger(a + b);
+double get_double(HiList* args) {
+    return args->get(0)->as<HiDouble>()->value();
+}
+
+HiObject* math_sqrt(HiList* args, HiDict* kwargs) {
+    double x = get_double(args);
+    return new HiDouble(sqrt(x));
+}
+
+HiObject* math_sin(HiList* args, HiDict* kwargs) {
+    double x = get_double(args);
+    return new HiDouble(sin(x));
 }
 
 RGMethod math_methods[] = {
-    { "add", add, 0, "add tow integer", },
+    { "sin",  math_sin,  0, "sin(x)", },
+    { "sqrt", math_sqrt, 0, "square root of x", },
     { NULL, NULL, 0, NULL, },
 };
 
@@ -23,4 +33,3 @@ SO_PUBLIC RGMethod* init_libmath() {
 #ifdef __cplusplus
 }
 #endif
-

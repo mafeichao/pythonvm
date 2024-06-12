@@ -3,6 +3,7 @@
 
 #include "runtime/functionObject.hpp"
 #include "object/hiInteger.hpp"
+#include "object/hiDouble.hpp"
 #include "object/hiList.hpp"
 #include "object/hiObject.hpp"
 

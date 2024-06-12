@@ -260,7 +260,7 @@ HiList* BinaryFileParser::get_tuple() {
             obj = new HiInteger(file_stream->read_int());
             break;
         case 'g':
-            list->append(new HiDouble(file_stream->read_double()));
+            obj = new HiDouble(file_stream->read_double());
             break;
         case 'N':
             obj = Universe::HiNone;
