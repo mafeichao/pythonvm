@@ -318,7 +318,9 @@ HiObject* listiterator_next(HiList* args, HiDict* kwargs) {
         iter->inc_cnt();
         return obj;
     }
-    else // TODO : we need Traceback here to mark iteration end
-        return NULL;
+    else {
+        Interpreter::get_instance()->set_error_str(ST(stop_iter));
+        return nullptr;
+    }
 }
 

@@ -14,7 +14,7 @@ def fib(n):
     i = 0
     a = 1
     b = 0
-    while i < 10:
+    while i < n:
         yield a
         t = a
         a += b

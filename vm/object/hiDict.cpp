@@ -6,6 +6,7 @@
 #include "runtime/universe.hpp"
 #include "runtime/functionObject.hpp"
 #include "runtime/stringTable.hpp"
+#include "runtime/interpreter.hpp"
 #include "memory/oopClosure.hpp"
 #include "util/handles.hpp"
 #include <assert.h>
@@ -244,8 +245,10 @@ HiObject* dictiterator_next(HiList* args, HiDict* kwargs) {
         iter->inc_cnt();
         return obj;
     }
-    else // TODO : we need Traceback here to mark iteration end
+    else {
+        Interpreter::get_instance()->set_error_str(ST(stop_iter));
         return nullptr;
+    }
 }
 
 template<ITER_TYPE n>
@@ -314,8 +317,10 @@ HiObject* dict_view_next(HiList* args, HiDict* kwargs) {
         iter->inc_cnt();
         return obj;
     }
-    else // TODO : we need Traceback here to mark iteration end
-        return NULL;
+    else {
+        Interpreter::get_instance()->set_error_str(ST(stop_iter));
+        return nullptr;
+    }
 }
 
 template<ITER_TYPE iter_type>

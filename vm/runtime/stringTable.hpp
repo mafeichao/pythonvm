@@ -40,6 +40,7 @@ public:
 
     // Names of erros
     HiString* div_zero_str;
+    HiString* stop_iter_str;
     HiString* index_err_str;
     HiString* exc_str;
     HiString* context_str;

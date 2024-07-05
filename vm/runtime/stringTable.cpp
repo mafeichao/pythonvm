@@ -48,6 +48,7 @@ StringTable::StringTable() {
 #endif
 
     div_zero_str = HiString::new_instance("ZeroDivisionError");
+    stop_iter_str = HiString::new_instance("StopIteration");
     index_err_str = HiString::new_instance("IndexError");;
     exc_str = HiString::new_instance("Exception");
     context_str = HiString::new_instance("__context__");
@@ -79,6 +80,7 @@ void StringTable::oops_do(OopClosure* f) {
 
     //Exceptions;
     f->do_oop((HiObject**)&div_zero_str);
+    f->do_oop((HiObject**)&stop_iter_str);
     f->do_oop((HiObject**)&index_err_str);
     f->do_oop((HiObject**)&exc_str);
     f->do_oop((HiObject**)&context_str);

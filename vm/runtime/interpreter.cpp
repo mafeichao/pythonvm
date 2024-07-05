@@ -606,9 +606,14 @@ void Interpreter::eval_frame() {
                 v = TOP();
                 w = v->next();
 
-                if (w == nullptr) {
+                if (_int_status == IS_EXCEPTION &&
+                    _exception_class == _builtins->get(ST(stop_iter))) {
                     _frame->_pc += op_arg;
                     POP();
+                    _int_status = IS_OK;
+                    _exception_class = nullptr;
+                    _pending_exception = nullptr;
+                    _trace_back = nullptr;
                 }
                 else {
                     PUSH(w);
@@ -875,6 +880,7 @@ HiObject* Interpreter::eval_generator(Generator* g) {
         _int_status = IS_OK;
         leave_frame();
         gen->set_frame(nullptr);
+        set_error_str(ST(stop_iter));
         return nullptr;
     }
 

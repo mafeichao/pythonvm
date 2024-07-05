@@ -21,6 +21,13 @@ class ZeroDivisionError(Exception):
     def __repr__(self):
         return "divide by zero"
 
+class StopIteration(Exception):
+    def __init__(self, *args):
+        self.info = args
+
+    def __repr__(self):
+        return "stop iteration."
+
 def range(*args):
     start = 0
     end = 0

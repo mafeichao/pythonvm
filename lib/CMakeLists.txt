@@ -17,7 +17,7 @@ add_custom_command(OUTPUT ${LIBFILES}
     POST_BUILD
     DEPENDS ${SRCFILES}
     COMMAND echo "${CMAKE_CURRENT_SOURCE_DIR}"
-    COMMAND python ${CMAKE_CURRENT_SOURCE_DIR}/compilelib.py
+    COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/compilelib.py
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
