@@ -70,6 +70,10 @@ void Interpreter::initialize() {
     _builtins->put(name,         new FunctionObject(isinstance, name));
     name = HiString::new_instance("sysgc");
     _builtins->put(name,         new FunctionObject(sysgc, name));
+    name = HiString::new_instance("iter");
+    _builtins->put(name,         new FunctionObject(iter, name));
+    name = HiString::new_instance("next");
+    _builtins->put(name,         new FunctionObject(next, name));
     _builtins->put(ST(build_class), new FunctionObject(build_type_object, ST(build_class)));
 
     _builtins->extend(ModuleObject::import_module(HiString::new_instance("builtins")));

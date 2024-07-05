@@ -253,3 +253,13 @@ HiObject* sysgc(HiList* args, HiDict* kwargs) {
     return Universe::HiNone;
 }
 
+HiObject* iter(HiList* args, HiDict* kwargs) {
+    HiObject* arg0 = args->get(0);
+    return arg0->iter();
+}
+
+HiObject* next(HiList* args, HiDict* kwargs) {
+    HiObject* arg0 = args->get(0);
+    return arg0->next();
+}
+

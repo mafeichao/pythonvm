@@ -28,6 +28,8 @@ HiObject* type_of(HiList* args, HiDict* kwargs);
 HiObject* build_type_object(HiList* args, HiDict* kwargs);
 HiObject* internal_exec(FunctionObject* callable, HiDict* globals, HiDict* locals);
 HiObject* sysgc(HiList* args, HiDict* kwargs);
+HiObject* iter(HiList* args, HiDict* kwargs);
+HiObject* next(HiList* args, HiDict* kwargs);
 
 typedef HiObject* (*NativeFuncPointer)(HiList* args, HiDict* kwargs);
 
