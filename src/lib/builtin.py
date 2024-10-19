@@ -44,7 +44,7 @@ def range(*args):
             lst.append(start)
             start += step
     else:
-        print "Error"
+        print("Error")
 
     return lst
 
