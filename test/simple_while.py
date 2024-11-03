@@ -5,4 +5,7 @@ while i < 10:
     if (i > 5):
         break
 
+    if i == 3:
+        continue
+    
     print(i)
