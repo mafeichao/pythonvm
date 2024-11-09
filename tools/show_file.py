@@ -14,9 +14,12 @@ def show_file(fname):
     code = marshal.load(f)
     show_code(code)
      
-def show_code(code, indent=''):
+def show_code(code, indent='', const_idx=None):
     old_indent = indent
-    print("%s<code>" % indent)
+    if const_idx:
+        print("%s{%d}<code>" % (indent, const_idx))
+    else:
+        print("%s<code>" % indent)
     indent += '   '
     print("%s<argcount> %d </argcount>" % (indent, code.co_argcount))
     print("%s<nlocals> %d</nlocals>" % (indent, code.co_nlocals))
@@ -36,15 +39,20 @@ def show_code(code, indent=''):
     print("%s<firstlineno> %d</firstlineno>" % (indent, code.co_firstlineno))
  
     print("%s<consts>" % indent)
+    const_idx = 0
     for const in code.co_consts:
         if type(const) == types.CodeType:
-            show_code(const, indent+'   ')
+            show_code(const, indent+'   ', const_idx=const_idx)
         else:
-            print("   %s%r" % (indent, const))
+            print("   %s{%d}%r" % (indent, const_idx, const))
+        const_idx += 1
     print("%s</consts>" % indent)
  
     show_hex("lnotab", code.co_lnotab, indent=indent)
-    print("%s</code>" % old_indent)
+    if const_idx:
+        print("%s</code>{%d}" % (old_indent, const_idx))
+    else:
+        print("%s</code>" % old_indent)
      
 def show_hex(label, h, indent):
     h = h.hex()
