@@ -5,4 +5,4 @@ s = "hello"
 def py_len(o):
     return len(o)
 
-print py_len(s)
+print(py_len(s))

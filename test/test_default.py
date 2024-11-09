@@ -1,7 +1,7 @@
 def foo(a = 1):
     return a
 
-print foo()
+print(foo())
 
 def make_func(x):
     def add(a, b = x):
@@ -10,4 +10,4 @@ def make_func(x):
     return add
 
 add5 = make_func(5)
-print add5(10)
+print(add5(10))

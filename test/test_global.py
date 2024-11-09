@@ -6,10 +6,10 @@ def func():
     x = 1
 
 func()
-print x
+print(x)
 
 y = 2
 def foo():
-    print y
+    print(y)
 
 foo()
