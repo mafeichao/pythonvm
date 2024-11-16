@@ -12,6 +12,7 @@ l = [4, 1, 2, 3]
 l.append(10)
 l[0] = 5
 del l[3]
+print(l.index(1))
 l.pop()
 l.remove(2)
 l.reverse()
