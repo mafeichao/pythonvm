@@ -10,6 +10,7 @@ print(x)
 
 y = 2
 def foo():
+    z = 0
     print(y)
 
 foo()
