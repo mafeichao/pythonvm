@@ -22,7 +22,7 @@ def func(a, b = 2, *alist, **kwargs):
     for i in alist:
         t += i
 
-    for v in kwargs.itervalues():
+    for v in kwargs.values():
         t += v
 
     return t
@@ -50,7 +50,7 @@ def foo(**kwargs):
         print(v)
 foo(a = 1, b = 2)
 
-def calc(a, b, *args, **kwargs):
+def calc(a, b=1, *args, **kwargs):
     coeff = kwargs.get("coeff")
 
     if coeff is None:
@@ -58,8 +58,13 @@ def calc(a, b, *args, **kwargs):
 
     t = a + b
     for i in args:
+        print("args:" + str(i))
         t += i
 
     return coeff * t
+#print(calc())
+print(calc(1))
 print(calc(1, 2, 3, 4, coeff = 2))
 print(calc(b = 1, a = 2, c = 3, coeff = 2))
+#print(calc(0, b = 1, a = 2, c = 3, coeff = 2))
+print(calc(0, b = 1, c = 3, coeff = 2))
