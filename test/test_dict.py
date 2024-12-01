@@ -1,15 +1,22 @@
 d = {1 : "hello", "world" : 2}
 
-print d
-print d[1]
-print d["world"]
+print(d)
+print(d[1])
+print(d["world"])
 
-d.setdefault(1, 2);
-d.setdefault(2, 3);
+a = 1
+b = 2
+d = {a : "hello", b : "world"}
+print(d)
+print(d.get(a))
 
-print d[1]
-print d[2]
+d.setdefault(1, 2)
+d.setdefault(2, 3)
+print(d[1])
+print(d[2])
+
 del d[1]
-print d
+print(d)
 d.remove(2)
-print d
+print(d)
+print(d.pop(2,100))
