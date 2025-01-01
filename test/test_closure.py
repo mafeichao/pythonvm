@@ -1,18 +1,35 @@
+def func(z=5):
+    x = 2
+    y = 5
+    def say(a0=1,a1=2,a2=3,a3=4,a4=5,a5=6,a6=7,a7=8,a8=9):
+        nonlocal x
+        x += y
+        x += z
+        print(x)
+    
+    x += 1
+    y += 1
+    return say
+
+f = func()
+f()
+f()
+
 def foo():
     value = 1
-    print value
+    print(value)
 
     def bar(a = 3):
-        print value
+        print(value)
         inner_v = 4
 
         def func1():
-            print a
-            print value
+            print(a)
+            print(value)
 
         def func2():
-            print a
-            print inner_v
+            print(a)
+            print(inner_v)
 
         return func1, func2
 
@@ -26,20 +43,20 @@ g()
 
 def func(x = 5):
     def say():
-        print x
+        print(x)
 
     x = 3
-    print x
+    print(x)
     return say
 
 f = func()
-print "hello"
+print("hello")
 f()
 
 def foo():
     x = 2
     def bar():
-        print x
+        print(x)
 
     x = 3
 
