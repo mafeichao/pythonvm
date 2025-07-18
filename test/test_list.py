@@ -6,6 +6,11 @@ if "hello" in la:
 else:
     print("none")
 
+if "hello" not in la:
+    print("none")
+else:
+    print("exist")
+    
 print(la[1])
 
 l = [4, 1, 2, 3]
