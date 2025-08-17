@@ -1,6 +1,6 @@
 s = "hello"
 
-#print len(s)
+print(len(s))
 
 def py_len(o):
     return len(o)
