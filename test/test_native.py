@@ -6,3 +6,7 @@ def py_len(o):
     return len(o)
 
 print(py_len(s))
+
+def say_hello():
+    return "hello"
+print(say_hello())
